@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: codeclub
+        ports: [ '3306:3306' ]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer
+          extensions: mbstring, intl, pdo, pdo_mysql
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Copy .env
+        run: cp .env.example .env || true
+
+      - name: Configure app key
+        run: php artisan key:generate || true
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build --if-present
+
+      - name: Configure DB
+        run: |
+          php -r "file_exists('.env') && file_put_contents('.env', str_replace('DB_CONNECTION=mysql', 'DB_CONNECTION=mysql', file_get_contents('.env')));"
+          php -r "file_exists('.env') && file_put_contents('.env', str_replace('DB_HOST=127.0.0.1', 'DB_HOST=127.0.0.1', file_get_contents('.env')));"
+          php -r "file_exists('.env') && file_put_contents('.env', str_replace('DB_PORT=3306', 'DB_PORT=3306', file_get_contents('.env')));"
+          php -r "file_exists('.env') && file_put_contents('.env', str_replace('DB_DATABASE=laravel', 'DB_DATABASE=codeclub', file_get_contents('.env')));"
+          php -r "file_exists('.env') && file_put_contents('.env', str_replace('DB_USERNAME=root', 'DB_USERNAME=root', file_get_contents('.env')));"
+          php -r "file_exists('.env') && file_put_contents('.env', str_replace('DB_PASSWORD=', 'DB_PASSWORD=root', file_get_contents('.env')));"
+
+      - name: Run migrations
+        run: php artisan migrate --force
+
+      - name: Run tests
+        run: php artisan test --colors=always
+
