@@ -109,6 +109,8 @@
                         <iframe 
                             src="https://scratch.mit.edu/projects/editor/?tutorial=getStarted" 
                             class="w-full h-full border-0"
+                            loading="lazy"
+                            referrerpolicy="no-referrer"
                             allowfullscreen>
                         </iframe>
                         
@@ -146,8 +148,8 @@
                             <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">My First Game</h3>
                             <p class="text-sm text-slate-600 dark:text-slate-400">A simple platformer game</p>
                         </div>
-                        <div class="mb-4">
-                            <img src="https://via.placeholder.com/300x200/FF6B35/FFFFFF?text=Scratch+Game" alt="Project thumbnail" class="w-full h-32 object-cover rounded-lg">
+                    <div class="mb-4">
+                            <img src="https://via.placeholder.com/300x200/FF6B35/FFFFFF?text=Scratch+Game" alt="Project thumbnail" class="w-full h-32 object-cover rounded-lg" loading="lazy" width="300" height="200">
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg text-xs font-medium">
@@ -176,7 +178,7 @@
                             <p class="text-sm text-slate-600 dark:text-slate-400">Choose your own adventure</p>
                         </div>
                         <div class="mb-4">
-                            <img src="https://via.placeholder.com/300x200/4ECDC4/FFFFFF?text=Story+Project" alt="Project thumbnail" class="w-full h-32 object-cover rounded-lg">
+                            <img src="https://via.placeholder.com/300x200/4ECDC4/FFFFFF?text=Story+Project" alt="Project thumbnail" class="w-full h-32 object-cover rounded-lg" loading="lazy" width="300" height="200">
                         </div>
                         <div class="flex items-center justify-between">
                             <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-lg text-xs font-medium">
@@ -206,7 +208,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <!-- Featured Project 1 -->
                         <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 hover:shadow-lg transition-shadow">
-                            <img src="https://via.placeholder.com/200x150/3B82F6/FFFFFF?text=Amazing+Game" alt="Featured project" class="w-full h-24 object-cover rounded-lg mb-3">
+                            <img src="https://via.placeholder.com/200x150/3B82F6/FFFFFF?text=Amazing+Game" alt="Featured project" class="w-full h-24 object-cover rounded-lg mb-3" loading="lazy" width="200" height="150">
                             <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Amazing Game</h3>
                             <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">By Student Name</p>
                             <div class="flex items-center justify-between">
@@ -217,7 +219,7 @@
 
                         <!-- Featured Project 2 -->
                         <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-4 hover:shadow-lg transition-shadow">
-                            <img src="https://via.placeholder.com/200x150/10B981/FFFFFF?text=Creative+Art" alt="Featured project" class="w-full h-24 object-cover rounded-lg mb-3">
+                            <img src="https://via.placeholder.com/200x150/10B981/FFFFFF?text=Creative+Art" alt="Featured project" class="w-full h-24 object-cover rounded-lg mb-3" loading="lazy" width="200" height="150">
                             <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Creative Art</h3>
                             <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">By Student Name</p>
                             <div class="flex items-center justify-between">
@@ -228,7 +230,7 @@
 
                         <!-- Featured Project 3 -->
                         <div class="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-4 hover:shadow-lg transition-shadow">
-                            <img src="https://via.placeholder.com/200x150/8B5CF6/FFFFFF?text=Music+Player" alt="Featured project" class="w-full h-24 object-cover rounded-lg mb-3">
+                            <img src="https://via.placeholder.com/200x150/8B5CF6/FFFFFF?text=Music+Player" alt="Featured project" class="w-full h-24 object-cover rounded-lg mb-3" loading="lazy" width="200" height="150">
                             <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Music Player</h3>
                             <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">By Student Name</p>
                             <div class="flex items-center justify-between">
@@ -239,7 +241,7 @@
 
                         <!-- Featured Project 4 -->
                         <div class="bg-gradient-to-br from-orange-50 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 rounded-xl p-4 hover:shadow-lg transition-shadow">
-                            <img src="https://via.placeholder.com/200x150/F59E0B/FFFFFF?text=Math+Quiz" alt="Featured project" class="w-full h-24 object-cover rounded-lg mb-3">
+                            <img src="https://via.placeholder.com/200x150/F59E0B/FFFFFF?text=Math+Quiz" alt="Featured project" class="w-full h-24 object-cover rounded-lg mb-3" loading="lazy" width="200" height="150">
                             <h3 class="font-semibold text-slate-900 dark:text-white mb-1">Math Quiz</h3>
                             <p class="text-xs text-slate-600 dark:text-slate-400 mb-2">By Student Name</p>
                             <div class="flex items-center justify-between">

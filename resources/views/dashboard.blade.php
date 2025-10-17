@@ -993,13 +993,22 @@
         </div>
     </div>
 
-    <!-- Chart.js Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js Scripts (deferred and conditional) -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const ensureChartJs = () => new Promise(resolve => {
+                if (window.Chart) return resolve();
+                const s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                s.defer = true;
+                s.onload = () => resolve();
+                document.head.appendChild(s);
+            });
+
             // Weekly Attendance Chart
             const attendanceCtx = document.getElementById('attendanceChart');
             if (attendanceCtx) {
+                ensureChartJs().then(() => {
                 new Chart(attendanceCtx, {
                     type: 'line',
                     data: {
@@ -1043,11 +1052,13 @@
                         }
                     }
                 });
+                });
             }
 
             // Club Performance Chart
             const clubCtx = document.getElementById('clubPerformanceChart');
             if (clubCtx) {
+                ensureChartJs().then(() => {
                 new Chart(clubCtx, {
                     type: 'bar',
                     data: {
@@ -1095,6 +1106,7 @@
                             }
                         }
                     }
+                });
                 });
             }
         });
