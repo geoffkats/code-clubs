@@ -93,10 +93,12 @@ Route::get('/scratch/ide', function() {
 
 // Attendance Management
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+Route::get('/clubs/{club_id}/attendance', [AttendanceController::class, 'show_grid'])->name('attendance.grid');
 Route::post('/attendance/{club_id}', [AttendanceController::class, 'store'])->name('attendance.store');
 Route::put('/attendance/{attendance_id}', [AttendanceController::class, 'update'])->name('attendance.update');
 Route::delete('/attendance/{attendance_id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
 Route::post('/attendance/bulk/{club_id}', [AttendanceController::class, 'bulk_update'])->name('attendance.bulk_update');
+Route::post('/attendance/update/{club_id}', [AttendanceController::class, 'update_attendance'])->name('attendance.update_attendance');
 });
 
 require __DIR__.'/auth.php';

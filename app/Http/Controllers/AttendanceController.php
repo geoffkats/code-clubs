@@ -12,10 +12,31 @@ class AttendanceController extends Controller
 {
 	public function show_grid(int $club_id)
 	{
-		$club = Club::with(['students'])->findOrFail($club_id);
+		$club = Club::with(['students', 'school'])->findOrFail($club_id);
 		$week = (int) request('week', 1);
-		$session = SessionSchedule::where('club_id', $club->id)->where('session_week_number', $week)->first();
-		return view('attendance.grid', compact('club', 'week', 'session'));
+		
+		// Create a session if it doesn't exist for this week
+		$session = SessionSchedule::where('club_id', $club->id)
+			->where('session_week_number', $week)
+			->first();
+			
+		if (!$session) {
+			$session = SessionSchedule::create([
+				'club_id' => $club->id,
+				'session_week_number' => $week,
+				'session_date' => now()->addWeeks($week - 1),
+				'session_start_time' => '09:00:00',
+				'session_end_time' => '10:00:00',
+			]);
+		}
+		
+		// Get existing attendance records for this week
+		$attendanceRecords = AttendanceRecord::where('session_id', $session->id)
+			->with('student')
+			->get()
+			->keyBy('student_id');
+			
+		return view('attendance.grid', compact('club', 'week', 'session', 'attendanceRecords'));
 	}
 
 	public function index()
@@ -102,6 +123,30 @@ class AttendanceController extends Controller
 		}
 
 		return redirect()->back()->with('success', 'Bulk attendance updated successfully!');
+	}
+
+	public function update_attendance(Request $request, int $club_id)
+	{
+		$request->validate([
+			'student_id' => ['required', 'exists:students,id'],
+			'session_id' => ['required', 'exists:sessions,id'],
+			'status' => ['required', 'in:present,absent,late,excused'],
+			'notes' => ['nullable', 'string', 'max:500'],
+		]);
+
+		AttendanceRecord::updateOrCreate(
+			[
+				'student_id' => $request->student_id,
+				'session_id' => $request->session_id,
+			],
+			[
+				'status' => $request->status,
+				'notes' => $request->notes,
+				'recorded_at' => now(),
+			]
+		);
+
+		return response()->json(['success' => true]);
 	}
 }
 

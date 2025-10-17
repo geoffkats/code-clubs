@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'CodeClub System') }} - Empowering Young Coders</title>
     
@@ -49,7 +49,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
-</head>
+    </head>
 <body class="font-sans antialiased bg-white">
     <!-- Navigation -->
     <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md border-b border-gray-200">
@@ -81,7 +81,7 @@
                 </div>
             </div>
         </div>
-    </nav>
+                </nav>
 
     <!-- Hero Section -->
     <section class="relative min-h-screen flex items-center justify-center hero-pattern overflow-hidden">
@@ -315,7 +315,7 @@
                 </div>
             </div>
         </div>
-    </section>
+            </section>
 
     <!-- CTA Section -->
     <section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
@@ -335,7 +335,7 @@
                 </a>
             </div>
         </div>
-    </section>
+            </section>
 
     <!-- Footer -->
     <footer id="contact" class="bg-gray-900 text-white py-16">
@@ -389,5 +389,5 @@
             </div>
         </div>
     </footer>
-</body>
+    </body>
 </html>

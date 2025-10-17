@@ -31,6 +31,8 @@ class StudentController extends Controller
 			'student_grade_level' => ['required', 'string'],
 			'student_parent_name' => ['required', 'string'],
 			'student_parent_email' => ['required', 'email'],
+			'student_parent_phone' => ['nullable', 'string'],
+			'student_medical_info' => ['nullable', 'string'],
 		]);
 
 		// Get the club to determine the school
@@ -42,6 +44,11 @@ class StudentController extends Controller
 
 		// Enroll the student in the club
 		$student->clubs()->attach($data['club_id']);
+
+		// Redirect back to the page that called this (clubs or students)
+		if ($request->has('redirect_to')) {
+			return redirect($request->input('redirect_to'))->with('success', 'Student enrolled successfully!');
+		}
 
 		return redirect()->route('students.index')->with('success', 'Student added and enrolled in club successfully!');
 	}

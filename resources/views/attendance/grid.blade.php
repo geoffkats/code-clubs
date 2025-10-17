@@ -4,11 +4,12 @@
              currentWeek: {{ request('week', 1) }},
              clubId: {{ $club->id }},
              students: @json($club->students),
-             attendance: {},
+             attendance: @json($attendanceRecords->pluck('status', 'student_id')),
              showStudentModal: false,
              selectedStudent: null,
              showBulkEdit: false,
-             editingMode: false
+             editingMode: false,
+             sessionId: {{ $session->id }}
          }">
         <!-- Header Section -->
         <div class="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/60">
@@ -145,6 +146,25 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                            <template x-if="students.length === 0">
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center">
+                                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No Students Enrolled</h3>
+                                        <p class="text-slate-500 dark:text-slate-400 mb-4">This club doesn't have any students enrolled yet.</p>
+                                        <a href="{{ route('clubs.show', $club->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                            Add Students
+                                        </a>
+                                    </td>
+                                </tr>
+                            </template>
                             <template x-for="student in students" :key="student.id">
                                 <tr>
                                     <td class="px-6 py-4">
@@ -308,10 +328,10 @@
                             Apply to All
                         </button>
                     </div>
-                </form>
-            </div>
+			</form>
+		</div>
         </div>
-    </div>
+	</div>
 
     <script>
         function updateWeek() {
@@ -339,11 +359,39 @@
             const statuses = ['present', 'absent', 'late', 'excused'];
             const currentIndex = statuses.indexOf(currentStatus);
             const nextIndex = (currentIndex + 1) % statuses.length;
+            const newStatus = statuses[nextIndex];
             
             if (!this.attendance[studentId]) {
                 this.attendance[studentId] = {};
             }
-            this.attendance[studentId][day] = statuses[nextIndex];
+            this.attendance[studentId][day] = newStatus;
+            
+            // Save to database
+            this.saveAttendance(studentId, newStatus);
+        }
+        
+        function saveAttendance(studentId, status) {
+            fetch(`/attendance/update/${this.clubId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    session_id: this.sessionId,
+                    status: status
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Attendance saved successfully');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving attendance:', error);
+            });
         }
 
         function getAttendanceStatus(studentId, day) {

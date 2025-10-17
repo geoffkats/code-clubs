@@ -146,8 +146,8 @@
                                 <span class="font-medium">{{ __('Schools') }}</span>
                             </div>
                         </flux:navlist.item>
-                    </flux:navlist.group>
-                </flux:navlist>
+                </flux:navlist.group>
+            </flux:navlist>
             </div>
 
             <flux:spacer />
@@ -229,7 +229,7 @@
                             </div>
                             <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-300 text-xs rounded-full font-medium">Soon</span>
                         </div>
-                    </flux:navlist.item>
+                </flux:navlist.item>
 
                     <flux:navlist.item 
                         icon="cog-6-tooth" 
@@ -248,8 +248,8 @@
                                 <p class="text-xs text-slate-500 dark:text-slate-400">Configuration</p>
                             </div>
                         </div>
-                    </flux:navlist.item>
-                </flux:navlist>
+                </flux:navlist.item>
+            </flux:navlist>
             </div>
 
             <!-- Enhanced Desktop User Menu -->
@@ -271,25 +271,25 @@
                     </button>
 
                     <flux:menu class="w-[240px]">
-                        <flux:menu.radio.group>
-                            <div class="p-0 text-sm font-normal">
+                    <flux:menu.radio.group>
+                        <div class="p-0 text-sm font-normal">
                                 <div class="flex items-center gap-3 px-3 py-3 text-start text-sm bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800 dark:to-slate-700 rounded-t-lg">
                                     <span class="relative flex h-10 w-10 shrink-0 overflow-hidden rounded-xl">
                                         <span class="flex h-full w-full items-center justify-center rounded-xl bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-lg">
-                                            {{ auth()->user()->initials() }}
-                                        </span>
+                                        {{ auth()->user()->initials() }}
                                     </span>
-                                    <div class="grid flex-1 text-start text-sm leading-tight">
+                                </span>
+                                <div class="grid flex-1 text-start text-sm leading-tight">
                                         <span class="truncate font-semibold text-slate-900 dark:text-white">{{ auth()->user()->name }}</span>
                                         <span class="truncate text-xs text-slate-500 dark:text-slate-400">{{ auth()->user()->email }}</span>
                                     </div>
-                                </div>
                             </div>
-                        </flux:menu.radio.group>
+                        </div>
+                    </flux:menu.radio.group>
 
-                        <flux:menu.separator />
+                    <flux:menu.separator />
 
-                        <flux:menu.radio.group>
+                    <flux:menu.radio.group>
                             <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate class="group">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white">
@@ -301,12 +301,12 @@
                                     <span class="font-medium">{{ __('Settings') }}</span>
                                 </div>
                             </flux:menu.item>
-                        </flux:menu.radio.group>
+                    </flux:menu.radio.group>
 
-                        <flux:menu.separator />
+                    <flux:menu.separator />
 
-                        <form method="POST" action="{{ route('logout') }}" class="w-full">
-                            @csrf
+                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        @csrf
                             <flux:menu.item as="button" type="submit" class="w-full group" data-test="logout-button">
                                 <div class="flex items-center space-x-3">
                                     <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-rose-600 rounded-lg flex items-center justify-center text-white">
@@ -316,10 +316,10 @@
                                     </div>
                                     <span class="font-medium text-red-600 dark:text-red-400">{{ __('Log Out') }}</span>
                                 </div>
-                            </flux:menu.item>
-                        </form>
-                    </flux:menu>
-                </flux:dropdown>
+                        </flux:menu.item>
+                    </form>
+                </flux:menu>
+            </flux:dropdown>
             </div>
         </flux:sidebar>
 

@@ -264,6 +264,7 @@
                     </button>
                 </div>
                 <form method="post" action="{{ route('students.store') }}" class="space-y-4">
+                    <input type="hidden" name="redirect_to" value="{{ request()->fullUrl() }}">
 									@csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
