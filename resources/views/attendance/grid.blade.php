@@ -4,15 +4,7 @@
              currentWeek: {{ request('week', 1) }},
              clubId: {{ $club->id }},
             students: @json($club->students),
-            attendance: @php(
-                $days = ['mon','tue','wed','thu','fri'];
-            )@json(
-                $attendanceRecords->groupBy('student_id')->map(function($recs) use ($days) {
-                    $status = optional($recs->first())->attendance_status;
-                    // Build nested map: day => status (defaulting all days to same status for current session)
-                    return collect($days)->mapWithKeys(fn($d) => [$d => $status])->all();
-                })
-            ),
+            attendance: @json($attendanceRecords->pluck('status', 'student_id')),
              showStudentModal: false,
              selectedStudent: null,
              showBulkEdit: false,
