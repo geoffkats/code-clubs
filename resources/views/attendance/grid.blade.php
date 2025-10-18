@@ -61,6 +61,9 @@
                             </svg>
                             <span x-text="savingInProgress ? 'Saving...' : (unsavedChanges ? 'Save Changes' : 'All Saved')"></span>
                         </button>
+                        <button @click="testSave()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium">
+                            Test Save
+                        </button>
                     </div>
                 </div>
             </div>
@@ -402,23 +405,46 @@
                         savePromises.push(this.saveAttendancePromise(student.id, status));
                     });
                     
-                    Promise.all(savePromises)
+                    // Always reset saving state after a timeout to prevent infinite loading
+                    const timeoutId = setTimeout(() => {
+                        console.error('Save operation timed out - resetting saving state');
+                        this.savingInProgress = false;
+                        alert('Save operation timed out. Please try again.');
+                    }, 15000); // 15 second timeout
+                    
+                    Promise.allSettled(savePromises)
                         .then(results => {
-                            console.log('All attendance saved successfully:', results);
+                            clearTimeout(timeoutId);
                             this.savingInProgress = false;
-                            this.unsavedChanges = false;
-                            // Show success message (you could add a toast notification here)
-                            alert('All attendance changes saved successfully!');
+                            
+                            console.log('All save operations completed:', results);
+                            
+                            const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length;
+                            const failed = results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success)).length;
+                            
+                            if (failed === 0) {
+                                this.unsavedChanges = false;
+                                alert(`All ${successful} attendance records saved successfully!`);
+                            } else {
+                                alert(`Saved ${successful} records successfully, but ${failed} failed. Check console for details.`);
+                                console.error('Failed saves:', results.filter(r => r.status === 'rejected' || (r.status === 'fulfilled' && !r.value.success)));
+                            }
                         })
                         .catch(error => {
-                            console.error('Error saving some attendance records:', error);
+                            clearTimeout(timeoutId);
                             this.savingInProgress = false;
-                            alert('Some attendance records failed to save. Please check the console for details.');
+                            console.error('Critical error in save operation:', error);
+                            alert('Critical error occurred while saving. Please check the console for details.');
                         });
                 },
                 
                 saveAttendancePromise(studentId, status) {
-                    return fetch(`/attendance/update/${this.clubId}`, {
+                    // Add timeout protection
+                    const timeoutPromise = new Promise((_, reject) => {
+                        setTimeout(() => reject(new Error('Request timeout after 10 seconds')), 10000);
+                    });
+                    
+                    const fetchPromise = fetch(`/attendance/update/${this.clubId}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -429,25 +455,29 @@
                             session_id: this.sessionId,
                             status: status
                         })
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            console.log(`Attendance saved successfully for student ${studentId}: ${status}`);
-                            return { studentId, status, success: true };
-                        } else {
-                            throw new Error(`Server returned success: false for student ${studentId}`);
-                        }
-                    })
-                    .catch(error => {
-                        console.error(`Error saving attendance for student ${studentId}:`, error);
-                        return { studentId, status, success: false, error: error.message };
                     });
+                    
+                    return Promise.race([fetchPromise, timeoutPromise])
+                        .then(response => {
+                            console.log(`Response received for student ${studentId}:`, response);
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log(`Response data for student ${studentId}:`, data);
+                            if (data && data.success) {
+                                console.log(`Attendance saved successfully for student ${studentId}: ${status}`);
+                                return { studentId, status, success: true };
+                            } else {
+                                throw new Error(`Server returned success: false for student ${studentId}. Data: ${JSON.stringify(data)}`);
+                            }
+                        })
+                        .catch(error => {
+                            console.error(`Error saving attendance for student ${studentId}:`, error);
+                            return { studentId, status, success: false, error: error.message };
+                        });
                 },
                 
                 saveAttendance(studentId, status) {
@@ -470,6 +500,31 @@
                     setTimeout(() => {
                         this.unsavedChanges = false;
                     }, 1000);
+                },
+                
+                testSave() {
+                    console.log('=== TESTING SAVE FUNCTIONALITY ===');
+                    console.log('Club ID:', this.clubId);
+                    console.log('Session ID:', this.sessionId);
+                    console.log('Students:', this.students);
+                    console.log('Attendance:', this.attendance);
+                    
+                    if (this.students && this.students.length > 0) {
+                        const firstStudent = this.students[0];
+                        console.log('Testing save for first student:', firstStudent.id);
+                        
+                        this.saveAttendancePromise(firstStudent.id, 'present')
+                            .then(result => {
+                                console.log('Test save result:', result);
+                                alert(`Test save result: ${JSON.stringify(result)}`);
+                            })
+                            .catch(error => {
+                                console.error('Test save error:', error);
+                                alert(`Test save error: ${error.message}`);
+                            });
+                    } else {
+                        alert('No students found to test with');
+                    }
                 },
                 
                 getAttendanceStatus(studentId) {
