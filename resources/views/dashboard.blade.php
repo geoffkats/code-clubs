@@ -30,13 +30,19 @@
             \App\Models\Report::whereHas('club', fn($q) => $q->where('school_id', $schoolId))->count() : 
             \App\Models\Report::count();
             
-        // If no data exists, show sample data for demo purposes
-        if ($studentsCount == 0 && $clubsCount == 0 && $assessmentsCount == 0 && $reportsCount == 0) {
-            $studentsCount = 45; // Sample data
-            $clubsCount = 8;
-            $assessmentsCount = 23;
-            $reportsCount = 12;
-        }
+        // Debug information - temporarily enabled to see what's in the database
+        dd([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'school_id' => $schoolId,
+            'total_students' => \App\Models\Student::count(),
+            'total_clubs' => \App\Models\Club::count(),
+            'total_assessments' => \App\Models\Assessment::count(),
+            'total_reports' => \App\Models\Report::count(),
+            'students_with_school' => \App\Models\Student::whereNotNull('school_id')->count(),
+            'clubs_with_school' => \App\Models\Club::whereNotNull('school_id')->count(),
+            'all_schools' => \App\Models\School::count(),
+        ]);
         
         // Time-based metrics
         $startOfWeek = now()->startOfWeek()->toDateString();
