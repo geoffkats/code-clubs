@@ -90,6 +90,17 @@
         $schoolClubs = $schoolId ? 
             \App\Models\Club::where('school_id', $schoolId)->with('students')->orderBy('club_name')->get() :
             \App\Models\Club::with('students')->orderBy('club_name')->get();
+            
+        // If no upcoming sessions found for this school, show all upcoming sessions (fallback)
+        if ($upcomingSessions->isEmpty()) {
+            $upcomingSessions = \App\Models\SessionSchedule::whereBetween('session_date', [now()->toDateString(), now()->addDays(7)->toDateString()])
+                ->with('club')->orderBy('session_date')->take(5)->get();
+        }
+        
+        // If no recent reports found for this school, show all recent reports (fallback)
+        if ($recentReports->isEmpty()) {
+            $recentReports = \App\Models\Report::with(['student', 'club'])->latest()->take(5)->get();
+        }
         $allSchools = \App\Models\School::orderBy('school_name')->get();
         
         // Get club enrollment data
