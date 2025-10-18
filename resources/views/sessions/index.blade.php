@@ -171,11 +171,11 @@
                                         </div>
                                         <div class="flex items-center space-x-2">
                                             <span class="px-2 py-1 rounded-lg text-xs font-medium
-                                                @if($session->session_date < now()) bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300
-                                                @elseif($session->session_date->isToday()) bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300
+                                                @if(\Carbon\Carbon::parse($session->session_date) < now()) bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300
+                                                @elseif(\Carbon\Carbon::parse($session->session_date)->isToday()) bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300
                                                 @else bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300
                                                 @endif">
-                                                @if($session->session_date < now()) Completed
+                                                @if(\Carbon\Carbon::parse($session->session_date) < now()) Completed
                                                 @elseif(\Carbon\Carbon::parse($session->session_date)->isToday()) Today
                                                 @else Upcoming
                                                 @endif
