@@ -16,21 +16,6 @@ class ReportController extends Controller
 		$clubId = $request->get('club_id');
 		$user = auth()->user();
 		
-		// Debug: Let's see what's in the database
-		$allReports = Report::with(['student', 'club'])->get();
-		$totalReports = Report::count();
-		$userSchoolReports = Report::whereHas('club', function($q) use ($user) {
-			$q->where('school_id', $user->school_id);
-		})->count();
-		
-		// Debug output
-		\Log::info('Reports Debug', [
-			'user_school_id' => $user->school_id,
-			'total_reports' => $totalReports,
-			'user_school_reports' => $userSchoolReports,
-			'club_id_filter' => $clubId,
-			'all_reports' => $allReports->toArray()
-		]);
 		
 		if ($clubId) {
 			// Show reports for specific club
@@ -70,14 +55,6 @@ class ReportController extends Controller
 		$startDate = $request->get('start_date');
 		$endDate = $request->get('end_date');
 		
-		// Debug: Check club and students before generation
-		\Log::info('Generating reports for club', [
-			'club_id' => $club->id,
-			'club_name' => $club->club_name,
-			'students_count' => $club->students()->count(),
-			'students' => $club->students()->get()->toArray(),
-			'form_data' => $request->all()
-		]);
 		
 		$generator->generate_reports_for_club($club->id, [
 			'report_type' => $reportType,
@@ -89,13 +66,6 @@ class ReportController extends Controller
 			'end_date' => $endDate
 		]);
 		
-		// Debug: Check reports after generation
-		$generatedReports = Report::where('club_id', $club->id)->get();
-		\Log::info('Reports generated', [
-			'club_id' => $club->id,
-			'reports_count' => $generatedReports->count(),
-			'reports' => $generatedReports->toArray()
-		]);
 		
 		return redirect()->route('reports.index', ['club_id' => $club->id])->with('success', 'Reports generated successfully!');
 	}
