@@ -30,12 +30,15 @@
             \App\Models\Report::whereHas('club', fn($q) => $q->where('school_id', $schoolId))->count() : 
             \App\Models\Report::count();
             
-        // Debug the actual variable values
+        // Debug to see what's happening with the queries
         dd([
-            'studentsCount' => $studentsCount,
-            'clubsCount' => $clubsCount,
-            'assessmentsCount' => $assessmentsCount,
-            'reportsCount' => $reportsCount,
+            'schoolId' => $schoolId,
+            'students_with_school_1' => \App\Models\Student::where('school_id', 1)->count(),
+            'students_total' => \App\Models\Student::count(),
+            'clubs_with_school_1' => \App\Models\Club::where('school_id', 1)->count(),
+            'clubs_total' => \App\Models\Club::count(),
+            'all_students' => \App\Models\Student::select('id', 'name', 'school_id')->get(),
+            'all_clubs' => \App\Models\Club::select('id', 'club_name', 'school_id')->get(),
         ]);
         
         // Time-based metrics
