@@ -247,7 +247,7 @@
                                 <span x-text="getAttendanceStatus(selectedStudent.id).charAt(0).toUpperCase() + getAttendanceStatus(selectedStudent.id).slice(1)"></span>
                             </button>
                             <div class="text-sm text-slate-600 dark:text-slate-400">
-                                <p>Session {{ currentWeek }}</p>
+                                <p>Session {{ request('week', 1) }}</p>
                                 <p x-text="getAttendanceStatus(selectedStudent.id) === 'present' ? 'Attended' : getAttendanceStatus(selectedStudent.id) === 'absent' ? 'Missed session' : getAttendanceStatus(selectedStudent.id) === 'late' ? 'Arrived late' : 'Excused absence'"></p>
                             </div>
                         </div>
