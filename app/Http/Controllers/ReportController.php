@@ -279,6 +279,143 @@ class ReportController extends Controller
 		
 		return back()->with('success', 'Access code regenerated successfully! New code: ' . $created['plain']);
 	}
+
+	/**
+	 * Show parent access form
+	 */
+	public function parent_preview(string $access_code = null)
+	{
+		// If access code is provided, try to verify it
+		if ($access_code) {
+			$report = $this->verifyAccessCode($access_code);
+			if ($report) {
+				return redirect()->route('reports.parent-view', ['access_code' => $access_code]);
+			}
+		}
+
+		// Show access code entry form
+		return view('reports.parent-access');
+	}
+
+	/**
+	 * Verify parent access code and show report
+	 */
+	public function verify_parent_access(Request $request, AccessCodeService $codes)
+	{
+		$request->validate([
+			'access_code' => 'required|string'
+		]);
+
+		$access_code = $request->input('access_code');
+		$report = $this->verifyAccessCode($access_code);
+
+		if ($report) {
+			return redirect()->route('reports.parent-view', ['access_code' => $access_code]);
+		}
+
+		return back()->with('error', 'Invalid or expired access code. Please check the code and try again.');
+	}
+
+	/**
+	 * Show report for parents (no authentication required)
+	 */
+	public function parent_view(string $access_code)
+	{
+		$report = $this->verifyAccessCode($access_code);
+		
+		if (!$report) {
+			return redirect()->route('reports.parent-preview')
+				->with('error', 'Invalid or expired access code.');
+		}
+
+		// Load all necessary data for parent view
+		$attendance_percentage = $this->calculateAttendancePercentage($report->club, $report->student->id);
+		$assessments = $this->getAssessmentData($report->club, $report->student->id);
+		$scratch_projects = $this->getScratchProjects($report->club, $report->student->id);
+
+		return view('reports.parent-view', compact('report', 'attendance_percentage', 'assessments', 'scratch_projects', 'access_code'));
+	}
+
+	/**
+	 * Verify access code and return report if valid
+	 */
+	private function verifyAccessCode(string $access_code)
+	{
+		try {
+			$reportAccessCode = \App\Models\ReportAccessCode::where('access_code_plain_preview', $access_code)->first();
+			
+			if (!$reportAccessCode) {
+				return null;
+			}
+
+			// Check if code is expired
+			if ($reportAccessCode->access_code_expires_at && now()->isAfter($reportAccessCode->access_code_expires_at)) {
+				return null;
+			}
+
+			// Return the report with all necessary relationships
+			return Report::with(['student', 'club', 'access_code'])
+				->find($reportAccessCode->report_id);
+
+		} catch (\Exception $e) {
+			Log::error('Error verifying access code', [
+				'access_code' => $access_code,
+				'error' => $e->getMessage()
+			]);
+			return null;
+		}
+	}
+
+	/**
+	 * Calculate attendance percentage for a student in a club
+	 */
+	private function calculateAttendancePercentage(Club $club, int $studentId): float
+	{
+		$sessions = $club->sessions;
+		$attended = 0;
+		$totalSessions = $sessions->count();
+		
+		if ($totalSessions === 0) return 0;
+		
+		foreach ($sessions as $session) {
+			$attendance = $session->attendance_records->where('student_id', $studentId)->first();
+			if ($attendance && $attendance->attendance_status === 'present') {
+				$attended++;
+			}
+		}
+		
+		return round(($attended / $totalSessions) * 100, 2);
+	}
+
+	/**
+	 * Get assessment data for a student in a club
+	 */
+	private function getAssessmentData(Club $club, int $studentId): array
+	{
+		$assessments = [];
+		foreach ($club->assessments as $assessment) {
+			$score = $assessment->scores->where('student_id', $studentId)->first();
+			$assessments[] = [
+				'name' => $assessment->assessment_name,
+				'type' => $assessment->assessment_type,
+				'week' => $assessment->assessment_week_number,
+				'score' => $score ? $score->score_value : null,
+				'max_score' => $score ? $score->score_max_value : 100,
+				'percentage' => $score && $score->score_max_value > 0 ? 
+					round(($score->score_value / $score->score_max_value) * 100, 2) : 0
+			];
+		}
+		return collect($assessments);
+	}
+
+	/**
+	 * Get Scratch projects for a student
+	 */
+	private function getScratchProjects(Club $club, int $studentId): array
+	{
+		// For now, return empty array - this can be enhanced later
+		return [];
+	}
 }
 
 

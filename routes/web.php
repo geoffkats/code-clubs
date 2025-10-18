@@ -69,9 +69,13 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::get('/reports/{report_id}/edit', [ReportController::class, 'edit'])->name('reports.edit');
     Route::put('/reports/{report_id}', [ReportController::class, 'update'])->name('reports.update');
     Route::delete('/reports/{report_id}', [ReportController::class, 'destroy'])->name('reports.destroy');
-    Route::get('/reports/{report_id}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
-    Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->name('reports.send');
-    Route::post('/reports/{report_id}/regenerate-access-code', [ReportController::class, 'regenerate_access_code'])->name('reports.regenerate-access-code');
+Route::get('/reports/{report_id}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
+Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->name('reports.send');
+Route::post('/reports/{report_id}/regenerate-access-code', [ReportController::class, 'regenerate_access_code'])->name('reports.regenerate-access-code');
+
+// Parent access routes (no authentication required)
+Route::get('/parent-access/{access_code}', [ReportController::class, 'parent_preview'])->name('reports.parent-preview');
+Route::post('/parent-access/verify', [ReportController::class, 'verify_parent_access'])->name('reports.verify-parent-access');
 
     // Attendance grid
     Route::get('/clubs/{club_id}/attendance', [AttendanceController::class, 'show_grid'])->name('attendance.grid');

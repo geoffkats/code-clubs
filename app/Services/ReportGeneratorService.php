@@ -26,7 +26,10 @@ class ReportGeneratorService
      * 
      * @param AccessCodeService $accessCodeService Service for managing access codes
      */
-	public function __construct(private AccessCodeService $accessCodeService)
+	public function __construct(
+		private AccessCodeService $accessCodeService,
+		private AIReportGeneratorService $aiService
+	)
 	{
 	}
 
@@ -75,10 +78,7 @@ class ReportGeneratorService
                     $overall_score = $this->calculate_overall_score($club, $student->id);
                     $summary_text = $this->build_summary_text($club, $attendance_percent, $overall_score, $options);
                     
-                    // Generate student initials
-                    $student_initials = strtoupper(substr($student->student_first_name, 0, 1) . substr($student->student_last_name, 0, 1));
-                    
-                    // Create or update the report
+                    // Create initial report
                     $report = Report::updateOrCreate(
                         ['club_id' => $club->id, 'student_id' => $student->id],
                         [
@@ -86,21 +86,14 @@ class ReportGeneratorService
                             'report_summary_text' => $summary_text,
                             'report_overall_score' => $overall_score,
                             'report_generated_at' => now(),
-                            'student_initials' => $student_initials,
-                            // Initialize skill scores with default values
-                            'problem_solving_score' => $this->calculateSkillScore($attendance_percent, $overall_score, 1),
-                            'creativity_score' => $this->calculateSkillScore($attendance_percent, $overall_score, 2),
-                            'collaboration_score' => $this->calculateSkillScore($attendance_percent, $overall_score, 3),
-                            'persistence_score' => $this->calculateSkillScore($attendance_percent, $overall_score, 4),
-                            // Initialize project fields with default content
-                            'scratch_project_ids' => json_encode([]),
-                            'favorite_concept' => 'To be determined based on student engagement',
-                            'challenges_overcome' => 'Various coding challenges and problem-solving tasks',
-                            'special_achievements' => 'Active participation in coding club activities',
-                            'areas_for_growth' => 'Continued practice and exploration of coding concepts',
-                            'next_steps' => 'Continue building coding skills and exploring new programming concepts',
                         ]
                     );
+
+                    // Use AI service to generate comprehensive content
+                    $aiContent = $this->aiService->generateReportContent($report);
+                    
+                    // Update report with AI-generated content
+                    $report->update($aiContent);
 
                     // Automatically generate access code for secure parent access
                     // This ensures all reports have proper access controls
