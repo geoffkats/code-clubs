@@ -30,7 +30,13 @@
             \App\Models\Report::whereHas('club', fn($q) => $q->where('school_id', $schoolId))->count() : 
             \App\Models\Report::count();
             
-        // Debug information removed - data loading correctly
+        // Debug the actual variable values
+        dd([
+            'studentsCount' => $studentsCount,
+            'clubsCount' => $clubsCount,
+            'assessmentsCount' => $assessmentsCount,
+            'reportsCount' => $reportsCount,
+        ]);
         
         // Time-based metrics
         $startOfWeek = now()->startOfWeek()->toDateString();
