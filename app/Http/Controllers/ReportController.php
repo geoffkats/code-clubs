@@ -26,9 +26,9 @@ class ReportController extends Controller
 
 	public function show(int $report_id)
 	{
-		$report = Report::with(['student', 'club'])->findOrFail($report_id);
+		$report = Report::with(['student', 'club', 'access_code'])->findOrFail($report_id);
 		if ($report->club->school_id !== auth()->user()->school_id) abort(403);
-		return view('reports.show', compact('report'));
+		return view('reports.beautiful-show', compact('report'));
 	}
 
 	public function send_to_parent(int $report_id, AccessCodeService $codes, EmailNotificationService $email)

@@ -15,7 +15,7 @@ class ParentReportController extends Controller
 		if (!$code || !$codes->verify_access_code($report, $code)) {
 			abort(403, 'Invalid or expired access code');
 		}
-		return view('reports.public', compact('report'));
+		return view('reports.beautiful-public', compact('report'));
 	}
 }
 
