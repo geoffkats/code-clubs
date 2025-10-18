@@ -14,26 +14,38 @@ class ReportController extends Controller
 	public function index(Request $request)
 	{
 		$clubId = $request->get('club_id');
+		$search = $request->get('search');
+		$perPage = $request->get('per_page', 12); // Default 12 reports per page
 		$user = auth()->user();
 		
+		// Build the base query
+		$query = Report::with(['student', 'club', 'access_code']);
 		
+		// Apply club filter if specified
 		if ($clubId) {
-			// Show reports for specific club
 			$club = Club::findOrFail($clubId);
-			$reports = Report::where('club_id', $clubId)
-				->with(['student', 'club', 'access_code'])
-				->orderBy('created_at', 'desc')
-				->get();
-		} else {
-			// Show all reports (temporarily removing school filtering)
-			$reports = Report::with(['student', 'club', 'access_code'])
-				->orderBy('created_at', 'desc')
-				->get();
+			$query->where('club_id', $clubId);
 		}
 		
+		// Apply search filter if specified
+		if ($search) {
+			$query->whereHas('student', function($q) use ($search) {
+				$q->where('student_first_name', 'like', "%{$search}%")
+				  ->orWhere('student_last_name', 'like', "%{$search}%");
+			})->orWhereHas('club', function($q) use ($search) {
+				$q->where('club_name', 'like', "%{$search}%");
+			})->orWhere('report_name', 'like', "%{$search}%");
+		}
+		
+		// Get paginated results
+		$reports = $query->orderBy('created_at', 'desc')
+			->paginate($perPage)
+			->withQueryString(); // Preserve query parameters in pagination links
+		
+		// Get clubs for filter dropdown
 		$clubs = Club::orderBy('club_name')->get();
 		
-		return view('reports.index', compact('reports', 'clubs', 'clubId'));
+		return view('reports.index', compact('reports', 'clubs', 'clubId', 'search', 'perPage'));
 	}
 
 	public function create(int $club_id)
@@ -151,6 +163,83 @@ class ReportController extends Controller
 		$email->send_parent_report_email($report, $parent_email, $plain);
 		
 		return back()->with('success', "Report sent successfully to {$parent_email}!");
+	}
+
+	/**
+	 * Edit a report (show edit form)
+	 * 
+	 * @param int $report_id The ID of the report to edit
+	 * @return \Illuminate\View\View
+	 */
+	public function edit(int $report_id)
+	{
+		$report = Report::with(['student', 'club', 'access_code'])->findOrFail($report_id);
+		// Temporarily removing school ID check for consistency
+		return view('reports.edit', compact('report'));
+	}
+
+	/**
+	 * Update a report
+	 * 
+	 * @param \Illuminate\Http\Request $request
+	 * @param int $report_id The ID of the report to update
+	 * @return \Illuminate\Http\RedirectResponse
+	 */
+	public function update(Request $request, int $report_id)
+	{
+		$report = Report::findOrFail($report_id);
+		
+		// Validate the request
+		$request->validate([
+			'report_name' => 'required|string|max:255',
+			'report_summary_text' => 'required|string',
+			'report_overall_score' => 'required|numeric|min:0|max:100',
+		]);
+		
+		// Update the report
+		$report->update([
+			'report_name' => $request->input('report_name'),
+			'report_summary_text' => $request->input('report_summary_text'),
+			'report_overall_score' => $request->input('report_overall_score'),
+		]);
+		
+		return redirect()->route('reports.show', $report->id)
+			->with('success', 'Report updated successfully!');
+	}
+
+	/**
+	 * Delete a report
+	 * 
+	 * @param int $report_id The ID of the report to delete
+	 * @return \Illuminate\Http\RedirectResponse
+	 */
+	public function destroy(int $report_id)
+	{
+		$report = Report::findOrFail($report_id);
+		$clubId = $report->club_id;
+		
+		// Delete the report (access codes will be deleted automatically due to cascade)
+		$report->delete();
+		
+		return redirect()->route('reports.index', ['club_id' => $clubId])
+			->with('success', 'Report deleted successfully!');
+	}
+
+	/**
+	 * Regenerate access code for a report
+	 * 
+	 * @param int $report_id The ID of the report
+	 * @param AccessCodeService $codes Service for managing access codes
+	 * @return \Illuminate\Http\RedirectResponse
+	 */
+	public function regenerate_access_code(int $report_id, AccessCodeService $codes)
+	{
+		$report = Report::with(['student', 'club'])->findOrFail($report_id);
+		
+		// Generate new access code
+		$created = $codes->create_access_code_for_report($report->id);
+		
+		return back()->with('success', 'Access code regenerated successfully! New code: ' . $created['plain']);
 	}
 }
 

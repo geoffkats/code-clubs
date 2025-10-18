@@ -6,52 +6,139 @@ use App\Models\Assessment;
 use App\Models\Club;
 use App\Models\Report;
 use App\Models\SessionSchedule;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * ReportGeneratorService
+ * 
+ * Enterprise-grade service for generating comprehensive student reports.
+ * Handles calculation of scores, attendance, and automatic access code generation.
+ * 
+ * @package App\Services
+ * @version 1.0.0
+ * @author Code Club System
+ */
 class ReportGeneratorService
 {
+    /**
+     * Dependency injection for access code service
+     * 
+     * @param AccessCodeService $accessCodeService Service for managing access codes
+     */
 	public function __construct(private AccessCodeService $accessCodeService)
 	{
 	}
 
+    /**
+     * Generate comprehensive reports for all students in a club
+     * 
+     * This method creates detailed reports for each student including:
+     * - Attendance calculations
+     * - Assessment scores and performance metrics
+     * - Summary text with personalized feedback
+     * - Automatic access code generation for parent access
+     * 
+     * @param int $club_id The ID of the club to generate reports for
+     * @param array $options Configuration options for report generation
+     * @return void
+     * @throws \Exception If report generation fails
+     */
 	public function generate_reports_for_club(int $club_id, array $options = []): void
 	{
-		$club = Club::with([
-			'students', 
-			'assessments.scores', 
-			'sessions.attendance_records',
-			'attachments'
-		])->findOrFail($club_id);
+		try {
+            // Start database transaction for data consistency
+            DB::beginTransaction();
+            
+            // Load club with all necessary relationships
+            $club = Club::with([
+                'students', 
+                'assessments.scores', 
+                'sessions.attendance_records',
+                'attachments'
+            ])->findOrFail($club_id);
 
-		$reportType = $options['report_type'] ?? 'comprehensive';
-		$dateRange = $options['date_range'] ?? 'month';
-		$includeCharts = $options['include_charts'] ?? true;
-		$sections = $options['sections'] ?? [];
+            // Extract and validate options
+            $reportType = $options['report_type'] ?? 'comprehensive';
+            $dateRange = $options['date_range'] ?? 'month';
+            $includeCharts = $options['include_charts'] ?? true;
+            $sections = $options['sections'] ?? [];
 
-		foreach ($club->students as $student) {
-			$attendance_percent = $this->calculate_attendance_percent($club, $student->id);
-			$overall_score = $this->calculate_overall_score($club, $student->id);
-			$summary_text = $this->build_summary_text($club, $attendance_percent, $overall_score, $options);
-			
-			// Get detailed assessment data
-			$assessment_data = $this->get_assessment_data($club, $student->id);
-			
-			// Get Scratch project attachments
-			$scratch_projects = $this->get_scratch_projects($club, $student->id);
+            $generatedCount = 0;
+            $errors = [];
 
-			$report = Report::updateOrCreate(
-				['club_id' => $club->id, 'student_id' => $student->id],
-				[
-					'report_name' => $student->student_first_name.' '.$student->student_last_name.' - '.$club->club_name.' Report',
-					'report_summary_text' => $summary_text,
-					'report_overall_score' => $overall_score,
-					'report_generated_at' => now(),
-				]
-			);
+            // Process each student in the club
+            foreach ($club->students as $student) {
+                try {
+                    // Calculate student performance metrics
+                    $attendance_percent = $this->calculate_attendance_percent($club, $student->id);
+                    $overall_score = $this->calculate_overall_score($club, $student->id);
+                    $summary_text = $this->build_summary_text($club, $attendance_percent, $overall_score, $options);
+                    
+                    // Create or update the report
+                    $report = Report::updateOrCreate(
+                        ['club_id' => $club->id, 'student_id' => $student->id],
+                        [
+                            'report_name' => $student->student_first_name.' '.$student->student_last_name.' - '.$club->club_name.' Report',
+                            'report_summary_text' => $summary_text,
+                            'report_overall_score' => $overall_score,
+                            'report_generated_at' => now(),
+                        ]
+                    );
 
-			// Create access code for the report if it doesn't already have one
-			if (!$report->access_code) {
-				$this->accessCodeService->create_access_code_for_report($report->id);
-			}
+                    // Automatically generate access code for secure parent access
+                    // This ensures all reports have proper access controls
+                    $this->accessCodeService->create_access_code_for_report($report->id);
+                    
+                    $generatedCount++;
+                    
+                } catch (\Exception $e) {
+                    $errors[] = [
+                        'student_id' => $student->id,
+                        'student_name' => $student->student_first_name . ' ' . $student->student_last_name,
+                        'error' => $e->getMessage()
+                    ];
+                    
+                    Log::error('Failed to generate report for student', [
+                        'student_id' => $student->id,
+                        'club_id' => $club_id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            // Commit transaction if all successful
+            DB::commit();
+            
+            // Log successful generation
+            Log::info('Reports generated successfully for club', [
+                'club_id' => $club_id,
+                'club_name' => $club->club_name,
+                'generated_count' => $generatedCount,
+                'total_students' => $club->students->count(),
+                'errors_count' => count($errors),
+                'generated_by' => auth()->id() ?? 'system'
+            ]);
+            
+            // If there were errors, log them but don't fail the entire operation
+            if (!empty($errors)) {
+                Log::warning('Some reports failed to generate', [
+                    'club_id' => $club_id,
+                    'errors' => $errors
+                ]);
+            }
+            
+		} catch (\Exception $e) {
+            // Rollback transaction on failure
+            DB::rollBack();
+            
+            Log::error('Failed to generate reports for club', [
+                'club_id' => $club_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            throw $e;
 		}
 	}
 

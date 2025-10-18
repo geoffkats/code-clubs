@@ -243,9 +243,9 @@
         button { display: none !important; }
     </style>
 
-    <!-- Email Input Modal -->
-    <div id="emailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6">
+    <!-- Email Input Modal with Glassmorphism -->
+    <div id="emailModal" class="fixed inset-0 bg-white/10 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white/90 backdrop-blur-xl rounded-3xl max-w-md w-full p-8 shadow-2xl border border-white/20">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold text-gray-900">Send Report to Parent</h3>
                 <button onclick="closeEmailModal()" class="text-gray-400 hover:text-gray-600">
