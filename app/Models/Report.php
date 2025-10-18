@@ -18,6 +18,18 @@ class Report extends Model
 		'report_summary_text',
 		'report_overall_score',
 		'report_generated_at',
+		'student_initials',
+		'problem_solving_score',
+		'creativity_score',
+		'collaboration_score',
+		'persistence_score',
+		'scratch_project_ids',
+		'favorite_concept',
+		'challenges_overcome',
+		'special_achievements',
+		'areas_for_growth',
+		'next_steps',
+		'parent_feedback',
 	];
 
 	public function club(): BelongsTo

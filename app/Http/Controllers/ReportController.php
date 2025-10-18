@@ -194,14 +194,52 @@ class ReportController extends Controller
 			'report_name' => 'required|string|max:255',
 			'report_summary_text' => 'required|string',
 			'report_overall_score' => 'required|numeric|min:0|max:100',
+			'student_initials' => 'nullable|string|max:3',
+			'problem_solving_score' => 'nullable|integer|min:1|max:10',
+			'creativity_score' => 'nullable|integer|min:1|max:10',
+			'collaboration_score' => 'nullable|integer|min:1|max:10',
+			'persistence_score' => 'nullable|integer|min:1|max:10',
+			'scratch_project_ids' => 'nullable|json',
+			'favorite_concept' => 'nullable|string|max:255',
+			'challenges_overcome' => 'nullable|string',
+			'special_achievements' => 'nullable|string',
+			'areas_for_growth' => 'nullable|string',
+			'next_steps' => 'nullable|string',
+			'parent_feedback' => 'nullable|string',
 		]);
+		
+		// Process scratch project IDs (convert from newline-separated to JSON array)
+		$scratchProjectIds = [];
+		if ($request->input('scratch_project_ids')) {
+			$ids = explode("\n", $request->input('scratch_project_ids'));
+			$scratchProjectIds = array_filter(array_map('trim', $ids));
+		}
 		
 		// Update the report
 		$report->update([
 			'report_name' => $request->input('report_name'),
 			'report_summary_text' => $request->input('report_summary_text'),
 			'report_overall_score' => $request->input('report_overall_score'),
+			'student_initials' => $request->input('student_initials'),
+			'problem_solving_score' => $request->input('problem_solving_score'),
+			'creativity_score' => $request->input('creativity_score'),
+			'collaboration_score' => $request->input('collaboration_score'),
+			'persistence_score' => $request->input('persistence_score'),
+			'scratch_project_ids' => json_encode($scratchProjectIds),
+			'favorite_concept' => $request->input('favorite_concept'),
+			'challenges_overcome' => $request->input('challenges_overcome'),
+			'special_achievements' => $request->input('special_achievements'),
+			'areas_for_growth' => $request->input('areas_for_growth'),
+			'next_steps' => $request->input('next_steps'),
+			'parent_feedback' => $request->input('parent_feedback'),
 		]);
+		
+		// Update student grade if provided
+		if ($request->input('student_grade')) {
+			$report->student->update([
+				'student_grade_level' => $request->input('student_grade')
+			]);
+		}
 		
 		return redirect()->route('reports.show', $report->id)
 			->with('success', 'Report updated successfully!');

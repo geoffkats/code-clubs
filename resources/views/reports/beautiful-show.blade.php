@@ -47,13 +47,196 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Main Content -->
             <div class="lg:col-span-2 space-y-6">
+                <!-- Student Header with Initials -->
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg p-8 text-white">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-3xl font-bold mb-2">{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}</h2>
+                            <p class="text-blue-100 text-lg">{{ $report->club->club_name }}</p>
+                            @if($report->student->student_grade_level)
+                                <p class="text-blue-200 text-sm">{{ $report->student->student_grade_level }}</p>
+                            @endif
+                            <p class="text-blue-200 text-sm mt-1">Coding Club Report</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4">
+                                <div class="text-4xl font-bold">{{ $report->student_initials ?? strtoupper(substr($report->student->student_first_name, 0, 1) . substr($report->student->student_last_name, 0, 1)) }}</div>
+                                <div class="text-sm text-blue-200">Student Initials</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Report Summary -->
                 <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Report Summary</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">📝 Report Summary</h2>
                     <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
                         <p class="text-gray-700 leading-relaxed text-lg">{{ $report->report_summary_text }}</p>
                     </div>
                 </div>
+
+                <!-- Coding Skills Assessment -->
+                @if($report->problem_solving_score || $report->creativity_score || $report->collaboration_score || $report->persistence_score)
+                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">🎮 Coding Skills Assessment</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        @if($report->problem_solving_score)
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-lg font-semibold text-green-800">🧩 Problem Solving</h3>
+                                <div class="text-2xl font-bold text-green-600">{{ $report->problem_solving_score }}/10</div>
+                            </div>
+                            <div class="w-full bg-green-200 rounded-full h-3">
+                                <div class="bg-green-600 h-3 rounded-full" style="width: {{ ($report->problem_solving_score / 10) * 100 }}%"></div>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($report->creativity_score)
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-lg font-semibold text-purple-800">🎨 Creativity & Innovation</h3>
+                                <div class="text-2xl font-bold text-purple-600">{{ $report->creativity_score }}/10</div>
+                            </div>
+                            <div class="w-full bg-purple-200 rounded-full h-3">
+                                <div class="bg-purple-600 h-3 rounded-full" style="width: {{ ($report->creativity_score / 10) * 100 }}%"></div>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($report->collaboration_score)
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-lg font-semibold text-blue-800">🤝 Teamwork & Collaboration</h3>
+                                <div class="text-2xl font-bold text-blue-600">{{ $report->collaboration_score }}/10</div>
+                            </div>
+                            <div class="w-full bg-blue-200 rounded-full h-3">
+                                <div class="bg-blue-600 h-3 rounded-full" style="width: {{ ($report->collaboration_score / 10) * 100 }}%"></div>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($report->persistence_score)
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-lg font-semibold text-orange-800">💪 Persistence & Perseverance</h3>
+                                <div class="text-2xl font-bold text-orange-600">{{ $report->persistence_score }}/10</div>
+                            </div>
+                            <div class="w-full bg-orange-200 rounded-full h-3">
+                                <div class="bg-orange-600 h-3 rounded-full" style="width: {{ ($report->persistence_score / 10) * 100 }}%"></div>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                <!-- Scratch Projects -->
+                @if($report->scratch_project_ids)
+                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">🎮 Scratch Projects</h2>
+                    <div class="space-y-4">
+                        @php
+                            $projectIds = json_decode($report->scratch_project_ids, true) ?? [];
+                        @endphp
+                        @if(count($projectIds) > 0)
+                            @foreach($projectIds as $projectId)
+                                <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border border-orange-200">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-orange-800 mb-2">🎨 Scratch Project</h3>
+                                            <p class="text-orange-700 font-mono text-sm">Project ID: {{ $projectId }}</p>
+                                        </div>
+                                        <div class="flex space-x-3">
+                                            <a href="https://scratch.mit.edu/projects/{{ $projectId }}" 
+                                               target="_blank"
+                                               class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                                </svg>
+                                                View Project
+                                            </a>
+                                            <button onclick="previewProject('{{ $projectId }}')"
+                                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                                Preview
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        @else
+                            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 text-center">
+                                <p class="text-gray-600">No Scratch projects attached yet.</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                <!-- Projects and Achievements -->
+                @if($report->favorite_concept || $report->special_achievements)
+                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">🏆 Achievements & Learning</h2>
+                    <div class="space-y-6">
+                        @if($report->favorite_concept)
+                        <div class="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-xl p-6 border border-yellow-200">
+                            <h3 class="text-lg font-semibold text-yellow-800 mb-3">⭐ Favorite Coding Concept</h3>
+                            <p class="text-yellow-700 text-lg font-medium">{{ $report->favorite_concept }}</p>
+                        </div>
+                        @endif
+
+                        @if($report->special_achievements)
+                        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200">
+                            <h3 class="text-lg font-semibold text-indigo-800 mb-3">🏅 Special Achievements & Recognition</h3>
+                            <p class="text-indigo-700 leading-relaxed">{{ $report->special_achievements }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                <!-- Learning Journey -->
+                @if($report->challenges_overcome || $report->areas_for_growth || $report->next_steps)
+                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">🚀 Learning Journey</h2>
+                    <div class="space-y-6">
+                        @if($report->challenges_overcome)
+                        <div class="bg-gradient-to-r from-red-50 to-pink-50 rounded-xl p-6 border border-red-200">
+                            <h3 class="text-lg font-semibold text-red-800 mb-3">🏆 Challenges Overcome</h3>
+                            <p class="text-red-700 leading-relaxed">{{ $report->challenges_overcome }}</p>
+                        </div>
+                        @endif
+
+                        @if($report->areas_for_growth)
+                        <div class="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl p-6 border border-teal-200">
+                            <h3 class="text-lg font-semibold text-teal-800 mb-3">🌱 Areas for Growth</h3>
+                            <p class="text-teal-700 leading-relaxed">{{ $report->areas_for_growth }}</p>
+                        </div>
+                        @endif
+
+                        @if($report->next_steps)
+                        <div class="bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl p-6 border border-violet-200">
+                            <h3 class="text-lg font-semibold text-violet-800 mb-3">🚀 Next Steps & Recommendations</h3>
+                            <p class="text-violet-700 leading-relaxed">{{ $report->next_steps }}</p>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                <!-- Parent Feedback -->
+                @if($report->parent_feedback)
+                <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">💬 Parent Feedback</h2>
+                    <div class="bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl p-6 border border-rose-200">
+                        <p class="text-rose-700 leading-relaxed text-lg">{{ $report->parent_feedback }}</p>
+                    </div>
+                </div>
+                @endif
 
                 <!-- Performance Metrics -->
                 <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
@@ -471,6 +654,68 @@
                     document.body.removeChild(toast);
                 }, 300);
             }, 3000);
+        }
+
+        function previewProject(projectId) {
+            // Create a modal to preview the Scratch project
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+                    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+                        <h3 class="text-xl font-bold text-gray-900">🎮 Scratch Project Preview</h3>
+                        <button onclick="closePreview()" class="text-gray-500 hover:text-gray-700 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div class="bg-gray-100 rounded-xl p-4 mb-4">
+                            <p class="text-sm text-gray-600 mb-2">Project ID: <span class="font-mono font-bold">${projectId}</span></p>
+                            <div class="flex space-x-3">
+                                <a href="https://scratch.mit.edu/projects/${projectId}" 
+                                   target="_blank"
+                                   class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                    </svg>
+                                    Open in Scratch
+                                </a>
+                                <button onclick="closePreview()" 
+                                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all duration-200">
+                                    Close Preview
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border border-orange-200">
+                            <div class="text-center">
+                                <div class="text-6xl mb-4">🎨</div>
+                                <h4 class="text-lg font-semibold text-orange-800 mb-2">Scratch Project Preview</h4>
+                                <p class="text-orange-700 mb-4">Click "Open in Scratch" to view your child's amazing coding creation!</p>
+                                <div class="bg-white rounded-lg p-4 border border-orange-200">
+                                    <p class="text-sm text-gray-600">💡 <strong>Tip:</strong> This project showcases your child's creativity and coding skills. You can see their interactive stories, games, and animations!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Add close function to window
+            window.closePreview = function() {
+                document.body.removeChild(modal);
+                delete window.closePreview;
+            };
+            
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    window.closePreview();
+                }
+            });
         }
     </script>
 </x-layouts.app>

@@ -75,6 +75,9 @@ class ReportGeneratorService
                     $overall_score = $this->calculate_overall_score($club, $student->id);
                     $summary_text = $this->build_summary_text($club, $attendance_percent, $overall_score, $options);
                     
+                    // Generate student initials
+                    $student_initials = strtoupper(substr($student->student_first_name, 0, 1) . substr($student->student_last_name, 0, 1));
+                    
                     // Create or update the report
                     $report = Report::updateOrCreate(
                         ['club_id' => $club->id, 'student_id' => $student->id],
@@ -83,6 +86,19 @@ class ReportGeneratorService
                             'report_summary_text' => $summary_text,
                             'report_overall_score' => $overall_score,
                             'report_generated_at' => now(),
+                            'student_initials' => $student_initials,
+                            // Initialize skill scores with default values
+                            'problem_solving_score' => $this->calculateSkillScore($attendance_percent, $overall_score, 1),
+                            'creativity_score' => $this->calculateSkillScore($attendance_percent, $overall_score, 2),
+                            'collaboration_score' => $this->calculateSkillScore($attendance_percent, $overall_score, 3),
+                            'persistence_score' => $this->calculateSkillScore($attendance_percent, $overall_score, 4),
+                            // Initialize project fields with default content
+                            'scratch_project_ids' => json_encode([]),
+                            'favorite_concept' => 'To be determined based on student engagement',
+                            'challenges_overcome' => 'Various coding challenges and problem-solving tasks',
+                            'special_achievements' => 'Active participation in coding club activities',
+                            'areas_for_growth' => 'Continued practice and exploration of coding concepts',
+                            'next_steps' => 'Continue building coding skills and exploring new programming concepts',
                         ]
                     );
 
@@ -268,6 +284,32 @@ class ReportGeneratorService
 		}
 
 		return $count;
+	}
+
+	/**
+	 * Calculate skill score based on attendance and overall performance
+	 * 
+	 * @param float $attendance_percent Attendance percentage
+	 * @param float $overall_score Overall assessment score
+	 * @param int $skill_variation Variation factor for different skills (1-4)
+	 * @return int Skill score between 1-10
+	 */
+	private function calculateSkillScore(float $attendance_percent, float $overall_score, int $skill_variation): int
+	{
+		// Base score from overall performance
+		$base_score = ($overall_score / 100) * 10;
+		
+		// Attendance bonus
+		$attendance_bonus = ($attendance_percent / 100) * 2;
+		
+		// Add some variation based on skill type
+		$variation = ($skill_variation % 3) * 0.5;
+		
+		// Calculate final score
+		$final_score = $base_score + $attendance_bonus + $variation;
+		
+		// Ensure score is between 1-10
+		return max(1, min(10, round($final_score)));
 	}
 }
 

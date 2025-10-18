@@ -76,16 +76,185 @@
                     @enderror
                 </div>
 
+                <!-- Student Initials -->
+                <div>
+                    <label for="student_initials" class="block text-sm font-semibold text-slate-700 mb-2">
+                        Student Initials
+                    </label>
+                    <input type="text" 
+                           id="student_initials" 
+                           name="student_initials" 
+                           value="{{ old('student_initials', $report->student_initials ?? strtoupper(substr($report->student->student_first_name, 0, 1) . substr($report->student->student_last_name, 0, 1))) }}"
+                           class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700"
+                           placeholder="e.g., JS for John Smith"
+                           maxlength="3">
+                    @error('student_initials')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Coding Skills Assessment -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-3">
+                        🎮 Coding Skills Assessment
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="problem_solving_score" class="block text-sm font-medium text-slate-600 mb-2">
+                                Problem Solving Skills (1-10)
+                            </label>
+                            <input type="number" 
+                                   id="problem_solving_score" 
+                                   name="problem_solving_score" 
+                                   value="{{ old('problem_solving_score', $report->problem_solving_score ?? '') }}"
+                                   min="1" max="10"
+                                   class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700">
+                        </div>
+                        <div>
+                            <label for="creativity_score" class="block text-sm font-medium text-slate-600 mb-2">
+                                Creativity & Innovation (1-10)
+                            </label>
+                            <input type="number" 
+                                   id="creativity_score" 
+                                   name="creativity_score" 
+                                   value="{{ old('creativity_score', $report->creativity_score ?? '') }}"
+                                   min="1" max="10"
+                                   class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700">
+                        </div>
+                        <div>
+                            <label for="collaboration_score" class="block text-sm font-medium text-slate-600 mb-2">
+                                Teamwork & Collaboration (1-10)
+                            </label>
+                            <input type="number" 
+                                   id="collaboration_score" 
+                                   name="collaboration_score" 
+                                   value="{{ old('collaboration_score', $report->collaboration_score ?? '') }}"
+                                   min="1" max="10"
+                                   class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700">
+                        </div>
+                        <div>
+                            <label for="persistence_score" class="block text-sm font-medium text-slate-600 mb-2">
+                                Persistence & Perseverance (1-10)
+                            </label>
+                            <input type="number" 
+                                   id="persistence_score" 
+                                   name="persistence_score" 
+                                   value="{{ old('persistence_score', $report->persistence_score ?? '') }}"
+                                   min="1" max="10"
+                                   class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Grade/Year -->
+                <div>
+                    <label for="student_grade" class="block text-sm font-semibold text-slate-700 mb-2">
+                        📚 Student Grade/Year
+                    </label>
+                    <input type="text" 
+                           id="student_grade" 
+                           name="student_grade" 
+                           value="{{ old('student_grade', $report->student->student_grade_level ?? '') }}"
+                           class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700"
+                           placeholder="e.g., Grade 3, Year 4, etc.">
+                </div>
+
+                <!-- Scratch Project IDs -->
+                <div>
+                    <label for="scratch_project_ids" class="block text-sm font-semibold text-slate-700 mb-2">
+                        🎮 Scratch Project IDs
+                    </label>
+                    <textarea id="scratch_project_ids" 
+                              name="scratch_project_ids" 
+                              rows="4"
+                              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700 resize-none"
+                              placeholder="Enter Scratch project IDs (one per line):&#10;123456789&#10;987654321&#10;456789123">{{ old('scratch_project_ids', is_array(json_decode($report->scratch_project_ids ?? '[]', true)) ? implode("\n", json_decode($report->scratch_project_ids ?? '[]', true)) : '') }}</textarea>
+                    <p class="text-sm text-slate-500 mt-2">Enter one Scratch project ID per line. Parents will be able to preview these projects.</p>
+                </div>
+
+                <!-- Favorite Coding Concept -->
+                <div>
+                    <label for="favorite_concept" class="block text-sm font-semibold text-slate-700 mb-2">
+                        ⭐ Favorite Coding Concept
+                    </label>
+                    <input type="text" 
+                           id="favorite_concept" 
+                           name="favorite_concept" 
+                           value="{{ old('favorite_concept', $report->favorite_concept ?? '') }}"
+                           class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700"
+                           placeholder="e.g., Loops, Variables, Sprites, Sound Effects">
+                </div>
+
+                <!-- Challenges Overcome -->
+                <div>
+                    <label for="challenges_overcome" class="block text-sm font-semibold text-slate-700 mb-2">
+                        🏆 Challenges Overcome
+                    </label>
+                    <textarea id="challenges_overcome" 
+                              name="challenges_overcome" 
+                              rows="3"
+                              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700 resize-none"
+                              placeholder="Describe the coding challenges your child successfully tackled">{{ old('challenges_overcome', $report->challenges_overcome ?? '') }}</textarea>
+                </div>
+
+                <!-- Special Achievements -->
+                <div>
+                    <label for="special_achievements" class="block text-sm font-semibold text-slate-700 mb-2">
+                        🏅 Special Achievements & Recognition
+                    </label>
+                    <textarea id="special_achievements" 
+                              name="special_achievements" 
+                              rows="3"
+                              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700 resize-none"
+                              placeholder="Any "Coder of the Week" awards, peer recognition, or special moments">{{ old('special_achievements', $report->special_achievements ?? '') }}</textarea>
+                </div>
+
+                <!-- Areas for Growth -->
+                <div>
+                    <label for="areas_for_growth" class="block text-sm font-semibold text-slate-700 mb-2">
+                        🌱 Implementation of Areas for Growth
+                    </label>
+                    <textarea id="areas_for_growth" 
+                              name="areas_for_growth" 
+                              rows="3"
+                              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700 resize-none"
+                              placeholder="How your child has improved in areas identified earlier">{{ old('areas_for_growth', $report->areas_for_growth ?? '') }}</textarea>
+                </div>
+
+                <!-- Next Steps -->
+                <div>
+                    <label for="next_steps" class="block text-sm font-semibold text-slate-700 mb-2">
+                        🚀 Next Steps & Recommendations
+                    </label>
+                    <textarea id="next_steps" 
+                              name="next_steps" 
+                              rows="3"
+                              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700 resize-none"
+                              placeholder="Suggestions for continued learning and development">{{ old('next_steps', $report->next_steps ?? '') }}</textarea>
+                </div>
+
+                <!-- Parent Feedback -->
+                <div>
+                    <label for="parent_feedback" class="block text-sm font-semibold text-slate-700 mb-2">
+                        💬 Parent Feedback & Comments
+                    </label>
+                    <textarea id="parent_feedback" 
+                              name="parent_feedback" 
+                              rows="3"
+                              class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700 resize-none"
+                              placeholder="Space for parent comments and feedback">{{ old('parent_feedback', $report->parent_feedback ?? '') }}</textarea>
+                </div>
+
                 <!-- Summary Text -->
                 <div>
                     <label for="report_summary_text" class="block text-sm font-semibold text-slate-700 mb-2">
-                        Report Summary
+                        📝 Overall Summary
                     </label>
                     <textarea id="report_summary_text" 
                               name="report_summary_text" 
-                              rows="8"
+                              rows="6"
                               class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm font-medium text-slate-700 resize-none"
-                              placeholder="Enter detailed report summary..."
+                              placeholder="Write a comprehensive summary of your child's coding journey..."
                               required>{{ old('report_summary_text', $report->report_summary_text) }}</textarea>
                     @error('report_summary_text')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
