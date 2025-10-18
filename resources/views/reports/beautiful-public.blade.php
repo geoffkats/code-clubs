@@ -187,7 +187,17 @@
                             <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            <span class="text-sm text-gray-600">{{ $report->report_generated_at ? $report->report_generated_at->format('M j, Y') : 'N/A' }}</span>
+                            <span class="text-sm text-gray-600">
+                                @if($report->report_generated_at)
+                                    @if(is_string($report->report_generated_at))
+                                        {{ \Carbon\Carbon::parse($report->report_generated_at)->format('M j, Y') }}
+                                    @else
+                                        {{ $report->report_generated_at->format('M j, Y') }}
+                                    @endif
+                                @else
+                                    N/A
+                                @endif
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -249,7 +259,16 @@
                 </div>
                 <p class="text-gray-600 mb-4">Empowering young minds through coding education</p>
                 <div class="text-sm text-gray-500">
-                    Report generated on {{ $report->report_generated_at ? $report->report_generated_at->format('F j, Y \a\t g:i A') : 'N/A' }}
+                    Report generated on 
+                    @if($report->report_generated_at)
+                        @if(is_string($report->report_generated_at))
+                            {{ \Carbon\Carbon::parse($report->report_generated_at)->format('F j, Y \a\t g:i A') }}
+                        @else
+                            {{ $report->report_generated_at->format('F j, Y \a\t g:i A') }}
+                        @endif
+                    @else
+                        N/A
+                    @endif
                 </div>
             </div>
         </div>
