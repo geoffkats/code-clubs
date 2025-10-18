@@ -9,15 +9,20 @@ use App\Models\SessionSchedule;
 
 class ReportGeneratorService
 {
-	public function generate_reports_for_club(int $club_id): void
+	public function generate_reports_for_club(int $club_id, array $options = []): void
 	{
 		$club = Club::with(['students', 'assessments.scores', 'sessions.attendance_records'])
 			->findOrFail($club_id);
 
+		$reportType = $options['report_type'] ?? 'comprehensive';
+		$dateRange = $options['date_range'] ?? 'month';
+		$includeCharts = $options['include_charts'] ?? true;
+		$sections = $options['sections'] ?? [];
+
 		foreach ($club->students as $student) {
 			$attendance_percent = $this->calculate_attendance_percent($club, $student->id);
 			$overall_score = $this->calculate_overall_score($club, $student->id);
-			$summary_text = $this->build_summary_text($club, $attendance_percent, $overall_score);
+			$summary_text = $this->build_summary_text($club, $attendance_percent, $overall_score, $options);
 
 			Report::updateOrCreate(
 				['club_id' => $club->id, 'student_id' => $student->id],
@@ -62,10 +67,13 @@ class ReportGeneratorService
 		return $count > 0 ? round($total / $count, 2) : 0.0;
 	}
 
-	private function build_summary_text(Club $club, float $attendance_percent, float $overall_score): string
+	private function build_summary_text(Club $club, float $attendance_percent, float $overall_score, array $options = []): string
 	{
 		$band = $overall_score >= 85 ? 'Excellent' : ($overall_score >= 70 ? 'Good' : ($overall_score >= 50 ? 'Developing' : 'Foundational'));
-		return sprintf(
+		$reportType = $options['report_type'] ?? 'comprehensive';
+		$dateRange = $options['date_range'] ?? 'month';
+		
+		$baseText = sprintf(
 			"%s level %s club. Attendance: %s%%. Performance: %s (%s%%).",
 			$club->club_name,
 			$club->club_level ?: 'beginner',
@@ -73,6 +81,26 @@ class ReportGeneratorService
 			$band,
 			number_format($overall_score, 2)
 		);
+		
+		// Add report type and date range info
+		$typeText = match($reportType) {
+			'progress' => 'This is a progress report',
+			'attendance' => 'This is an attendance report',
+			'assessment' => 'This is an assessment report',
+			'comprehensive' => 'This is a comprehensive report',
+			default => 'This is a custom report'
+		};
+		
+		$dateText = match($dateRange) {
+			'week' => 'covering the last week',
+			'month' => 'covering the last month',
+			'quarter' => 'covering the last quarter',
+			'year' => 'covering the last year',
+			'custom' => 'covering the specified date range',
+			default => 'covering the last month'
+		};
+		
+		return $typeText . ' ' . $dateText . '. ' . $baseText;
 	}
 }
 
