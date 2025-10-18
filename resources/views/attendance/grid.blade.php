@@ -149,38 +149,38 @@
                 </div>
                 
                 <div class="divide-y divide-slate-200 dark:divide-slate-700">
-                    <template x-if="students.length === 0">
+                            <template x-if="students.length === 0">
                         <div class="px-6 py-12 text-center">
-                            <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No Students Enrolled</h3>
-                            <p class="text-slate-500 dark:text-slate-400 mb-4">This club doesn't have any students enrolled yet.</p>
-                            <a href="{{ route('clubs.show', $club->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Add Students
-                            </a>
+                                        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No Students Enrolled</h3>
+                                        <p class="text-slate-500 dark:text-slate-400 mb-4">This club doesn't have any students enrolled yet.</p>
+                                        <a href="{{ route('clubs.show', $club->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                            </svg>
+                                            Add Students
+                                        </a>
                         </div>
-                    </template>
+                            </template>
                     
-                    <template x-for="student in students" :key="student.id">
+                            <template x-for="student in students" :key="student.id">
                         <div class="px-6 py-4 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-4">
                                     <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold">
-                                        <span x-text="getInitials(student.student_first_name, student.student_last_name)"></span>
-                                    </div>
-                                    <div>
+                                                <span x-text="getInitials(student.student_first_name, student.student_last_name)"></span>
+                                            </div>
+                                            <div>
                                         <button @click="viewStudentProfile(student)" class="text-lg font-semibold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                                            <span x-text="student.student_first_name + ' ' + student.student_last_name"></span>
-                                        </button>
-                                        <p class="text-sm text-slate-500 dark:text-slate-400">Grade <span x-text="student.student_grade_level"></span></p>
-                                    </div>
-                                </div>
+                                                    <span x-text="student.student_first_name + ' ' + student.student_last_name"></span>
+                                                </button>
+                                                <p class="text-sm text-slate-500 dark:text-slate-400">Grade <span x-text="student.student_grade_level"></span></p>
+                                            </div>
+                                        </div>
                                 
                                 <div class="flex items-center space-x-4">
                                     <!-- Attendance Status Button -->
@@ -192,28 +192,28 @@
                                             <path x-show="getAttendanceStatus(student.id) === 'absent'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                             <path x-show="getAttendanceStatus(student.id) === 'late'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             <path x-show="getAttendanceStatus(student.id) === 'excused'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
+                                                </svg>
                                         <span x-text="getAttendanceStatus(student.id).charAt(0).toUpperCase() + getAttendanceStatus(student.id).slice(1)"></span>
-                                    </button>
+                                            </button>
                                     
                                     <!-- Action Buttons -->
                                     <div class="flex items-center space-x-2">
                                         <button @click="viewStudentProfile(student)" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                            </svg>
-                                        </button>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </button>
                                         <button @click="editStudentAttendance(student)" class="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                            </svg>
-                                        </button>
-                                    </div>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
                                 </div>
                             </div>
                         </div>
-                    </template>
+                            </template>
                 </div>
             </div>
         </div>
@@ -247,20 +247,20 @@
                     <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4">
                         <h5 class="font-semibold text-slate-900 dark:text-white mb-3">Current Session Attendance</h5>
                         <div class="flex items-center space-x-4">
-                            <button @click="toggleAttendance(selectedStudent.id)" 
-                                    :class="getAttendanceClass(selectedStudent.id)"
+                            <button x-show="selectedStudent" @click="toggleAttendance(selectedStudent?.id)" 
+                                    :class="selectedStudent ? getAttendanceClass(selectedStudent.id) : ''"
                                     class="px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path x-show="getAttendanceStatus(selectedStudent.id) === 'present'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    <path x-show="getAttendanceStatus(selectedStudent.id) === 'absent'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    <path x-show="getAttendanceStatus(selectedStudent.id) === 'late'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    <path x-show="getAttendanceStatus(selectedStudent.id) === 'excused'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <path x-show="selectedStudent && getAttendanceStatus(selectedStudent.id) === 'present'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <path x-show="selectedStudent && getAttendanceStatus(selectedStudent.id) === 'absent'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    <path x-show="selectedStudent && getAttendanceStatus(selectedStudent.id) === 'late'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    <path x-show="selectedStudent && getAttendanceStatus(selectedStudent.id) === 'excused'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
-                                <span x-text="getAttendanceStatus(selectedStudent.id).charAt(0).toUpperCase() + getAttendanceStatus(selectedStudent.id).slice(1)"></span>
+                                <span x-show="selectedStudent" x-text="selectedStudent ? getAttendanceStatus(selectedStudent.id).charAt(0).toUpperCase() + getAttendanceStatus(selectedStudent.id).slice(1) : ''"></span>
                             </button>
-                            <div class="text-sm text-slate-600 dark:text-slate-400">
+                            <div class="text-sm text-slate-600 dark:text-slate-400" x-show="selectedStudent">
                                 <p>Session {{ request('week', 1) }}</p>
-                                <p x-text="getAttendanceStatus(selectedStudent.id) === 'present' ? 'Attended' : getAttendanceStatus(selectedStudent.id) === 'absent' ? 'Missed session' : getAttendanceStatus(selectedStudent.id) === 'late' ? 'Arrived late' : 'Excused absence'"></p>
+                                <p x-text="selectedStudent ? (getAttendanceStatus(selectedStudent.id) === 'present' ? 'Attended' : getAttendanceStatus(selectedStudent.id) === 'absent' ? 'Missed session' : getAttendanceStatus(selectedStudent.id) === 'late' ? 'Arrived late' : 'Excused absence') : ''"></p>
                             </div>
                         </div>
                     </div>
@@ -286,9 +286,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+		</div>
         </div>
-    </div>
+	</div>
 
     <script>
         function attendanceGrid() {
@@ -336,7 +336,7 @@
                 
                 // Helper methods
                 getInitials(firstName, lastName) {
-                    return (firstName?.[0] || '') + (lastName?.[0] || '');
+            return (firstName?.[0] || '') + (lastName?.[0] || '');
                 },
                 
                 viewStudentProfile(student) {
@@ -346,8 +346,8 @@
                 
                 editStudentAttendance(student) {
                     // Open student profile modal for detailed editing
-                    this.selectedStudent = student;
-                    this.showStudentModal = true;
+            this.selectedStudent = student;
+            this.showStudentModal = true;
                     console.log('Opening detailed edit for student:', student);
                 },
                 
@@ -357,12 +357,17 @@
                         return;
                     }
                     
-                    const currentStatus = this.getAttendanceStatus(studentId);
-                    const statuses = ['present', 'absent', 'late', 'excused'];
-                    const currentIndex = statuses.indexOf(currentStatus);
-                    const nextIndex = (currentIndex + 1) % statuses.length;
-                    const newStatus = statuses[nextIndex];
+                    if (!studentId) {
+                        console.log('No student ID provided');
+                        return;
+                    }
                     
+                    const currentStatus = this.getAttendanceStatus(studentId);
+            const statuses = ['present', 'absent', 'late', 'excused'];
+            const currentIndex = statuses.indexOf(currentStatus);
+            const nextIndex = (currentIndex + 1) % statuses.length;
+            const newStatus = statuses[nextIndex];
+            
                     this.attendance[studentId] = newStatus;
                     this.unsavedChanges = true; // Mark that there are unsaved changes
                     
@@ -451,16 +456,16 @@
                     });
                     
                     const fetchPromise = fetch(`/attendance/update/${this.clubId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': csrfToken
-                        },
-                        body: JSON.stringify({
-                            student_id: studentId,
-                            session_id: this.sessionId,
-                            status: status
-                        })
+                },
+                body: JSON.stringify({
+                    student_id: studentId,
+                    session_id: this.sessionId,
+                    status: status
+                })
                     });
                     
                     return Promise.race([fetchPromise, timeoutPromise])
@@ -471,16 +476,16 @@
                             }
                             return response.json();
                         })
-                        .then(data => {
+            .then(data => {
                             console.log(`Response data for student ${studentId}:`, data);
                             if (data && data.success) {
                                 console.log(`Attendance saved successfully for student ${studentId}: ${status}`);
                                 return { studentId, status, success: true };
                             } else {
                                 throw new Error(`Server returned success: false for student ${studentId}. Data: ${JSON.stringify(data)}`);
-                            }
-                        })
-                        .catch(error => {
+                }
+            })
+            .catch(error => {
                             console.error(`Error saving attendance for student ${studentId}:`, error);
                             return { studentId, status, success: false, error: error.message };
                         });
@@ -510,10 +515,13 @@
                 
                 
                 getAttendanceStatus(studentId) {
+                    if (!studentId) return 'present';
                     return this.attendance[studentId] || 'present';
                 },
                 
                 getAttendanceClass(studentId) {
+                    if (!studentId) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700';
+                    
                     const status = this.getAttendanceStatus(studentId);
                     const classes = {
                         present: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700',
