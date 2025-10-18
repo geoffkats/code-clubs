@@ -75,11 +75,12 @@ class ReportController extends Controller
 			'include_charts' => $includeCharts,
 			'sections' => $sections,
 			'start_date' => $startDate,
-			'end_date' => $endDate
+			'end_date' => $endDate,
+			'use_ai_generation' => true, // Enable AI-powered content generation
 		]);
 		
 		
-		return redirect()->route('reports.index', ['club_id' => $club->id])->with('success', 'Reports generated successfully!');
+		return redirect()->route('reports.index', ['club_id' => $club->id])->with('success', '🤖 AI-powered reports generated successfully! Each report now contains personalized content based on student assessments and attendance.');
 	}
 
 	public function show(int $report_id)

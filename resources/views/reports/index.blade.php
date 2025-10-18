@@ -90,14 +90,15 @@
                 <div class="flex flex-wrap items-center justify-between gap-6">
                     <!-- Generate Reports Action -->
                     @if($clubId)
-                        <a href="{{ route('reports.create', ['club_id' => $clubId]) }}" 
-                           class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <a href="{{ route('reports.generate', ['club_id' => $clubId]) }}" 
+                           class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                           title="🤖 AI will automatically analyze assessments and attendance to generate personalized content for each student's report">
                             <div class="bg-white/20 rounded-lg p-2 mr-3">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
                             </div>
-                            Generate New Reports
+                            🤖 Generate AI Reports
                         </a>
                     @else
                         <div class="bg-slate-100 rounded-xl px-6 py-3 text-slate-600 font-medium">
@@ -309,12 +310,13 @@
                     @endif
                 </p>
                 @if($clubId)
-                    <a href="{{ route('reports.create', ['club_id' => $clubId]) }}" 
-                       class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
+                    <a href="{{ route('reports.generate', ['club_id' => $clubId]) }}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center"
+                       title="🤖 AI will automatically analyze assessments and attendance to generate personalized content for each student's report">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        Generate Reports
+                        🤖 Generate AI Reports
                     </a>
                 @else
                     <p class="text-sm text-gray-500">Select a club from the filter above to generate reports.</p>
