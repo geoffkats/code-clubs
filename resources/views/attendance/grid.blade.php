@@ -49,6 +49,18 @@
                             </svg>
                             Mark All Present
                         </button>
+                        <button @click="saveAllChanges()" 
+                                :disabled="savingInProgress || !unsavedChanges"
+                                :class="savingInProgress ? 'bg-gray-400 cursor-not-allowed' : (unsavedChanges ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-400 cursor-not-allowed')"
+                                class="px-4 py-2 text-white rounded-lg transition-colors font-medium">
+                            <svg x-show="!savingInProgress" class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                            </svg>
+                            <svg x-show="savingInProgress" class="w-4 h-4 mr-2 inline animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span x-text="savingInProgress ? 'Saving...' : (unsavedChanges ? 'Save Changes' : 'All Saved')"></span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -289,6 +301,8 @@
                 selectedStudent: null,
                 editingMode: false,
                 sessionId: {{ $session->id }},
+                savingInProgress: false,
+                unsavedChanges: false,
                 
                 init() {
                     console.log('Students loaded:', this.students.length, this.students);
@@ -350,10 +364,11 @@
                     const newStatus = statuses[nextIndex];
                     
                     this.attendance[studentId] = newStatus;
+                    this.unsavedChanges = true; // Mark that there are unsaved changes
                     
                     console.log(`Updated ${studentId} to ${newStatus}`);
                     
-                    // Save to database
+                    // Save to database (automatic save)
                     this.saveAttendance(studentId, newStatus);
                 },
                 
@@ -366,15 +381,44 @@
                     if (this.students && Array.isArray(this.students)) {
                         this.students.forEach(student => {
                             this.attendance[student.id] = 'present';
-                            this.saveAttendance(student.id, 'present');
                         });
                     }
                     
                     console.log('Marked all students as present');
                 },
                 
-                saveAttendance(studentId, status) {
-                    fetch(`/attendance/update/${this.clubId}`, {
+                saveAllChanges() {
+                    if (!this.students || !Array.isArray(this.students)) {
+                        console.log('No students to save');
+                        return;
+                    }
+                    
+                    this.savingInProgress = true;
+                    console.log('Saving all attendance changes...');
+                    let savePromises = [];
+                    
+                    this.students.forEach(student => {
+                        const status = this.attendance[student.id] || 'present';
+                        savePromises.push(this.saveAttendancePromise(student.id, status));
+                    });
+                    
+                    Promise.all(savePromises)
+                        .then(results => {
+                            console.log('All attendance saved successfully:', results);
+                            this.savingInProgress = false;
+                            this.unsavedChanges = false;
+                            // Show success message (you could add a toast notification here)
+                            alert('All attendance changes saved successfully!');
+                        })
+                        .catch(error => {
+                            console.error('Error saving some attendance records:', error);
+                            this.savingInProgress = false;
+                            alert('Some attendance records failed to save. Please check the console for details.');
+                        });
+                },
+                
+                saveAttendancePromise(studentId, status) {
+                    return fetch(`/attendance/update/${this.clubId}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -386,15 +430,46 @@
                             status: status
                         })
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
-                            console.log('Attendance saved successfully');
+                            console.log(`Attendance saved successfully for student ${studentId}: ${status}`);
+                            return { studentId, status, success: true };
+                        } else {
+                            throw new Error(`Server returned success: false for student ${studentId}`);
                         }
                     })
                     .catch(error => {
-                        console.error('Error saving attendance:', error);
+                        console.error(`Error saving attendance for student ${studentId}:`, error);
+                        return { studentId, status, success: false, error: error.message };
                     });
+                },
+                
+                saveAttendance(studentId, status) {
+                    this.saveAttendancePromise(studentId, status)
+                        .then(result => {
+                            if (result.success) {
+                                console.log(`Auto-saved: Student ${studentId} -> ${status}`);
+                                // Check if all changes are saved
+                                this.checkIfAllSaved();
+                            } else {
+                                console.error(`Auto-save failed: Student ${studentId} -> ${status}`, result.error);
+                                // You could show a toast notification here for failed auto-saves
+                            }
+                        });
+                },
+                
+                checkIfAllSaved() {
+                    // This is a simple check - in a more complex app you might track individual save states
+                    // For now, we'll just clear unsaved changes after a short delay
+                    setTimeout(() => {
+                        this.unsavedChanges = false;
+                    }, 1000);
                 },
                 
                 getAttendanceStatus(studentId) {
