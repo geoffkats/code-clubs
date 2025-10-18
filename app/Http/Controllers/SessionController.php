@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Club;
-use App\Models\Session;
+use App\Models\SessionSchedule;
 use Illuminate\Http\Request;
 
 class SessionController extends Controller
 {
     public function index()
     {
-        $sessions = Session::with(['club.school'])
+        $sessions = SessionSchedule::with(['club.school'])
             ->withCount(['attendance'])
             ->orderBy('session_date', 'desc')
             ->paginate(20);
@@ -30,7 +30,7 @@ class SessionController extends Controller
             'session_week_number' => ['required', 'integer', 'min:1', 'max:52'],
         ]);
 
-        $session = Session::create($data);
+        $session = SessionSchedule::create($data);
         
         return redirect()->route('sessions.index')
             ->with('success', 'Session created successfully!');

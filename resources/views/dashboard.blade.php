@@ -994,9 +994,10 @@
     </div>
 
     <!-- Chart.js Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Dynamically import Chart.js
+            const { Chart } = await import('chart.js');
             // Weekly Attendance Chart
             const attendanceCtx = document.getElementById('attendanceChart');
             if (attendanceCtx) {
