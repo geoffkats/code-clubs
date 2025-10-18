@@ -10,8 +10,8 @@ class SessionController extends Controller
 {
     public function index()
     {
-        $sessions = SessionSchedule::with(['club.school', 'club.students'])
-            ->withCount(['attendance_records as attendance_count'])
+        $sessions = SessionSchedule::with(['club.school'])
+            ->withCount(['attendance'])
             ->orderBy('session_date', 'desc')
             ->paginate(20);
 
@@ -28,12 +28,8 @@ class SessionController extends Controller
             'session_week_number' => ['required', 'integer', 'min:1', 'max:52'],
         ]);
 
-        $session = SessionSchedule::create([
-            'club_id' => $request->club_id,
-            'session_date' => $request->session_date,
-            'session_week_number' => $request->session_week_number,
-        ]);
-
+        $session = SessionSchedule::create($data);
+        
         return redirect()->route('sessions.index')
             ->with('success', 'Session created successfully!');
     }

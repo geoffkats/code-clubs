@@ -10,6 +10,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ClubSessionsController;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SessionController;
 use App\Http\Controllers\ParentReportController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route as FacadesRoute;

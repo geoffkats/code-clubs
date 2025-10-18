@@ -15,4 +15,14 @@ export default defineConfig({
     server: {
         cors: true,
     },
+    build: {
+        rollupOptions: {
+            external: [],
+            output: {
+                manualChunks: {
+                    chartjs: ['chart.js']
+                }
+            }
+        }
+    }
 });
