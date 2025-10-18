@@ -286,9 +286,47 @@
                         </div>
                     </div>
                 </div>
-		</div>
+            </div>
         </div>
-	</div>
+
+        <!-- Edit Mode Modal -->
+        <div x-show="showEditModeModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Enable Edit Mode</h3>
+                    <button @click="showEditModeModal=false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="text-center space-y-4">
+                    <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto">
+                        <svg class="w-8 h-8 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Edit Mode Required</h4>
+                        <p class="text-slate-600 dark:text-slate-400">
+                            You need to enable edit mode before you can mark all students as present.
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-center justify-center space-x-4 pt-4">
+                        <button @click="showEditModeModal=false" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button @click="enableEditModeAndMarkAll()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium">
+                            Enable Edit & Mark All Present
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         function attendanceGrid() {
@@ -303,6 +341,7 @@
                 sessionId: {{ $session->id }},
                 savingInProgress: false,
                 unsavedChanges: false,
+                showEditModeModal: false,
                 
                 init() {
                     console.log('Students loaded:', this.students.length, this.students);
@@ -379,7 +418,9 @@
                 
                 markAllPresent() {
                     if (!this.editingMode) {
-                        console.log('Edit mode is not enabled');
+                        // Show modal asking to enable edit mode
+                        this.showEditModeModal = true;
+                        console.log('Edit mode is not enabled - showing modal');
                         return;
                     }
                     
@@ -387,9 +428,25 @@
                         this.students.forEach(student => {
                             this.attendance[student.id] = 'present';
                         });
+                        this.unsavedChanges = true;
                     }
                     
                     console.log('Marked all students as present');
+                },
+                
+                enableEditModeAndMarkAll() {
+                    this.editingMode = true;
+                    this.showEditModeModal = false;
+                    
+                    // Now mark all as present
+                    if (this.students && Array.isArray(this.students)) {
+                        this.students.forEach(student => {
+                            this.attendance[student.id] = 'present';
+                        });
+                        this.unsavedChanges = true;
+                    }
+                    
+                    console.log('Edit mode enabled and marked all students as present');
                 },
                 
                 saveAllChanges() {
