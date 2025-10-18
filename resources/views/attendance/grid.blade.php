@@ -260,18 +260,34 @@
 
                     <!-- Attendance Summary -->
                     <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4">
-                        <h5 class="font-semibold text-slate-900 dark:text-white mb-3">Attendance Summary</h5>
+                        <h5 class="font-semibold text-slate-900 dark:text-white mb-3">Weekly Attendance</h5>
+                        <div class="grid grid-cols-5 gap-2 mb-4">
+                            <template x-for="day in ['mon', 'tue', 'wed', 'thu', 'fri']" :key="day">
+                                <div class="text-center">
+                                    <p class="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1" x-text="day.charAt(0).toUpperCase() + day.slice(1)"></p>
+                                    <button @click="toggleAttendance(selectedStudent.id, day)" 
+                                            :class="getAttendanceClass(selectedStudent.id, day)"
+                                            class="w-8 h-8 rounded-lg transition-colors text-xs">
+                                        <svg class="w-3 h-3 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path x-show="getAttendanceStatus(selectedStudent.id, day) === 'present'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            <path x-show="getAttendanceStatus(selectedStudent.id, day) === 'absent'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            <path x-show="getAttendanceStatus(selectedStudent.id, day) === 'late'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </template>
+                        </div>
                         <div class="grid grid-cols-3 gap-4">
                             <div class="text-center">
                                 <p class="text-2xl font-bold text-emerald-600" x-text="getStudentAttendanceRate(selectedStudent?.id) + '%'"></p>
                                 <p class="text-sm text-slate-600 dark:text-slate-400">Overall Rate</p>
                             </div>
                             <div class="text-center">
-                                <p class="text-2xl font-bold text-blue-600" x-text="getStudentPresentDays(selectedStudent?.id)"></p>
+                                <p class="text-2xl font-bold text-blue-600" x-text="getWeekTotal(selectedStudent?.id)"></p>
                                 <p class="text-sm text-slate-600 dark:text-slate-400">Days Present</p>
                             </div>
                             <div class="text-center">
-                                <p class="text-2xl font-bold text-red-600" x-text="getStudentAbsentDays(selectedStudent?.id)"></p>
+                                <p class="text-2xl font-bold text-red-600" x-text="5 - getWeekTotal(selectedStudent?.id)"></p>
                                 <p class="text-sm text-slate-600 dark:text-slate-400">Days Absent</p>
                             </div>
                         </div>
@@ -389,8 +405,10 @@
                 },
                 
                 editStudentAttendance(student) {
-                    // Implementation for editing individual student attendance
-                    console.log('Edit attendance for student:', student);
+                    // Open student profile modal for detailed editing
+                    this.selectedStudent = student;
+                    this.showStudentModal = true;
+                    console.log('Opening detailed edit for student:', student);
                 },
                 
                 toggleAttendance(studentId, day) {
