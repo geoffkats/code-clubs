@@ -46,6 +46,23 @@
                         </flux:navlist.item>
 
                         <flux:navlist.item 
+                            icon="user" 
+                            :href="route('students.index')" 
+                            :current="request()->routeIs('students.dashboard') || request()->routeIs('students.*')" 
+                            wire:navigate
+                            class="group relative overflow-hidden rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-slate-800 dark:hover:to-slate-700 p-4"
+                        >
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white shadow-md group-hover:shadow-lg transition-all duration-300">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    </svg>
+                                </div>
+                                <span class="font-medium">{{ __('Student Dashboard') }}</span>
+                            </div>
+                        </flux:navlist.item>
+
+                        <flux:navlist.item 
                             icon="users" 
                             :href="route('students.index')" 
                             :current="request()->routeIs('students.*')" 

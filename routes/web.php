@@ -12,6 +12,7 @@ use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SessionController;
 use App\Http\Controllers\ParentReportController;
+use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route as FacadesRoute;
 
 Route::get('/', function () {
@@ -81,9 +82,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
 Route::get('/sessions', [SessionController::class, 'index'])->name('sessions.index');
 Route::post('/sessions', [SessionController::class, 'store'])->name('sessions.store');
 
-// Student Dashboard
-Route::get('/student/dashboard', function() {
-    $student = \App\Models\Student::with('clubs.school')->first();
+// Student Dashboard (student-specific)
+Route::get('/students/{student_id}/dashboard', function(int $student_id) {
+    $student = \App\Models\Student::with('clubs.school')->findOrFail($student_id);
     return view('students.dashboard', compact('student'));
 })->name('students.dashboard');
 
