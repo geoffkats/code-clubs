@@ -65,8 +65,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/clubs/{club_id}/reports/generate', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/clubs/{club_id}/reports/generate', [ReportController::class, 'generate_for_club'])->name('reports.generate');
-    Route::get('/reports/{report_id}', [ReportController::class, 'show'])->name('reports.show');
     Route::get('/reports/{report_id}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
+    Route::get('/reports/{report_id}', [ReportController::class, 'show'])->name('reports.show');
     Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->name('reports.send');
 
     // Attendance grid
