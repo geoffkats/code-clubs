@@ -13,8 +13,8 @@ class SchoolFactory extends Factory
     {
         return [
             'school_name' => $this->faker->company . ' School',
-            'school_city' => $this->faker->city,
-            'school_state' => $this->faker->stateAbbr,
+            'address' => $this->faker->address,
+            'contact_email' => $this->faker->safeEmail,
         ];
     }
 }

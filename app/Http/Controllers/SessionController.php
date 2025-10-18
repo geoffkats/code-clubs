@@ -24,7 +24,6 @@ class SessionController extends Controller
     {
         $request->validate([
             'club_id' => ['required', 'exists:clubs,id'],
-            'session_title' => ['nullable', 'string'],
             'session_date' => ['required', 'date'],
             'session_week_number' => ['required', 'integer', 'min:1', 'max:52'],
         ]);
