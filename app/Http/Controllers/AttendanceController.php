@@ -34,6 +34,9 @@ class AttendanceController extends Controller
 			->get()
 			->keyBy('student_id');
 			
+		// Debug: Log the students count
+		\Log::info('Attendance Grid - Club ID: ' . $club->id . ', Students count: ' . $club->students->count());
+		
 		return view('attendance.grid', compact('club', 'week', 'session', 'attendanceRecords'));
 	}
 

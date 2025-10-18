@@ -37,7 +37,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+	</div>
 
         <!-- Main Content -->
         <div class="px-6 py-8">

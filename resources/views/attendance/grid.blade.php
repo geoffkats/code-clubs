@@ -386,7 +386,10 @@
         }
 
         function getAttendanceStatus(studentId, day) {
-            return this.attendance[studentId]?.[day] || 'present';
+            if (!this.attendance || !this.attendance[studentId]) {
+                return 'present'; // Default status
+            }
+            return this.attendance[studentId][day] || 'present';
         }
 
         function getAttendanceClass(studentId, day) {
@@ -413,6 +416,9 @@
         }
 
         function getPresentCount() {
+            if (!this.students || !Array.isArray(this.students)) {
+                return 0;
+            }
             return this.students.filter(student => {
                 const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
                 return days.some(day => this.getAttendanceStatus(student.id, day) === 'present');
@@ -420,11 +426,16 @@
         }
 
         function getAbsentCount() {
+            if (!this.students || !Array.isArray(this.students)) {
+                return 0;
+            }
             return this.students.length - this.getPresentCount();
         }
 
         function getAttendanceRate() {
-            if (this.students.length === 0) return 0;
+            if (!this.students || !Array.isArray(this.students) || this.students.length === 0) {
+                return 0;
+            }
             return Math.round((this.getPresentCount() / this.students.length) * 100);
         }
 
@@ -456,7 +467,7 @@
                 currentWeek: {{ request('week', 1) }},
                 clubId: {{ $club->id }},
                 students: @json($club->students ?? []),
-                attendance: @json($attendanceRecords->pluck('status', 'student_id') ?? []),
+                attendance: {},
                 showStudentModal: false,
                 selectedStudent: null,
                 showBulkEdit: false,
@@ -467,6 +478,36 @@
                 
                 init() {
                     console.log('Students loaded:', this.students.length, this.students);
+                    
+                    // Initialize attendance data structure
+                    this.attendance = {};
+                    
+                    // Ensure all students have default attendance status for all days
+                    if (this.students && Array.isArray(this.students)) {
+                        this.students.forEach(student => {
+                            this.attendance[student.id] = {};
+                            // Initialize all days with 'present' status by default
+                            ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(day => {
+                                this.attendance[student.id][day] = 'present';
+                            });
+                        });
+                    }
+                    
+                    // Load existing attendance records from backend if available
+                    @if(isset($attendanceRecords) && $attendanceRecords->count() > 0)
+                        @foreach($attendanceRecords as $studentId => $record)
+                            if (this.attendance[{{ $studentId }}]) {
+                                // For now, we'll set all days to the same status since the backend
+                                // doesn't have per-day granularity yet
+                                const status = '{{ $record->attendance_status ?? 'present' }}';
+                                ['mon', 'tue', 'wed', 'thu', 'fri'].forEach(day => {
+                                    this.attendance[{{ $studentId }}][day] = status;
+                                });
+                            }
+                        @endforeach
+                    @endif
+                    
+                    console.log('Attendance initialized:', this.attendance);
                 }
             }
         }
