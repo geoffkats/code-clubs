@@ -106,7 +106,7 @@
 
                             <flux:navlist.item 
                                 icon="document-text" 
-                                :href="route('clubs.index')" 
+                                :href="route('reports.index')" 
                                 :current="request()->routeIs('reports.*')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"

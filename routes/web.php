@@ -62,6 +62,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::get('/assessments/{assessment_id}/scores', [AssessmentController::class, 'scores'])->name('assessments.scores');
 
     // Reports
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/clubs/{club_id}/reports/generate', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/clubs/{club_id}/reports/generate', [ReportController::class, 'generate_for_club'])->name('reports.generate');
     Route::get('/reports/{report_id}', [ReportController::class, 'show'])->name('reports.show');
