@@ -319,147 +319,10 @@
                             Apply to All
                         </button>
                     </div>
-			</form>
-		</div>
+                </form>
+            </div>
         </div>
-	</div>
-
-    <script>
-        function updateWeek() {
-            window.location.href = `{{ route('attendance.grid', $club->id) }}?week=${this.currentWeek}`;
-        }
-
-        function getInitials(firstName, lastName) {
-            return (firstName?.[0] || '') + (lastName?.[0] || '');
-        }
-
-        function viewStudentProfile(student) {
-            this.selectedStudent = student;
-            this.showStudentModal = true;
-        }
-
-        function editStudentAttendance(student) {
-            // Implementation for editing individual student attendance
-            console.log('Edit attendance for student:', student);
-        }
-
-        function toggleAttendance(studentId, day) {
-            if (!this.editingMode) return;
-            
-            const currentStatus = this.getAttendanceStatus(studentId, day);
-            const statuses = ['present', 'absent', 'late', 'excused'];
-            const currentIndex = statuses.indexOf(currentStatus);
-            const nextIndex = (currentIndex + 1) % statuses.length;
-            const newStatus = statuses[nextIndex];
-            
-            if (!this.attendance[studentId]) {
-                this.attendance[studentId] = {};
-            }
-            this.attendance[studentId][day] = newStatus;
-            
-            // Save to database
-            this.saveAttendance(studentId, newStatus);
-        }
-        
-        function saveAttendance(studentId, status) {
-            fetch(`/attendance/update/${this.clubId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    student_id: studentId,
-                    session_id: this.sessionId,
-                    status: status
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Attendance saved successfully');
-                }
-            })
-            .catch(error => {
-                console.error('Error saving attendance:', error);
-            });
-        }
-
-        function getAttendanceStatus(studentId, day) {
-            if (!this.attendance || !this.attendance[studentId]) {
-                return 'present'; // Default status
-            }
-            return this.attendance[studentId][day] || 'present';
-        }
-
-        function getAttendanceClass(studentId, day) {
-            const status = this.getAttendanceStatus(studentId, day);
-            const classes = {
-                present: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/50',
-                absent: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50',
-                late: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50',
-                excused: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50'
-            };
-            return classes[status] || classes.present;
-        }
-
-        function getWeekTotal(studentId) {
-            const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
-            return days.filter(day => this.getAttendanceStatus(studentId, day) === 'present').length;
-        }
-
-        function getWeekTotalClass(studentId) {
-            const total = this.getWeekTotal(studentId);
-            if (total >= 4) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300';
-            if (total >= 3) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
-            return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300';
-        }
-
-        function getPresentCount() {
-            if (!this.students || !Array.isArray(this.students)) {
-                return 0;
-            }
-            return this.students.filter(student => {
-                const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
-                return days.some(day => this.getAttendanceStatus(student.id, day) === 'present');
-            }).length;
-        }
-
-        function getAbsentCount() {
-            if (!this.students || !Array.isArray(this.students)) {
-                return 0;
-            }
-            return this.students.length - this.getPresentCount();
-        }
-
-        function getAttendanceRate() {
-            if (!this.students || !Array.isArray(this.students) || this.students.length === 0) {
-                return 0;
-            }
-            return Math.round((this.getPresentCount() / this.students.length) * 100);
-        }
-
-        function getStudentAttendanceRate(studentId) {
-            // This would calculate the overall attendance rate for the student
-            return Math.floor(Math.random() * 40) + 60; // Mock data
-        }
-
-        function getStudentPresentDays(studentId) {
-            // This would calculate the total present days for the student
-            return Math.floor(Math.random() * 20) + 15; // Mock data
-        }
-
-        function getStudentAbsentDays(studentId) {
-            // This would calculate the total absent days for the student
-            return Math.floor(Math.random() * 5) + 1; // Mock data
-        }
-
-        function saveBulkAttendance() {
-            // Implementation for saving bulk attendance
-            console.log('Saving bulk attendance:', this.bulkDay, this.bulkStatus);
-            this.showBulkEdit = false;
-        }
-    </script>
+    </div>
 
     <script>
         function attendanceGrid() {
@@ -508,6 +371,159 @@
                     @endif
                     
                     console.log('Attendance initialized:', this.attendance);
+                },
+                
+                // Global function for week navigation
+                updateWeek() {
+                    window.location.href = `{{ route('attendance.grid', $club->id) }}?week=${this.currentWeek}`;
+                },
+                
+                // Helper methods
+                getInitials(firstName, lastName) {
+                    return (firstName?.[0] || '') + (lastName?.[0] || '');
+                },
+                
+                viewStudentProfile(student) {
+                    this.selectedStudent = student;
+                    this.showStudentModal = true;
+                },
+                
+                editStudentAttendance(student) {
+                    // Implementation for editing individual student attendance
+                    console.log('Edit attendance for student:', student);
+                },
+                
+                toggleAttendance(studentId, day) {
+                    if (!this.editingMode) {
+                        console.log('Edit mode is not enabled');
+                        return;
+                    }
+                    
+                    const currentStatus = this.getAttendanceStatus(studentId, day);
+                    const statuses = ['present', 'absent', 'late', 'excused'];
+                    const currentIndex = statuses.indexOf(currentStatus);
+                    const nextIndex = (currentIndex + 1) % statuses.length;
+                    const newStatus = statuses[nextIndex];
+                    
+                    if (!this.attendance[studentId]) {
+                        this.attendance[studentId] = {};
+                    }
+                    this.attendance[studentId][day] = newStatus;
+                    
+                    console.log(`Updated ${studentId} ${day} to ${newStatus}`);
+                    
+                    // Save to database
+                    this.saveAttendance(studentId, newStatus);
+                },
+                
+                saveAttendance(studentId, status) {
+                    fetch(`/attendance/update/${this.clubId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            student_id: studentId,
+                            session_id: this.sessionId,
+                            status: status
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Attendance saved successfully');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error saving attendance:', error);
+                    });
+                },
+                
+                getAttendanceStatus(studentId, day) {
+                    if (!this.attendance || !this.attendance[studentId]) {
+                        return 'present'; // Default status
+                    }
+                    return this.attendance[studentId][day] || 'present';
+                },
+                
+                getAttendanceClass(studentId, day) {
+                    const status = this.getAttendanceStatus(studentId, day);
+                    const classes = {
+                        present: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/50',
+                        absent: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50',
+                        late: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50',
+                        excused: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-200 dark:hover:bg-blue-900/50'
+                    };
+                    return classes[status] || classes.present;
+                },
+                
+                getWeekTotal(studentId) {
+                    const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+                    return days.filter(day => this.getAttendanceStatus(studentId, day) === 'present').length;
+                },
+                
+                getWeekTotalClass(studentId) {
+                    const total = this.getWeekTotal(studentId);
+                    if (total >= 4) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300';
+                    if (total >= 3) return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-emerald-300';
+                    return 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300';
+                },
+                
+                getPresentCount() {
+                    if (!this.students || !Array.isArray(this.students)) {
+                        return 0;
+                    }
+                    return this.students.filter(student => {
+                        const days = ['mon', 'tue', 'wed', 'thu', 'fri'];
+                        return days.some(day => this.getAttendanceStatus(student.id, day) === 'present');
+                    }).length;
+                },
+                
+                getAbsentCount() {
+                    if (!this.students || !Array.isArray(this.students)) {
+                        return 0;
+                    }
+                    return this.students.length - this.getPresentCount();
+                },
+                
+                getAttendanceRate() {
+                    if (!this.students || !Array.isArray(this.students) || this.students.length === 0) {
+                        return 0;
+                    }
+                    return Math.round((this.getPresentCount() / this.students.length) * 100);
+                },
+                
+                getStudentAttendanceRate(studentId) {
+                    // This would calculate the overall attendance rate for the student
+                    return Math.floor(Math.random() * 40) + 60; // Mock data
+                },
+                
+                getStudentPresentDays(studentId) {
+                    // This would calculate the total present days for the student
+                    return Math.floor(Math.random() * 20) + 15; // Mock data
+                },
+                
+                getStudentAbsentDays(studentId) {
+                    // This would calculate the total absent days for the student
+                    return Math.floor(Math.random() * 5) + 1; // Mock data
+                },
+                
+                saveBulkAttendance() {
+                    // Implementation for saving bulk attendance
+                    console.log('Saving bulk attendance:', this.bulkDay, this.bulkStatus);
+                    
+                    // Apply bulk status to all students for the selected day
+                    if (this.students && Array.isArray(this.students)) {
+                        this.students.forEach(student => {
+                            if (!this.attendance[student.id]) {
+                                this.attendance[student.id] = {};
+                            }
+                            this.attendance[student.id][this.bulkDay] = this.bulkStatus;
+                        });
+                    }
+                    
+                    this.showBulkEdit = false;
                 }
             }
         }
