@@ -125,7 +125,11 @@
                     <div class="text-sm text-slate-600 mb-1">Generated</div>
                     <div class="font-semibold text-slate-800">
                         @if($report->report_generated_at)
-                            {{ $report->report_generated_at->format('M j, Y g:i A') }}
+                            @if(is_string($report->report_generated_at))
+                                {{ \Carbon\Carbon::parse($report->report_generated_at)->format('M j, Y g:i A') }}
+                            @else
+                                {{ $report->report_generated_at->format('M j, Y g:i A') }}
+                            @endif
                         @else
                             Not generated
                         @endif

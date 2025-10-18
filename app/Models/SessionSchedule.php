@@ -28,6 +28,14 @@ class SessionSchedule extends Model
 	{
 		return $this->hasMany(AttendanceRecord::class, 'session_id');
 	}
+
+	/**
+	 * Alias for attendance_records for backward compatibility
+	 */
+	public function attendance(): HasMany
+	{
+		return $this->attendance_records();
+	}
 }
 
 

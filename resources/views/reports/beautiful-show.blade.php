@@ -190,6 +190,31 @@
                     </div>
                 </div>
 
+                <!-- Access Code -->
+                @if($report->access_code)
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-6 border border-blue-200">
+                        <h3 class="text-lg font-bold text-blue-900 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            </svg>
+                            Access Code
+                        </h3>
+                        <p class="text-sm text-blue-700 mb-3">Share this code with parents to view the report</p>
+                        <div class="flex items-center justify-between">
+                            <div class="text-xl font-mono font-bold text-blue-900 bg-white px-4 py-2 rounded-lg border-2 border-blue-300">
+                                {{ $report->access_code->access_code_plain_preview }}
+                            </div>
+                            <button onclick="copyAccessCode('{{ $report->access_code->access_code_plain_preview }}', this)" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center shadow-md hover:shadow-lg">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Quick Stats -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Quick Stats</h3>
@@ -394,5 +419,58 @@
                 closePreview();
             }
         });
+
+        // Copy access code function
+        function copyAccessCode(code, button) {
+            navigator.clipboard.writeText(code).then(function() {
+                // Show success feedback
+                const originalHTML = button.innerHTML;
+                button.innerHTML = `
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Copied!
+                `;
+                button.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                button.classList.add('bg-green-600');
+                
+                // Reset after 2 seconds
+                setTimeout(function() {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('bg-green-600');
+                    button.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                }, 2000);
+                
+                // Show toast notification
+                showToast('Access code copied to clipboard!', 'success');
+            }).catch(function(err) {
+                console.error('Failed to copy access code: ', err);
+                showToast('Failed to copy access code', 'error');
+            });
+        }
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 transform translate-x-full ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`;
+            toast.textContent = message;
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
     </script>
 </x-layouts.app>

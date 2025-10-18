@@ -49,8 +49,11 @@ class AccessCodeService
     public function create_access_code_for_report(int $report_id, ?int $days_valid = self::DEFAULT_EXPIRATION_DAYS): array
     {
         try {
-            // Generate secure access code
-            $plain = $this->generateSecureAccessCode();
+            // Get report with student information
+            $report = Report::with('student')->findOrFail($report_id);
+            
+            // Generate unique access code with child's first name
+            $plain = $this->generateUniqueAccessCode($report->student->student_first_name);
             $hash = Hash::make($plain);
             
             // Calculate expiration date
@@ -61,7 +64,7 @@ class AccessCodeService
                 ['report_id' => $report_id],
                 [
                     'access_code_hash' => $hash,
-                    'access_code_plain_preview' => $this->createPreview($plain),
+                    'access_code_plain_preview' => $plain, // Store full code for display
                     'access_code_expires_at' => $expires_at,
                 ]
             );
@@ -69,7 +72,8 @@ class AccessCodeService
             // Log successful code generation for audit trail
             Log::info('Access code generated for report', [
                 'report_id' => $report_id,
-                'code_preview' => $model->access_code_plain_preview,
+                'student_name' => $report->student->student_first_name,
+                'access_code' => $plain,
                 'expires_at' => $expires_at,
                 'generated_by' => auth()->id() ?? 'system'
             ]);
@@ -90,7 +94,39 @@ class AccessCodeService
     }
     
     /**
-     * Generate a secure access code
+     * Generate a unique access code with child's first name
+     * 
+     * Creates a memorable access code using the child's first name and a unique number.
+     * Format: firstName-XXXX (e.g., "john-2500", "mary-1234")
+     * 
+     * @param string $firstName The child's first name
+     * @return string The generated unique access code
+     */
+    private function generateUniqueAccessCode(string $firstName): string
+    {
+        // Clean and normalize the first name
+        $cleanName = strtolower(preg_replace('/[^a-zA-Z]/', '', $firstName));
+        
+        // Generate a unique 4-digit number
+        $uniqueNumber = $this->generateUniqueNumber();
+        
+        // Combine name and number
+        return $cleanName . '-' . $uniqueNumber;
+    }
+    
+    /**
+     * Generate a unique 4-digit number
+     * 
+     * @return string A 4-digit number
+     */
+    private function generateUniqueNumber(): string
+    {
+        // Generate a random 4-digit number between 1000-9999
+        return str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
+    }
+    
+    /**
+     * Generate a secure access code (legacy method)
      * 
      * Creates a cryptographically secure random access code using only
      * uppercase letters and numbers for better readability.

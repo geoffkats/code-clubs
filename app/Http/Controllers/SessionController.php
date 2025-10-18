@@ -11,7 +11,7 @@ class SessionController extends Controller
     public function index()
     {
         $sessions = SessionSchedule::with(['club.school'])
-            ->withCount(['attendance'])
+            ->withCount(['attendance_records'])
             ->orderBy('session_date', 'desc')
             ->paginate(20);
 
