@@ -27,10 +27,10 @@
                 <flux:navbar.item icon="clipboard-document-check" :href="route('assessments.create', ['club_id' => 0])" :current="request()->routeIs('assessments.*')" wire:navigate>
                     {{ __('Assessments') }}
                 </flux:navbar.item>
-                <flux:navbar.item icon="chart-bar" :href="route('attendance.grid', ['club_id' => 0])" :current="request()->routeIs('attendance.*')" wire:navigate>
+                <flux:navbar.item icon="chart-bar" :href="route('attendance.index')" :current="request()->routeIs('attendance.*')" wire:navigate>
                     {{ __('Attendance') }}
                 </flux:navbar.item>
-                <flux:navbar.item icon="document-text" :href="route('reports.show', ['report_id' => 0])" :current="request()->routeIs('reports.*')" wire:navigate>
+                <flux:navbar.item icon="document-text" :href="route('clubs.index')" :current="request()->routeIs('reports.*')" wire:navigate>
                     {{ __('Reports') }}
                 </flux:navbar.item>
                 <flux:navbar.item icon="building-office" :href="route('schools.index')" :current="request()->routeIs('schools.*')" wire:navigate>
@@ -134,10 +134,10 @@
                     <flux:navlist.item icon="clipboard-document-check" :href="route('assessments.create', ['club_id' => 0])" :current="request()->routeIs('assessments.*')" wire:navigate>
                     {{ __('Assessments') }}
                     </flux:navlist.item>
-                    <flux:navlist.item icon="chart-bar" :href="route('attendance.grid', ['club_id' => 0])" :current="request()->routeIs('attendance.*')" wire:navigate>
+                    <flux:navlist.item icon="chart-bar" :href="route('attendance.index')" :current="request()->routeIs('attendance.*')" wire:navigate>
                     {{ __('Attendance') }}
                     </flux:navlist.item>
-                    <flux:navlist.item icon="document-text" :href="route('reports.show', ['report_id' => 0])" :current="request()->routeIs('reports.*')" wire:navigate>
+                    <flux:navlist.item icon="document-text" :href="route('clubs.index')" :current="request()->routeIs('reports.*')" wire:navigate>
                     {{ __('Reports') }}
                     </flux:navlist.item>
                     <flux:navlist.item icon="building-office" :href="route('schools.index')" :current="request()->routeIs('schools.*')" wire:navigate>
