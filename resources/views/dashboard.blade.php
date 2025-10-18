@@ -102,6 +102,13 @@
                 ->orderBy('club_name')
                 ->get();
         
+        // If no club enrollments found for this school, show all club enrollments (fallback)
+        if ($clubEnrollments->isEmpty()) {
+            $clubEnrollments = \App\Models\Club::withCount('students')
+                ->orderBy('club_name')
+                ->get();
+        }
+        
         // Advanced analytics data
         $weeklyAttendanceData = [];
         $monthlyClubPerformance = [];
@@ -114,13 +121,21 @@
             $dayStart = $date->startOfDay()->toDateString();
             $dayEnd = $date->endOfDay()->toDateString();
             
-            $totalSessions = \App\Models\AttendanceRecord::whereHas('session.club', fn($q) => $q->where('school_id', $schoolId))
-                ->whereHas('session', function ($q) use ($dayStart, $dayEnd) {
+            $totalSessions = $schoolId ? 
+                \App\Models\AttendanceRecord::whereHas('session.club', fn($q) => $q->where('school_id', $schoolId))
+                    ->whereHas('session', function ($q) use ($dayStart, $dayEnd) {
+                        $q->whereBetween('session_date', [$dayStart, $dayEnd]);
+                    })->count() :
+                \App\Models\AttendanceRecord::whereHas('session', function ($q) use ($dayStart, $dayEnd) {
                     $q->whereBetween('session_date', [$dayStart, $dayEnd]);
                 })->count();
                 
-            $presentSessions = \App\Models\AttendanceRecord::whereHas('session.club', fn($q) => $q->where('school_id', $schoolId))
-                ->whereHas('session', function ($q) use ($dayStart, $dayEnd) {
+            $presentSessions = $schoolId ? 
+                \App\Models\AttendanceRecord::whereHas('session.club', fn($q) => $q->where('school_id', $schoolId))
+                    ->whereHas('session', function ($q) use ($dayStart, $dayEnd) {
+                        $q->whereBetween('session_date', [$dayStart, $dayEnd]);
+                    })->where('attendance_status', 'present')->count() :
+                \App\Models\AttendanceRecord::whereHas('session', function ($q) use ($dayStart, $dayEnd) {
                     $q->whereBetween('session_date', [$dayStart, $dayEnd]);
                 })->where('attendance_status', 'present')->count();
                 
@@ -132,8 +147,9 @@
             ];
         }
         
-        // Club performance data
-        foreach ($schoolClubs as $club) {
+        // Club performance data - use all clubs if school clubs is empty
+        $clubsForPerformance = $schoolClubs->isEmpty() ? \App\Models\Club::with('students')->orderBy('club_name')->get() : $schoolClubs;
+        foreach ($clubsForPerformance as $club) {
             $clubAttendance = \App\Models\AttendanceRecord::whereHas('session', fn($q) => $q->where('club_id', $club->id))
                 ->where('created_at', '>=', $last30)->count();
             $clubPresent = \App\Models\AttendanceRecord::whereHas('session', fn($q) => $q->where('club_id', $club->id))
