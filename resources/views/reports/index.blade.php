@@ -73,7 +73,17 @@
                                     <div class="text-sm text-gray-500">Overall Score</div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-gray-900">{{ $report->report_generated_at ? $report->report_generated_at->format('M j') : 'N/A' }}</div>
+                                    <div class="text-2xl font-bold text-gray-900">
+                                        @if($report->report_generated_at)
+                                            @if(is_string($report->report_generated_at))
+                                                {{ \Carbon\Carbon::parse($report->report_generated_at)->format('M j') }}
+                                            @else
+                                                {{ $report->report_generated_at->format('M j') }}
+                                            @endif
+                                        @else
+                                            N/A
+                                        @endif
+                                    </div>
                                     <div class="text-sm text-gray-500">Generated</div>
                                 </div>
                             </div>
@@ -109,7 +119,17 @@
                         <!-- Report Footer -->
                         <div class="bg-gray-50 px-6 py-3 border-t border-gray-100">
                             <div class="flex items-center justify-between text-sm text-gray-500">
-                                <span>{{ $report->report_generated_at ? $report->report_generated_at->format('M j, Y') : 'Not generated' }}</span>
+                                <span>
+                                    @if($report->report_generated_at)
+                                        @if(is_string($report->report_generated_at))
+                                            {{ \Carbon\Carbon::parse($report->report_generated_at)->format('M j, Y') }}
+                                        @else
+                                            {{ $report->report_generated_at->format('M j, Y') }}
+                                        @endif
+                                    @else
+                                        Not generated
+                                    @endif
+                                </span>
                                 @if($report->access_code)
                                     <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Access Code Generated</span>
                                 @else
