@@ -4,7 +4,7 @@
              currentWeek: {{ request('week', 1) }},
              clubId: {{ $club->id }},
              students: @json($club->students),
-             attendance: @json($attendanceRecords->pluck('status', 'student_id')),
+            attendance: @json($attendanceRecords->mapWithKeys(function($r){ return [$r->student_id => $r->attendance_status]; })),
              showStudentModal: false,
              selectedStudent: null,
              showBulkEdit: false,

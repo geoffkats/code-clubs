@@ -152,13 +152,13 @@
                                         </div>
                                         <div>
                                             <h3 class="text-lg font-bold text-slate-900 dark:text-white">
-                                                {{ $session->session_title ?? 'Session ' . $session->session_week_number }}
+                                                {{ 'Session Week ' . $session->session_week_number }}
                                             </h3>
                                             <p class="text-sm text-slate-600 dark:text-slate-400">
                                                 {{ $session->club->club_name ?? 'No Club' }} • Week {{ $session->session_week_number }}
                                             </p>
                                             <p class="text-sm text-slate-500 dark:text-slate-500">
-                                                {{ \Carbon\Carbon::parse($session->session_date)->format('M d, Y') }} at {{ \Carbon\Carbon::parse($session->session_time)->format('g:i A') }}
+                                                {{ \Carbon\Carbon::parse($session->session_date)->format('M d, Y') }}
                                             </p>
                                         </div>
                                     </div>
@@ -176,7 +176,7 @@
                                                 @else bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300
                                                 @endif">
                                                 @if($session->session_date < now()) Completed
-                                                @elseif($session->session_date->isToday()) Today
+                                                @elseif(\Carbon\Carbon::parse($session->session_date)->isToday()) Today
                                                 @else Upcoming
                                                 @endif
                                             </span>
@@ -250,10 +250,8 @@
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Date</label>
                             <input name="session_date" type="date" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Time</label>
-                            <input name="session_time" type="time" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent" required>
-                        </div>
+                        <!-- time removed: not stored in sessions_schedule -->
+                        <div></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Week Number</label>

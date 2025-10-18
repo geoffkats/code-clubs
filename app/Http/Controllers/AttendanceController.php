@@ -25,8 +25,6 @@ class AttendanceController extends Controller
 				'club_id' => $club->id,
 				'session_week_number' => $week,
 				'session_date' => now()->addWeeks($week - 1),
-				'session_start_time' => '09:00:00',
-				'session_end_time' => '10:00:00',
 			]);
 		}
 		
@@ -53,7 +51,7 @@ class AttendanceController extends Controller
 	{
 		$request->validate([
 			'student_id' => ['required', 'exists:students,id'],
-			'session_id' => ['required', 'exists:sessions,id'],
+			'session_id' => ['required', 'exists:sessions_schedule,id'],
 			'status' => ['required', 'in:present,absent,late,excused'],
 			'notes' => ['nullable', 'string', 'max:500'],
 		]);
@@ -64,9 +62,8 @@ class AttendanceController extends Controller
 				'session_id' => $request->session_id,
 			],
 			[
-				'status' => $request->status,
-				'notes' => $request->notes,
-				'recorded_at' => now(),
+				'attendance_status' => $request->status,
+				'attendance_notes' => $request->notes,
 			]
 		);
 
@@ -83,8 +80,8 @@ class AttendanceController extends Controller
 		]);
 
 		$attendance->update([
-			'status' => $request->status,
-			'notes' => $request->notes,
+			'attendance_status' => $request->status,
+			'attendance_notes' => $request->notes,
 		]);
 
 		return redirect()->back()->with('success', 'Attendance updated successfully!');
@@ -101,7 +98,7 @@ class AttendanceController extends Controller
 	public function bulk_update(Request $request, int $club_id)
 	{
 		$request->validate([
-			'session_id' => ['required', 'exists:sessions,id'],
+			'session_id' => ['required', 'exists:sessions_schedule,id'],
 			'attendance' => ['required', 'array'],
 			'attendance.*.student_id' => ['required', 'exists:students,id'],
 			'attendance.*.status' => ['required', 'in:present,absent,late,excused'],
@@ -115,9 +112,8 @@ class AttendanceController extends Controller
 					'session_id' => $request->session_id,
 				],
 				[
-					'status' => $record['status'],
-					'notes' => $record['notes'] ?? null,
-					'recorded_at' => now(),
+					'attendance_status' => $record['status'],
+					'attendance_notes' => $record['notes'] ?? null,
 				]
 			);
 		}
@@ -129,7 +125,7 @@ class AttendanceController extends Controller
 	{
 		$request->validate([
 			'student_id' => ['required', 'exists:students,id'],
-			'session_id' => ['required', 'exists:sessions,id'],
+			'session_id' => ['required', 'exists:sessions_schedule,id'],
 			'status' => ['required', 'in:present,absent,late,excused'],
 			'notes' => ['nullable', 'string', 'max:500'],
 		]);
@@ -140,9 +136,8 @@ class AttendanceController extends Controller
 				'session_id' => $request->session_id,
 			],
 			[
-				'status' => $request->status,
-				'notes' => $request->notes,
-				'recorded_at' => now(),
+				'attendance_status' => $request->status,
+				'attendance_notes' => $request->notes,
 			]
 		);
 
