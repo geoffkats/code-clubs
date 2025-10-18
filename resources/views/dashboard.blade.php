@@ -427,7 +427,12 @@
                             </div>
                         </div>
                         <div class="h-64">
-                            <canvas id="attendanceChart"></canvas>
+                            <canvas
+                                id="attendanceChart"
+                                data-labels='@json(array_column($weeklyAttendanceData ?? [], "date"))'
+                                data-present='@json(array_column($weeklyAttendanceData ?? [], "present"))'
+                                data-total='@json(array_column($weeklyAttendanceData ?? [], "total"))'
+                            ></canvas>
                         </div>
                     </div>
 
@@ -441,7 +446,11 @@
                             </div>
                         </div>
                         <div class="h-64">
-                            <canvas id="clubPerformanceChart"></canvas>
+                            <canvas
+                                id="clubPerformanceChart"
+                                data-labels='@json(array_column($monthlyClubPerformance ?? [], "name"))'
+                                data-values='@json(array_column($monthlyClubPerformance ?? [], "attendance_rate"))'
+                            ></canvas>
                         </div>
                     </div>
                 </div>
@@ -993,110 +1002,5 @@
         </div>
     </div>
 
-    <!-- Chart.js Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Weekly Attendance Chart
-            const attendanceCtx = document.getElementById('attendanceChart');
-            if (attendanceCtx) {
-                new Chart(attendanceCtx, {
-                    type: 'line',
-                    data: {
-                        labels: {!! json_encode(array_column($weeklyAttendanceData ?? [], 'date')) !!},
-                        datasets: [{
-                            label: 'Present',
-                            data: {!! json_encode(array_column($weeklyAttendanceData ?? [], 'present')) !!},
-                            borderColor: 'rgb(59, 130, 246)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            tension: 0.4,
-                            fill: true
-                        }, {
-                            label: 'Total',
-                            data: {!! json_encode(array_column($weeklyAttendanceData ?? [], 'total')) !!},
-                            borderColor: 'rgb(156, 163, 175)',
-                            backgroundColor: 'rgba(156, 163, 175, 0.1)',
-                            tension: 0.4,
-                            fill: false
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(148, 163, 184, 0.1)'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // Club Performance Chart
-            const clubCtx = document.getElementById('clubPerformanceChart');
-            if (clubCtx) {
-                new Chart(clubCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: {!! json_encode(array_column($monthlyClubPerformance ?? [], 'name')) !!},
-                        datasets: [{
-                            label: 'Attendance Rate (%)',
-                            data: {!! json_encode(array_column($monthlyClubPerformance ?? [], 'attendance_rate')) !!},
-                            backgroundColor: [
-                                'rgba(16, 185, 129, 0.8)',
-                                'rgba(59, 130, 246, 0.8)',
-                                'rgba(139, 92, 246, 0.8)',
-                                'rgba(245, 158, 11, 0.8)',
-                                'rgba(239, 68, 68, 0.8)'
-                            ],
-                            borderColor: [
-                                'rgb(16, 185, 129)',
-                                'rgb(59, 130, 246)',
-                                'rgb(139, 92, 246)',
-                                'rgb(245, 158, 11)',
-                                'rgb(239, 68, 68)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                max: 100,
-                                grid: {
-                                    color: 'rgba(148, 163, 184, 0.1)'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    </script>
+    
 </x-layouts.app>
