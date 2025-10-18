@@ -61,9 +61,6 @@
                             </svg>
                             <span x-text="savingInProgress ? 'Saving...' : (unsavedChanges ? 'Save Changes' : 'All Saved')"></span>
                         </button>
-                        <button @click="testSave()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium">
-                            Test Save
-                        </button>
                     </div>
                 </div>
             </div>
@@ -439,6 +436,15 @@
                 },
                 
                 saveAttendancePromise(studentId, status) {
+                    // Get CSRF token with fallback
+                    const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+                    const csrfToken = csrfTokenElement ? csrfTokenElement.getAttribute('content') : null;
+                    
+                    if (!csrfToken) {
+                        console.error('CSRF token not found');
+                        return Promise.resolve({ studentId, status, success: false, error: 'CSRF token not found' });
+                    }
+                    
                     // Add timeout protection
                     const timeoutPromise = new Promise((_, reject) => {
                         setTimeout(() => reject(new Error('Request timeout after 10 seconds')), 10000);
@@ -448,7 +454,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            'X-CSRF-TOKEN': csrfToken
                         },
                         body: JSON.stringify({
                             student_id: studentId,
@@ -502,30 +508,6 @@
                     }, 1000);
                 },
                 
-                testSave() {
-                    console.log('=== TESTING SAVE FUNCTIONALITY ===');
-                    console.log('Club ID:', this.clubId);
-                    console.log('Session ID:', this.sessionId);
-                    console.log('Students:', this.students);
-                    console.log('Attendance:', this.attendance);
-                    
-                    if (this.students && this.students.length > 0) {
-                        const firstStudent = this.students[0];
-                        console.log('Testing save for first student:', firstStudent.id);
-                        
-                        this.saveAttendancePromise(firstStudent.id, 'present')
-                            .then(result => {
-                                console.log('Test save result:', result);
-                                alert(`Test save result: ${JSON.stringify(result)}`);
-                            })
-                            .catch(error => {
-                                console.error('Test save error:', error);
-                                alert(`Test save error: ${error.message}`);
-                            });
-                    } else {
-                        alert('No students found to test with');
-                    }
-                },
                 
                 getAttendanceStatus(studentId) {
                     return this.attendance[studentId] || 'present';
