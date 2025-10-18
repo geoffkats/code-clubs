@@ -111,12 +111,10 @@
                                    class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
                                     🖨️ Print PDF
                                 </a>
-                                <form method="post" action="{{ route('reports.send', $report->id) }}" class="flex-1">
-                                    @csrf
-                                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-                                        Send to Parent
-                                    </button>
-                                </form>
+                                <button onclick="showEmailModal({{ $report->id }}, '{{ $report->student->student_parent_email }}')" 
+                                        class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Send to Parent
+                                </button>
                             </div>
                         </div>
 
@@ -175,7 +173,54 @@
         @endif
     </div>
 
-    <!-- JavaScript for filtering -->
+    <!-- Email Input Modal -->
+    <div id="emailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Send Report to Parent</h3>
+                <button onclick="closeEmailModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form id="emailForm" method="post" action="">
+                @csrf
+                <div class="mb-4">
+                    <label for="parentEmail" class="block text-sm font-medium text-gray-700 mb-2">
+                        Parent/Guardian Email Address
+                    </label>
+                    <input type="email" 
+                           id="parentEmail" 
+                           name="parent_email" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" 
+                           placeholder="Enter parent's email address"
+                           required>
+                    <p class="text-xs text-gray-500 mt-1">
+                        Current email on file: <span id="currentEmail">Not provided</span>
+                    </p>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button type="button" 
+                            onclick="closeEmailModal()" 
+                            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                            class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                        Send Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript for filtering and email modal -->
     <script>
         function filterByClub(clubId) {
             if (clubId) {
@@ -184,6 +229,47 @@
                 window.location.href = '{{ route("reports.index") }}';
             }
         }
+
+        // Email Modal Functions
+        function showEmailModal(reportId, currentEmail) {
+            document.getElementById('emailForm').action = '{{ route("reports.send", ":id") }}'.replace(':id', reportId);
+            document.getElementById('parentEmail').value = currentEmail || '';
+            document.getElementById('currentEmail').textContent = currentEmail || 'Not provided';
+            document.getElementById('emailModal').classList.remove('hidden');
+            document.getElementById('parentEmail').focus();
+        }
+
+        function closeEmailModal() {
+            document.getElementById('emailModal').classList.add('hidden');
+        }
+
+        // Close email modal when clicking outside
+        document.getElementById('emailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEmailModal();
+            }
+        });
+
+        // Email form submission with loading state
+        document.getElementById('emailForm').addEventListener('submit', function(e) {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = `
+                <svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Sending...
+            `;
+            submitBtn.disabled = true;
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEmailModal();
+            }
+        });
     </script>
 
     <!-- Success Message -->

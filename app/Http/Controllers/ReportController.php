@@ -131,17 +131,26 @@ class ReportController extends Controller
 		return view('reports.comprehensive-pdf', compact('report'));
 	}
 
-	public function send_to_parent(int $report_id, AccessCodeService $codes, EmailNotificationService $email)
+	public function send_to_parent(int $report_id, Request $request, AccessCodeService $codes, EmailNotificationService $email)
 	{
 		$report = Report::with(['student', 'club', 'access_code'])->findOrFail($report_id);
+		
+		// Validate the email input
+		$request->validate([
+			'parent_email' => 'required|email'
+		]);
+		
+		$parent_email = $request->input('parent_email');
+		
 		// Temporarily removing school ID check for consistency with other methods
 		// if ($report->club->school_id !== auth()->user()->school_id) abort(403);
 		$created = $codes->create_access_code_for_report($report->id);
 		$plain = $created['plain'];
-		if ($report->student->student_parent_email) {
-			$email->send_parent_report_email($report, $report->student->student_parent_email, $plain);
-		}
-		return back();
+		
+		// Send email to the provided email address
+		$email->send_parent_report_email($report, $parent_email, $plain);
+		
+		return back()->with('success', "Report sent successfully to {$parent_email}!");
 	}
 }
 
