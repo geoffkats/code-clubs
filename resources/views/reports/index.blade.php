@@ -119,15 +119,23 @@
                             <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
                             <div class="relative z-10">
                             <div class="flex items-center justify-between mb-4">
-                                <div>
-                                        <h3 class="text-xl font-bold text-white mb-1">{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}</h3>
+                                    <div>
+                                        <div class="flex items-center mb-1">
+                                            <h3 class="text-xl font-bold text-white">{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}</h3>
+                                            <div class="ml-3 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1">
+                                                <span class="text-xs font-bold text-white">{{ $report->student_initials ?? strtoupper(substr($report->student->student_first_name, 0, 1) . substr($report->student->student_last_name, 0, 1)) }}</span>
+                                            </div>
+                                        </div>
                                         <div class="flex items-center text-blue-200">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                             </svg>
                                             <span class="text-sm font-medium">{{ $report->club->club_name }}</span>
+                                            @if($report->student->student_grade_level)
+                                                <span class="text-xs text-blue-300 ml-2">• {{ $report->student->student_grade_level }}</span>
+                                            @endif
                                         </div>
-                                </div>
+                                    </div>
                                 <div class="text-right">
                                         <div class="bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-3">
                                             <div class="text-3xl font-bold text-white">{{ round($report->report_overall_score) }}%</div>
