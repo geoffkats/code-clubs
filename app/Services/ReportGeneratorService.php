@@ -11,8 +11,12 @@ class ReportGeneratorService
 {
 	public function generate_reports_for_club(int $club_id, array $options = []): void
 	{
-		$club = Club::with(['students', 'assessments.scores', 'sessions.attendance_records'])
-			->findOrFail($club_id);
+		$club = Club::with([
+			'students', 
+			'assessments.scores', 
+			'sessions.attendance_records',
+			'attachments'
+		])->findOrFail($club_id);
 
 		$reportType = $options['report_type'] ?? 'comprehensive';
 		$dateRange = $options['date_range'] ?? 'month';
@@ -23,6 +27,12 @@ class ReportGeneratorService
 			$attendance_percent = $this->calculate_attendance_percent($club, $student->id);
 			$overall_score = $this->calculate_overall_score($club, $student->id);
 			$summary_text = $this->build_summary_text($club, $attendance_percent, $overall_score, $options);
+			
+			// Get detailed assessment data
+			$assessment_data = $this->get_assessment_data($club, $student->id);
+			
+			// Get Scratch project attachments
+			$scratch_projects = $this->get_scratch_projects($club, $student->id);
 
 			Report::updateOrCreate(
 				['club_id' => $club->id, 'student_id' => $student->id],
@@ -101,6 +111,51 @@ class ReportGeneratorService
 		};
 		
 		return $typeText . ' ' . $dateText . '. ' . $baseText;
+	}
+
+	private function get_assessment_data(Club $club, int $student_id): array
+	{
+		$assessments = [];
+		foreach ($club->assessments as $assessment) {
+			$score = $assessment->scores->firstWhere('student_id', $student_id);
+			$assessments[] = [
+				'name' => $assessment->assessment_name,
+				'type' => $assessment->assessment_type,
+				'week' => $assessment->assessment_week_number,
+				'score' => $score ? $score->score_value : null,
+				'max_score' => $score ? $score->score_max_value : 100,
+				'percentage' => $score && $score->score_max_value > 0 ? 
+					round(($score->score_value / $score->score_max_value) * 100, 2) : 0
+			];
+		}
+		return $assessments;
+	}
+
+	private function get_scratch_projects(Club $club, int $student_id): array
+	{
+		// Get attachments that are Scratch projects for this student
+		$scratch_projects = \App\Models\Attachment::where('attachable_type', 'App\\Models\\Assessment')
+			->whereHas('attachable', function($q) use ($club) {
+				$q->where('club_id', $club->id);
+			})
+			->where(function($q) {
+				$q->where('file_type', 'scratch')
+					->orWhere('file_name', 'like', '%.sb3')
+					->orWhere('description', 'like', '%scratch%');
+			})
+			->get()
+			->map(function($attachment) {
+				return [
+					'name' => $attachment->file_name,
+					'description' => $attachment->description,
+					'file_path' => $attachment->file_path,
+					'created_at' => $attachment->created_at,
+					'file_size' => $attachment->file_size
+				];
+			})
+			->toArray();
+
+		return $scratch_projects;
 	}
 }
 

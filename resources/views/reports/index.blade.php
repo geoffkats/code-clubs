@@ -102,10 +102,14 @@
                             </div>
 
                             <!-- Action Buttons -->
-                            <div class="flex space-x-2">
+                            <div class="flex flex-wrap gap-2">
                                 <a href="{{ route('reports.show', $report->id) }}" 
                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
                                     View Report
+                                </a>
+                                <a href="{{ route('reports.pdf', $report->id) }}" 
+                                   class="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
+                                    🖨️ Print PDF
                                 </a>
                                 <form method="post" action="{{ route('reports.send', $report->id) }}" class="flex-1">
                                     @csrf

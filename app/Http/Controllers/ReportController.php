@@ -77,6 +77,13 @@ class ReportController extends Controller
 		return view('reports.beautiful-show', compact('report'));
 	}
 
+	public function pdf(int $report_id)
+	{
+		$report = Report::with(['student', 'club', 'access_code'])->findOrFail($report_id);
+		// Temporarily removing school ID check
+		return view('reports.comprehensive-pdf', compact('report'));
+	}
+
 	public function send_to_parent(int $report_id, AccessCodeService $codes, EmailNotificationService $email)
 	{
 		$report = Report::with(['student', 'club', 'access_code'])->findOrFail($report_id);
