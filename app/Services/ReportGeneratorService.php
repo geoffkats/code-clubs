@@ -9,6 +9,10 @@ use App\Models\SessionSchedule;
 
 class ReportGeneratorService
 {
+	public function __construct(private AccessCodeService $accessCodeService)
+	{
+	}
+
 	public function generate_reports_for_club(int $club_id, array $options = []): void
 	{
 		$club = Club::with([
@@ -34,7 +38,7 @@ class ReportGeneratorService
 			// Get Scratch project attachments
 			$scratch_projects = $this->get_scratch_projects($club, $student->id);
 
-			Report::updateOrCreate(
+			$report = Report::updateOrCreate(
 				['club_id' => $club->id, 'student_id' => $student->id],
 				[
 					'report_name' => $student->student_first_name.' '.$student->student_last_name.' - '.$club->club_name.' Report',
@@ -43,6 +47,11 @@ class ReportGeneratorService
 					'report_generated_at' => now(),
 				]
 			);
+
+			// Create access code for the report if it doesn't already have one
+			if (!$report->access_code) {
+				$this->accessCodeService->create_access_code_for_report($report->id);
+			}
 		}
 	}
 
@@ -156,6 +165,22 @@ class ReportGeneratorService
 			->toArray();
 
 		return $scratch_projects;
+	}
+
+	/**
+	 * Generate access codes for all reports that don't have them
+	 */
+	public function generate_access_codes_for_existing_reports(): int
+	{
+		$reportsWithoutCodes = Report::doesntHave('access_code')->get();
+		$count = 0;
+
+		foreach ($reportsWithoutCodes as $report) {
+			$this->accessCodeService->create_access_code_for_report($report->id);
+			$count++;
+		}
+
+		return $count;
 	}
 }
 
