@@ -324,9 +324,9 @@
                         </button>
                     </div>
                 </div>
-            </div>
+		</div>
         </div>
-    </div>
+	</div>
 
     <script>
         function attendanceGrid() {
@@ -580,13 +580,13 @@
                     if (!studentId) return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700';
                     
                     const status = this.getAttendanceStatus(studentId);
-                    const classes = {
+            const classes = {
                         present: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700',
                         absent: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700',
                         late: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-700',
                         excused: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
-                    };
-                    return classes[status] || classes.present;
+            };
+            return classes[status] || classes.present;
                 },
                 
                 getPresentCount() {
