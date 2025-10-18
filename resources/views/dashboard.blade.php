@@ -146,7 +146,8 @@
              searchQuery: '',
              dateRange: '7d',
              theme: localStorage.getItem('theme') || 'light',
-             selectedSchoolId: '{{ $schoolId }}'
+             selectedSchoolId: '{{ $schoolId }}',
+             selectedClubId: null
          }" 
          x-init="
              $watch('theme', value => {
