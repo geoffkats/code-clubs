@@ -45,6 +45,18 @@
             </div>
         </div>
 
+        <!-- Debug Info (Temporary) -->
+        <div class="bg-yellow-100 border border-yellow-400 rounded-lg p-4 mb-6">
+            <h3 class="font-bold text-yellow-800">Debug Info:</h3>
+            <p><strong>Total Reports Found:</strong> {{ $reports->count() }}</p>
+            <p><strong>Club ID Filter:</strong> {{ $clubId ?? 'None' }}</p>
+            <p><strong>User School ID:</strong> {{ auth()->user()->school_id }}</p>
+            @if($reports->count() > 0)
+                <p><strong>First Report Club ID:</strong> {{ $reports->first()->club_id }}</p>
+                <p><strong>First Report Club School ID:</strong> {{ $reports->first()->club->school_id }}</p>
+            @endif
+        </div>
+
         <!-- Reports Grid -->
         @if($reports->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
