@@ -62,6 +62,16 @@
             \App\Models\AttendanceRecord::where('created_at', '>=', $last30)->where('attendance_status', 'present')->count();
         $attendanceRate30 = $attendanceTotal30 > 0 ? round(($attendancePresent30 / $attendanceTotal30) * 100) : 0;
         
+        // If no attendance data found for this school, show all attendance data (fallback)
+        if ($attendanceThisWeek == 0 && $attendanceTotal30 == 0) {
+            $attendanceThisWeek = \App\Models\AttendanceRecord::whereHas('session', function ($q) use ($startOfWeek, $endOfWeek) {
+                $q->whereBetween('session_date', [$startOfWeek, $endOfWeek]);
+            })->count();
+            $attendanceTotal30 = \App\Models\AttendanceRecord::where('created_at', '>=', $last30)->count();
+            $attendancePresent30 = \App\Models\AttendanceRecord::where('created_at', '>=', $last30)->where('attendance_status', 'present')->count();
+            $attendanceRate30 = $attendanceTotal30 > 0 ? round(($attendancePresent30 / $attendanceTotal30) * 100) : 0;
+        }
+        
         // Recent activity data
         $upcomingSessions = $schoolId ? 
             \App\Models\SessionSchedule::whereHas('club', fn($q) => $q->where('school_id', $schoolId))
