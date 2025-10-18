@@ -999,7 +999,7 @@
             const ensureChartJs = () => new Promise(resolve => {
                 if (window.Chart) return resolve();
                 const s = document.createElement('script');
-                s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                s.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0';
                 s.defer = true;
                 s.onload = () => resolve();
                 document.head.appendChild(s);
