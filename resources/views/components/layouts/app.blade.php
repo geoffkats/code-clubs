@@ -179,10 +179,8 @@
 
             <!-- Main Content Area -->
             <div class="flex-1 flex flex-col overflow-hidden">
-                @include('components.layouts.app.header')
-                
                 <main class="flex-1 overflow-auto">
-        {{ $slot }}
+                    {{ $slot }}
                 </main>
             </div>
         </div>
