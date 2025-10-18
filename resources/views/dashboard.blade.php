@@ -136,7 +136,7 @@
             ->values();
     @endphp
 
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" 
+    <div class="h-full" 
          x-data="{ 
              showStudent: false, 
              showClub: false, 
@@ -161,9 +161,8 @@
              if (theme === 'dark') document.documentElement.classList.add('dark');
          ">
         
-        <!-- Header Section -->
-        <div class="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/60">
-            <div class="px-6 py-4">
+        <!-- Dashboard Content -->
+        <div class="p-6">
         <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <div>
@@ -213,9 +212,6 @@
                                 </svg>
                                 <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
                             </button>
-            </div>
-            </div>
-            </div>
                 
                 <!-- Navigation Tabs -->
                 <div class="mt-6 flex space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg w-fit">
@@ -244,9 +240,7 @@
                             class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200">
                         Activity
                     </button>
-            </div>
-            </div>
-        </div>
+                </div>
 
         <!-- Main Content -->
         <div class="px-6 py-8">
@@ -995,10 +989,9 @@
     </div>
 
     <!-- Chart.js Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Dynamically import Chart.js
-            const { Chart } = await import('chart.js');
+        document.addEventListener('DOMContentLoaded', function() {
             // Weekly Attendance Chart
             const attendanceCtx = document.getElementById('attendanceChart');
             if (attendanceCtx) {
