@@ -47,17 +47,26 @@ class ReportGeneratorService
      * @return void
      * @throws \Exception If report generation fails
      */
-	public function generate_reports_for_club(int $club_id, array $options = []): void
-	{
-		try {
+    public function generate_reports_for_club(int $club_id, array $options = []): void
+    {
+        try {
+            // Increase execution time limit for AI generation
+            set_time_limit(120); // 2 minutes
+            
             // Start database transaction for data consistency
             DB::beginTransaction();
             
-            // Load club with all necessary relationships
+            // Load club with all necessary relationships (limit to prevent timeout)
             $club = Club::with([
-                'students', 
-                'assessments.scores', 
-                'sessions.attendance_records',
+                'students' => function($query) {
+                    $query->limit(20); // Limit students to prevent timeout
+                },
+                'assessments.scores' => function($query) {
+                    $query->limit(10); // Limit assessments to prevent timeout
+                },
+                'sessions.attendance_records' => function($query) {
+                    $query->limit(50); // Limit sessions to prevent timeout
+                },
                 'attachments'
             ])->findOrFail($club_id);
 
