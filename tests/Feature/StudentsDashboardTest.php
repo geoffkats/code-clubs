@@ -15,7 +15,10 @@ class StudentsDashboardTest extends TestCase
 
     public function test_route_exists_and_requires_authentication(): void
     {
-        $response = $this->get(route('students.dashboard'));
+        $school = School::factory()->create();
+        $student = Student::factory()->create(['school_id' => $school->id]);
+
+        $response = $this->get(route('students.dashboard', ['student_id' => $student->id]));
         $response->assertRedirect(route('login'));
     }
 
@@ -34,7 +37,7 @@ class StudentsDashboardTest extends TestCase
         ]);
         $student->clubs()->attach($club->id);
 
-        $response = $this->get(route('students.dashboard'));
+        $response = $this->get(route('students.dashboard', ['student_id' => $student->id]));
         $response->assertStatus(200);
         $response->assertSeeText('Student Dashboard');
         $response->assertSeeText('Ada');

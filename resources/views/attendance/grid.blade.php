@@ -3,8 +3,16 @@
          x-data="{ 
              currentWeek: {{ request('week', 1) }},
              clubId: {{ $club->id }},
-             students: @json($club->students),
-            attendance: @json($attendanceRecords->mapWithKeys(function($r){ return [$r->student_id => $r->attendance_status]; })),
+            students: @json($club->students),
+            attendance: @php(
+                $days = ['mon','tue','wed','thu','fri'];
+            )@json(
+                $attendanceRecords->groupBy('student_id')->map(function($recs) use ($days) {
+                    $status = optional($recs->first())->attendance_status;
+                    // Build nested map: day => status (defaulting all days to same status for current session)
+                    return collect($days)->mapWithKeys(fn($d) => [$d => $status])->all();
+                })
+            ),
              showStudentModal: false,
              selectedStudent: null,
              showBulkEdit: false,

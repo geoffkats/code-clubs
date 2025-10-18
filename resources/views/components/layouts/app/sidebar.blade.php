@@ -47,8 +47,8 @@
 
                         <flux:navlist.item 
                             icon="user" 
-                            :href="route('students.dashboard')" 
-                            :current="request()->routeIs('students.dashboard')" 
+                            :href="route('students.index')" 
+                            :current="request()->routeIs('students.dashboard') || request()->routeIs('students.*')" 
                             wire:navigate
                             class="group relative overflow-hidden rounded-xl hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 dark:hover:from-slate-800 dark:hover:to-slate-700 p-4"
                         >

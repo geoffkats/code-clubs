@@ -15,7 +15,7 @@
                 <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navbar.item>
-                <flux:navbar.item icon="user" :href="route('students.dashboard')" :current="request()->routeIs('students.dashboard')" wire:navigate>
+                <flux:navbar.item icon="user" :href="route('students.index')" :current="request()->routeIs('students.dashboard')" wire:navigate>
                     {{ __('Student Dashboard') }}
                 </flux:navbar.item>
                 <flux:navbar.item icon="users" :href="route('students.index')" :current="request()->routeIs('students.*')" wire:navigate>
@@ -122,7 +122,7 @@
                     <flux:navlist.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                     </flux:navlist.item>
-                    <flux:navlist.item icon="user" :href="route('students.dashboard')" :current="request()->routeIs('students.dashboard')" wire:navigate>
+                    <flux:navlist.item icon="user" :href="route('students.index')" :current="request()->routeIs('students.dashboard')" wire:navigate>
                     {{ __('Student Dashboard') }}
                     </flux:navlist.item>
                     <flux:navlist.item icon="users" :href="route('students.index')" :current="request()->routeIs('students.*')" wire:navigate>
