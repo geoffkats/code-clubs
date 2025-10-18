@@ -37,7 +37,7 @@
             'students_total' => \App\Models\Student::count(),
             'clubs_with_school_1' => \App\Models\Club::where('school_id', 1)->count(),
             'clubs_total' => \App\Models\Club::count(),
-            'all_students' => \App\Models\Student::select('id', 'name', 'school_id')->get(),
+            'all_students' => \App\Models\Student::select('id', 'student_first_name', 'student_last_name', 'school_id')->get(),
             'all_clubs' => \App\Models\Club::select('id', 'club_name', 'school_id')->get(),
         ]);
         
