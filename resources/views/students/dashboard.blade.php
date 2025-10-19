@@ -104,7 +104,7 @@
                                         <div class="flex-1">
                                             <h3 class="font-semibold text-gray-900">{{ $score->assessment->assessment_name }}</h3>
                                             <p class="text-sm text-gray-600">{{ $score->assessment->club->club_name }}</p>
-                                            <p class="text-xs text-gray-500">{{ $score->submitted_at->format('M d, Y') }}</p>
+                                            <p class="text-xs text-gray-500">{{ $score->created_at->format('M d, Y') }}</p>
                                         </div>
                                         <div class="text-right">
                                             <div class="text-2xl font-bold text-green-600">
