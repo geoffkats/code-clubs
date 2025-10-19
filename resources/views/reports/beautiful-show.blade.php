@@ -501,7 +501,7 @@
 
     <!-- Scratch Project Preview Modal -->
     <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between p-6 border-b border-gray-200">
                 <h3 class="text-xl font-bold text-gray-900">Scratch Project Preview</h3>
                 <button onclick="closePreview()" class="text-gray-400 hover:text-gray-600">

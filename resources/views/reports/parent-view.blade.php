@@ -259,7 +259,7 @@
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+                <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
                     <div class="flex items-center justify-between p-6 border-b border-gray-200">
                         <h3 class="text-xl font-bold text-gray-900">🎮 Project Preview</h3>
                         <button onclick="closePreview()" class="text-gray-500 hover:text-gray-700 transition-colors">
