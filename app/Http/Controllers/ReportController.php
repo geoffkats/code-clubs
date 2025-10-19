@@ -22,8 +22,9 @@ class ReportController extends Controller
 		// Create cache key for this query
 		$cacheKey = 'reports_index_' . md5(serialize($request->only(['club_id', 'search', 'per_page'])));
 		
-		// Try to get from cache first (5 minutes cache)
-		$cachedData = \Cache::remember($cacheKey, 300, function() use ($clubId, $search, $perPage) {
+		// Try to get from cache first (10 minutes cache for production)
+		$cacheTTL = config('app.env') === 'production' ? 600 : 300; // 10 min prod, 5 min dev
+		$cachedData = \Cache::remember($cacheKey, $cacheTTL, function() use ($clubId, $search, $perPage) {
 			// Build optimized query with selective eager loading
 			$query = Report::select(['id', 'student_id', 'club_id', 'report_name', 'report_generated_at', 'created_at'])
 				->with([
@@ -81,8 +82,9 @@ class ReportController extends Controller
 					: 0;
 			}
 			
-			// Get clubs for filter dropdown (cached separately)
-			$clubs = \Cache::remember('clubs_list', 600, function() {
+			// Get clubs for filter dropdown (cached separately - longer TTL for static data)
+			$clubsCacheTTL = config('app.env') === 'production' ? 3600 : 600; // 1 hour prod, 10 min dev
+			$clubs = \Cache::remember('clubs_list', $clubsCacheTTL, function() {
 				return Club::select(['id', 'club_name'])->orderBy('club_name')->get();
 			});
 			

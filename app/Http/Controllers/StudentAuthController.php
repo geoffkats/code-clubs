@@ -70,8 +70,9 @@ class StudentAuthController extends Controller
         // Create cache key for student dashboard
         $cacheKey = 'student_dashboard_' . $student->id;
         
-        // Cache dashboard data for 10 minutes
-        $dashboardData = \Cache::remember($cacheKey, 600, function() use ($student) {
+        // Cache dashboard data with environment-specific TTL
+        $cacheTTL = config('app.env') === 'production' ? 900 : 600; // 15 min prod, 10 min dev
+        $dashboardData = \Cache::remember($cacheKey, $cacheTTL, function() use ($student) {
             // Load only necessary relationships with selective fields
             $student->load([
                 'clubs:id,club_name,club_level,club_start_date',
