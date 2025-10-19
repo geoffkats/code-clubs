@@ -4,7 +4,16 @@
              showCreate: false,
              showAI: false,
              selectedClub: '',
-             clubs: @js($clubs ?? [])
+             clubs: @js($clubs ?? []),
+             handleAISubmit(event) {
+                 if (!this.selectedClub) {
+                     alert('Please select a club first');
+                     event.preventDefault();
+                     return;
+                 }
+                 this.$el.action = `/clubs/${this.selectedClub}/assessments/ai-generate`;
+                 this.showAI = false;
+             }
          }">
         <!-- Header Section -->
         <div class="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/60">
@@ -30,7 +39,7 @@
                             </svg>
                             Create Assessment
                         </button>
-                        <button @click="showAI = true" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                        <button @click="showAI = !showAI; console.log('AI button clicked, showAI:', showAI)" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
                             <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                             </svg>
@@ -639,7 +648,9 @@
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 z-50 overflow-y-auto" 
-         style="display: none;">
+         style="display: none;"
+         x-init="console.log('Modal initialized, showAI:', showAI)"
+         x-effect="console.log('showAI changed to:', showAI)">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <!-- Background overlay -->
             <div class="fixed inset-0 transition-opacity bg-slate-500 bg-opacity-75 backdrop-blur-sm" 
@@ -656,7 +667,7 @@
                     </button>
                 </div>
 
-                <form method="POST" :action="selectedClub ? `/clubs/${selectedClub}/assessments/ai-generate` : '#'" @submit="if (!selectedClub) { alert('Please select a club first'); $event.preventDefault(); } else { showAI = false; }">
+                <form method="POST" action="#" @submit="handleAISubmit($event)">
                     @csrf
                     
                     <div class="space-y-4">
