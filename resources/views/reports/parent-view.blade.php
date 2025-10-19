@@ -15,9 +15,12 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-4xl font-bold text-gray-900 mb-2">
-                            🎓 {{ $report->student->student_first_name }}'s Coding Journey
+                            🎓 {{ $report->student->student_first_name }} {{ $report->student->student_last_name }}'s Coding Journey
                         </h1>
                         <p class="text-lg text-gray-600">{{ $report->club->club_name }}</p>
+                        @if($report->club->school)
+                            <p class="text-md text-gray-500 font-medium">{{ $report->club->school->school_name }}</p>
+                        @endif
                         @if($report->student->student_grade_level)
                             <p class="text-sm text-gray-500">{{ $report->student->student_grade_level }}</p>
                         @endif
@@ -30,6 +33,19 @@
                     </div>
                 </div>
             </div>
+
+            <!-- School Information -->
+            @if($report->club->school)
+            <div class="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-6 mb-8">
+                <div class="flex items-center justify-center">
+                    <div class="text-center">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">🏫 {{ $report->club->school->school_name }}</h2>
+                        <p class="text-gray-600">Coding Club Program</p>
+                        <p class="text-sm text-gray-500 mt-2">{{ $report->club->club_name }}</p>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <!-- Main Content -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

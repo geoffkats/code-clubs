@@ -12,7 +12,7 @@ class ParentReportController extends Controller
 	{
 		try {
 			$code = (string) $request->query('code');
-			$report = Report::with(['student', 'club', 'access_code'])->findOrFail($report_id);
+			$report = Report::with(['student', 'club.school', 'access_code'])->findOrFail($report_id);
 			
 			// Log the access attempt for debugging
 			\Log::info('Parent access attempt', [
