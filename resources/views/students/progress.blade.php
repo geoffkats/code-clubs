@@ -167,7 +167,7 @@
                                                         $color = $percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : 'red');
                                                     @endphp
                                                     <div class="text-lg font-bold text-{{ $color }}-600">{{ number_format($percentage, 1) }}%</div>
-                                                    <div class="text-xs text-gray-500">{{ $score->submitted_at->format('M d') }}</div>
+                                                    <div class="text-xs text-gray-500">{{ $score->created_at->format('M d') }}</div>
                                                 @else
                                                     <span class="text-sm text-gray-500">Not completed</span>
                                                 @endif
