@@ -224,19 +224,7 @@
                             <i class="fas fa-chevron-right text-slate-400 group-hover:text-slate-600 transition-colors"></i>
                         </a>
 
-                        <a href="{{ route('student.reports') }}" 
-                           class="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl border border-purple-200/60 dark:border-purple-700/60 hover:shadow-lg transition-all duration-300 group">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <i class="fas fa-file-alt text-white"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-semibold text-slate-900 dark:text-white">View Reports</h3>
-                                    <p class="text-sm text-slate-600 dark:text-slate-400">See your performance reports</p>
-                                </div>
-                            </div>
-                            <i class="fas fa-chevron-right text-slate-400 group-hover:text-slate-600 transition-colors"></i>
-                        </a>
+                        <!-- Reports section removed - students should not access their reports -->
                     </div>
                 </div>
             </div>
