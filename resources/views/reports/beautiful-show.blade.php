@@ -534,7 +534,24 @@
         </div>
     </div>
 
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
     <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("w4BP3cPYFveExmYVj"); // Your EmailJS public key
+        })();
+
+        // Global variables to store report data
+        let currentReportData = {
+            reportId: {{ $report->id }},
+            studentName: "{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}",
+            clubName: "{{ $report->club->club_name }}",
+            accessCode: "{{ $report->access_code?->access_code_plain_preview ?? 'N/A' }}",
+            reportUrl: "{{ route('reports.public', ['report_id' => $report->id]) }}?code={{ $report->access_code?->access_code_plain_preview ?? 'demo' }}"
+        };
+
         // Email Modal Functions
         function showEmailModal() {
             document.getElementById('emailModal').classList.remove('hidden');
@@ -552,11 +569,20 @@
             }
         });
 
-        // Email form submission with loading state
+        // Email form submission with EmailJS
         document.getElementById('emailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
+            const parentEmail = document.getElementById('parentEmail').value;
             
+            if (!parentEmail) {
+                showToast('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            // Update button to show loading state
             submitBtn.innerHTML = `
                 <svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -564,7 +590,87 @@
                 Sending...
             `;
             submitBtn.disabled = true;
+            
+            // Prepare EmailJS template parameters
+            const templateParams = {
+                to_email: parentEmail,
+                student_name: currentReportData.studentName,
+                club_name: currentReportData.clubName,
+                access_code: currentReportData.accessCode,
+                report_url: currentReportData.reportUrl,
+                sender_name: 'Code Club System',
+                current_date: new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })
+            };
+            
+            // Send email using EmailJS
+            emailjs.send('service_c38n38w', 'template_0o15p1m', templateParams)
+                .then(function(response) {
+                    console.log('Email sent successfully!', response.status, response.text);
+                    showToast(`Report sent successfully to ${parentEmail}!`, 'success');
+                    closeEmailModal();
+                }, function(error) {
+                    console.error('Failed to send email:', error);
+                    showToast('Failed to send email. Please try again.', 'error');
+                    alert(`❌ Email Error: ${error.text || 'Unknown error occurred'}`);
+                })
+                .finally(function() {
+                    // Reset button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
         });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            console.log('Showing toast:', message, type); // Debug log
+            
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-xl border-2 transition-all duration-300 transform ${
+                type === 'success' 
+                    ? 'bg-green-500 text-white border-green-600' 
+                    : 'bg-red-500 text-white border-red-600'
+            }`;
+            
+            toast.style.transform = 'translateX(100%)'; // Start off-screen
+            toast.style.transition = 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out';
+            
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        ${type === 'success' 
+                            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+                            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
+                        }
+                    </svg>
+                    <div>
+                        <div class="font-semibold">${type === 'success' ? 'Success!' : 'Error!'}</div>
+                        <div class="text-sm opacity-90">${message}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 4000);
+        }
 
         // Scratch Project Preview Functions
         function previewProject(projectName) {

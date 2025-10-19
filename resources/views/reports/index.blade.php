@@ -414,7 +414,7 @@
     <script>
         // Initialize EmailJS
         (function() {
-            emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
+            emailjs.init("w4BP3cPYFveExmYVj"); // Your EmailJS public key
         })();
 
         function filterByClub(clubId) {
