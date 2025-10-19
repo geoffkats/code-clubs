@@ -151,10 +151,10 @@
                     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold gradient-text mb-2 sm:mb-3">
                         Code Club System
                     </h1>
-                    <p class="text-lg sm:text-xl text-white/90 mb-2">
+                    <p class="text-lg sm:text-xl text-white mb-2">
                         <span class="uganda-text">Student Portal</span>
                     </p>
-                    <p class="text-xs sm:text-sm text-white/70 max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
+                    <p class="text-xs sm:text-sm text-white/90 max-w-sm mx-auto leading-relaxed px-4 sm:px-0">
                         Access your coding assignments, track your progress, and continue your journey to becoming a skilled developer
                     </p>
                 </div>
@@ -271,7 +271,7 @@
 
             <!-- Back to Main Site -->
             <div class="text-center slide-up">
-                <a href="{{ route('home') }}" class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg sm:rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/20 hover:border-white/30">
+                <a href="{{ route('home') }}" class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm font-medium text-white hover:text-yellow-300 bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl transition-all duration-300 backdrop-blur-sm border border-white/30 hover:border-white/50">
                     <i class="fas fa-arrow-left mr-1 sm:mr-2"></i>
                     <span class="hidden sm:inline">Back to main site</span>
                     <span class="sm:hidden">Back</span>
@@ -279,19 +279,19 @@
             </div>
             
             <!-- Footer -->
-            <div class="text-center text-xs text-white/60 slide-up px-4">
+            <div class="text-center text-xs text-white/90 slide-up px-4">
                 <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 mb-2">
                     <div class="flex items-center space-x-2">
-                        <i class="fas fa-code text-blue-400"></i>
-                        <span>Code Academy Uganda</span>
+                        <i class="fas fa-code text-blue-300"></i>
+                        <span class="text-white">Code Academy Uganda</span>
                     </div>
-                    <div class="hidden sm:block w-1 h-1 bg-white/40 rounded-full"></div>
+                    <div class="hidden sm:block w-1 h-1 bg-white/60 rounded-full"></div>
                     <div class="flex items-center space-x-2">
-                        <i class="fas fa-building text-purple-400"></i>
-                        <span>Synthilogic Enterprise</span>
+                        <i class="fas fa-building text-purple-300"></i>
+                        <span class="text-white">Synthilogic Enterprise</span>
                     </div>
                 </div>
-                <p class="text-xs sm:text-xs">© {{ date('Y') }} All rights reserved. Empowering the next generation of developers.</p>
+                <p class="text-xs sm:text-xs text-white/80">© {{ date('Y') }} All rights reserved. Empowering the next generation of developers.</p>
             </div>
         </div>
     </div>
