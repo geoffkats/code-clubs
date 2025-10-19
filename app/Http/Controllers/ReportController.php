@@ -30,7 +30,7 @@ class ReportController extends Controller
 				->with([
 					'student:id,student_first_name,student_last_name,student_id_number',
 					'club:id,club_name,club_level',
-					'access_code:id,report_id,access_code,expires_at'
+					'access_code:id,report_id,access_code_plain_preview,access_code_expires_at'
 				]);
 			
 			// Apply filters

@@ -435,7 +435,7 @@
                     <h3 class="text-lg font-bold mb-4">Parent Access</h3>
                     <div class="space-y-2">
                         <div class="text-sm">Access Code:</div>
-                        <div class="bg-white/20 rounded-lg px-3 py-2 font-mono text-lg">{{ $report->access_code->access_code }}</div>
+                        <div class="bg-white/20 rounded-lg px-3 py-2 font-mono text-lg">{{ $report->access_code->access_code_plain_preview }}</div>
                         <div class="text-xs text-blue-100">Share this code with parents to view the report</div>
                     </div>
                 </div>
