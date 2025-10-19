@@ -19,8 +19,8 @@ class ReportController extends Controller
 		$perPage = $request->get('per_page', 12); // Default 12 reports per page
 		$user = auth()->user();
 		
-		// Build the base query
-		$query = Report::with(['student', 'club', 'access_code']);
+		// Build the base query with efficient eager loading
+		$query = Report::with(['student', 'club.sessions.attendance_records', 'access_code']);
 		
 		// Apply club filter if specified
 		if ($clubId) {
@@ -42,6 +42,36 @@ class ReportController extends Controller
 		$reports = $query->orderBy('created_at', 'desc')
 			->paginate($perPage)
 			->withQueryString(); // Preserve query parameters in pagination links
+		
+		// Calculate attendance percentages efficiently using database queries
+		$reportIds = $reports->pluck('id');
+		$attendanceData = \DB::table('reports')
+			->join('clubs', 'reports.club_id', '=', 'clubs.id')
+			->join('sessions_schedule', 'clubs.id', '=', 'sessions_schedule.club_id')
+			->leftJoin('attendance_records', function($join) {
+				$join->on('sessions_schedule.id', '=', 'attendance_records.session_id')
+					 ->where('attendance_records.attendance_status', '=', 'present');
+			})
+			->select([
+				'reports.id as report_id',
+				'reports.student_id',
+				\DB::raw('COUNT(DISTINCT sessions_schedule.id) as total_sessions'),
+				\DB::raw('COUNT(DISTINCT CASE WHEN attendance_records.student_id = reports.student_id THEN sessions_schedule.id END) as attended_sessions')
+			])
+			->whereIn('reports.id', $reportIds)
+			->groupBy('reports.id', 'reports.student_id')
+			->get()
+			->keyBy('report_id');
+		
+		// Set attendance percentages
+		foreach ($reports as $report) {
+			$data = $attendanceData->get($report->id);
+			if ($data && $data->total_sessions > 0) {
+				$report->attendance_percentage = round(($data->attended_sessions / $data->total_sessions) * 100);
+			} else {
+				$report->attendance_percentage = 0;
+			}
+		}
 		
 		// Get clubs for filter dropdown
 		$clubs = Club::orderBy('club_name')->get();

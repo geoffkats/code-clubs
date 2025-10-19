@@ -117,7 +117,7 @@
                          data-report-id="{{ $report->id }}"
                          data-projects-completed="{{ count(json_decode($report->scratch_project_ids ?? '[]', true)) }}"
                          data-skill-score="{{ round($report->report_overall_score) }}"
-                         data-attendance-rate="{{ $report->club->sessions->count() > 0 ? round(($report->club->sessions->filter(function($session) use ($report) { return $session->attendance_records->where('student_id', $report->student->id)->where('attendance_status', 'present')->count() > 0; })->count() / $report->club->sessions->count()) * 100) : 0 }}">
+                         data-attendance-rate="{{ $report->attendance_percentage ?? 0 }}">
                         <!-- Enterprise Report Header -->
                         <div class="bg-gradient-to-br from-slate-700 via-blue-700 to-indigo-800 p-6 text-white relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>

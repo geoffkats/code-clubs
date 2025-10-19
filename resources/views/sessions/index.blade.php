@@ -1,17 +1,6 @@
 <x-layouts.app>
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" 
-         x-data="{ 
-             showCreate: false,
-             selectedClub: '',
-             clubs: @js($clubs ?? []),
-             currentDate: new Date(),
-             currentMonth: '',
-             calendarDays: [],
-             showSessionModal: false,
-             selectedSessions: [],
-             selectedDate: '',
-             sessions: @js($sessions->items() ?? [])
-         }">
+         x-data="calendarData()">
         <!-- Header Section -->
         <div class="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/60">
             <div class="px-6 py-6">
@@ -135,9 +124,9 @@
                      x-transition:leave="transition ease-in duration-200"
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0"
-                     class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                     class="fixed inset-0 bg-white/20 backdrop-blur-md flex items-center justify-center z-50"
                      @click="closeSessionModal()">
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4"
+                    <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 border border-white/20 dark:border-slate-700/20 shadow-2xl"
                          @click.stop>
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4" x-text="selectedDate"></h3>
                         <template x-if="selectedSessions.length === 0">
@@ -159,7 +148,7 @@
                                 Close
                             </button>
                         </div>
-                    </div>
+                        </div>
                 </div>
             </div>
 
@@ -191,14 +180,14 @@
                                                 {{ $session->attendance_records_count ?? 0 }} students attended
                                             </p>
                                         </div>
-                                    </div>
-                                    <div class="flex items-center space-x-2">
+                                        </div>
+                                        <div class="flex items-center space-x-2">
                                         <a href="{{ route('attendance.grid', ['club_id' => $session->club_id, 'week' => $session->session_week_number]) }}" 
                                            class="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                                            </svg>
-                                        </a>
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                                </svg>
+                                            </a>
                                         <form method="POST" action="{{ route('sessions.destroy', $session->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this session?')">
                                             @csrf
                                             @method('DELETE')
@@ -223,8 +212,8 @@
                     <div class="text-center py-12">
                         <div class="w-24 h-24 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
                             <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
                         </div>
                         <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No sessions found</h3>
                         <p class="text-slate-600 dark:text-slate-400 mb-6">Get started by creating your first session.</p>
@@ -256,21 +245,21 @@
                 <form method="POST" action="{{ route('sessions.store') }}">
                     @csrf
                     <div class="space-y-4">
-                        <div>
+                    <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
                             <select name="club_id" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                 <option value="">Select a club</option>
-                                @foreach($clubs as $club)
+                            @foreach($clubs as $club)
                                     <option value="{{ $club->id }}">{{ $club->club_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Session Date</label>
                             <input type="date" name="session_date" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Week Number</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Week Number</label>
                             <input type="number" name="session_week_number" min="1" max="52" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                         </div>
                     </div>
@@ -290,7 +279,18 @@
         <script>
             function calendarData() {
                 return {
-                    initCalendar() {
+                    showCreate: false,
+                    selectedClub: '',
+                    clubs: @js($clubs ?? []),
+                    currentDate: new Date(),
+                    currentMonth: '',
+                    calendarDays: [],
+                    showSessionModal: false,
+                    selectedSessions: [],
+                    selectedDate: '',
+                    sessions: @js($sessions->items() ?? []),
+                    
+                    init() {
                         this.updateCalendar();
                     },
                     

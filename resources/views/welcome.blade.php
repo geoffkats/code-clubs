@@ -117,27 +117,106 @@
         <div class="absolute bottom-40 left-20 w-12 h-12 bg-black rounded-full opacity-20 floating" style="animation-delay: 2s;"></div>
         <div class="absolute bottom-20 right-10 w-24 h-24 bg-yellow-200 rounded-full opacity-10 floating" style="animation-delay: 3s;"></div>
         
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="fade-in">
-                <div class="mb-8">
-                    <span class="inline-block px-4 py-2 bg-yellow-100 text-gray-800 rounded-full text-sm font-semibold mb-4">
-                        🇺🇬 Made in Uganda, For Africa
-                    </span>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Left Column - Content -->
+                <div class="text-center lg:text-left fade-in">
+                    <div class="mb-8">
+                        <span class="inline-block px-4 py-2 bg-yellow-100 text-gray-800 rounded-full text-sm font-semibold mb-4">
+                            🇺🇬 Made in Uganda, For Africa
+                        </span>
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
+                        Managing Code Clubs
+                        <span class="uganda-text">Across Uganda</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl">
+                        The comprehensive platform for managing coding clubs, tracking student progress, generating reports, and connecting parents with their children's coding journey.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="{{ route('login') }}" class="bg-yellow-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-yellow-600 transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Access Club Portal
+                        </a>
+                        <a href="#features" class="border-2 border-gray-600 text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-50 transition-all">
+                            <i class="fas fa-play mr-2"></i>Learn More
+                        </a>
+                    </div>
                 </div>
-                <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
-                    Managing Code Clubs
-                    <span class="uganda-text">Across Uganda</span>
-                </h1>
-                <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-                    The comprehensive platform for managing coding clubs, tracking student progress, generating reports, and connecting parents with their children's coding journey.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{{ route('login') }}" class="bg-yellow-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-yellow-600 transition-all transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Access Club Portal
-                    </a>
-                    <a href="#features" class="border-2 border-gray-600 text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-50 transition-all">
-                        <i class="fas fa-play mr-2"></i>Learn More
-                    </a>
+                
+                <!-- Right Column - Dashboard Mockup -->
+                <div class="relative slide-in-right">
+                    <!-- Dashboard Mockup -->
+                    <div class="bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
+                        <!-- Mockup Header -->
+                        <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-code text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-gray-900">Code Club Dashboard</h3>
+                                    <p class="text-sm text-gray-500">Live System Preview</p>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mockup Content -->
+                        <div class="space-y-4">
+                            <!-- Stats Cards -->
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="bg-blue-50 rounded-lg p-3 text-center">
+                                    <div class="text-2xl font-bold text-blue-600">24</div>
+                                    <div class="text-xs text-gray-600">Active Clubs</div>
+                                </div>
+                                <div class="bg-green-50 rounded-lg p-3 text-center">
+                                    <div class="text-2xl font-bold text-green-600">156</div>
+                                    <div class="text-xs text-gray-600">Students</div>
+                                </div>
+                                <div class="bg-purple-50 rounded-lg p-3 text-center">
+                                    <div class="text-2xl font-bold text-purple-600">89%</div>
+                                    <div class="text-xs text-gray-600">Attendance</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Recent Activity -->
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-3">Recent Activity</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                                        <span class="text-sm text-gray-600">New student enrolled in Python Club</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                        <span class="text-sm text-gray-600">Report generated for Sarah M.</span>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                        <span class="text-sm text-gray-600">Session scheduled for Web Dev Club</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Actions -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition-colors">
+                                    <i class="fas fa-plus mr-1"></i>New Club
+                                </button>
+                                <button class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300 transition-colors">
+                                    <i class="fas fa-chart-bar mr-1"></i>Reports
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Floating Elements -->
+                    <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-200 rounded-full opacity-50 floating"></div>
+                    <div class="absolute -bottom-4 -left-4 w-12 h-12 bg-red-200 rounded-full opacity-50 floating" style="animation-delay: 1s;"></div>
                 </div>
             </div>
         </div>
