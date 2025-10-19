@@ -494,9 +494,8 @@
                 })
             };
             
-            // For testing purposes - show success message immediately
-            // TODO: Replace with actual EmailJS when configured
-            if ('YOUR_SERVICE_ID' === 'YOUR_SERVICE_ID') {
+            // EmailJS is now configured - use real email sending
+            if (false) { // Changed to false to use real EmailJS
                 // EmailJS not configured yet - show test message
                 setTimeout(() => {
                     showToast(`Test: Report would be sent to ${parentEmail}!`, 'success');
@@ -509,7 +508,7 @@
                 }, 1000);
             } else {
                 // Send email using EmailJS (when configured)
-                emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+                emailjs.send('service_c38n38w', 'template_0o15p1m', templateParams)
                     .then(function(response) {
                         console.log('Email sent successfully!', response.status, response.text);
                         showToast(`Report sent successfully to ${parentEmail}!`, 'success');
