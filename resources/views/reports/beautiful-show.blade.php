@@ -549,7 +549,7 @@
             studentName: "{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}",
             clubName: "{{ $report->club->club_name }}",
             accessCode: "{{ $report->access_code?->access_code_plain_preview ?? 'N/A' }}",
-            reportUrl: "{{ route('reports.public', ['report_id' => $report->id]) }}?code={{ $report->access_code?->access_code_plain_preview ?? 'demo' }}"
+            reportUrl: "{{ url('/parent-welcome') }}"
         };
 
         // Email Modal Functions

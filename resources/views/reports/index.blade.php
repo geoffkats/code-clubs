@@ -436,7 +436,7 @@
                 studentName: document.querySelector(`[data-report-id="${reportId}"] .student-name`)?.textContent || 'Student',
                 clubName: document.querySelector(`[data-report-id="${reportId}"] .club-name`)?.textContent || 'Coding Club',
                 accessCode: document.querySelector(`[data-report-id="${reportId}"] .access-code`)?.textContent || 'N/A',
-                reportUrl: `${window.location.origin}/r/${reportId}?code=${document.querySelector(`[data-report-id="${reportId}"] .access-code`)?.textContent || 'demo'}`
+                reportUrl: `${window.location.origin}/parent-welcome`
             };
             
             document.getElementById('emailForm').action = '{{ route("reports.send", ":id") }}'.replace(':id', reportId);

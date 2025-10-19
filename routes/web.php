@@ -75,8 +75,10 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::post('/reports/{report_id}/generate-ai-single', [ReportController::class, 'generate_ai_single'])->name('reports.generate-ai-single');
 
 // Parent access routes (no authentication required)
+Route::get('/parent-welcome', [ParentReportController::class, 'welcome'])->name('parent.welcome');
+Route::post('/parent-access/verify', [ParentReportController::class, 'verify_access_code'])->name('parent.verify-access');
 Route::get('/parent-access/{access_code}', [ReportController::class, 'parent_preview'])->name('reports.parent-preview');
-Route::post('/parent-access/verify', [ReportController::class, 'verify_parent_access'])->name('reports.verify-parent-access');
+Route::post('/parent-access/verify-old', [ReportController::class, 'verify_parent_access'])->name('reports.verify-parent-access');
 
     // Attendance grid
     Route::get('/clubs/{club_id}/attendance', [AttendanceController::class, 'show_grid'])->name('attendance.grid');

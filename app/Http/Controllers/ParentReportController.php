@@ -8,6 +8,43 @@ use Illuminate\Http\Request;
 
 class ParentReportController extends Controller
 {
+	/**
+	 * Show parent welcome page
+	 */
+	public function welcome()
+	{
+		return view('parent-welcome');
+	}
+
+	/**
+	 * Verify access code and redirect to report
+	 */
+	public function verify_access_code(Request $request, AccessCodeService $codes)
+	{
+		$accessCode = $request->input('access_code');
+		
+		if (!$accessCode) {
+			return redirect()->route('parent.welcome')->with('error', 'Please enter an access code');
+		}
+		
+		// Find report with this access code
+		$report = Report::whereHas('access_code', function($query) use ($accessCode) {
+			$query->where('access_code_plain_preview', $accessCode);
+		})->with(['student', 'club.school', 'access_code'])->first();
+		
+		if (!$report) {
+			return redirect()->route('parent.welcome')->with('error', 'Invalid access code');
+		}
+		
+		// Verify the access code is valid and not expired
+		if (!$codes->verify_access_code($report, $accessCode)) {
+			return redirect()->route('parent.welcome')->with('error', 'Invalid or expired access code');
+		}
+		
+		// Redirect to the report view
+		return redirect()->route('reports.public', ['report_id' => $report->id, 'code' => $accessCode]);
+	}
+
 	public function show_public(int $report_id, Request $request, AccessCodeService $codes)
 	{
 		try {
