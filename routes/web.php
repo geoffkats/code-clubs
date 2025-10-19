@@ -59,6 +59,10 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     // Assessments
     Route::get('/clubs/{club_id}/assessments/create', [AssessmentController::class, 'create'])->name('assessments.create');
     Route::post('/clubs/{club_id}/assessments', [AssessmentController::class, 'store'])->name('assessments.store');
+    Route::get('/assessments/{assessment_id}', [AssessmentController::class, 'show'])->name('assessments.show');
+    Route::get('/assessments/{assessment_id}/edit', [AssessmentController::class, 'edit'])->name('assessments.edit');
+    Route::put('/assessments/{assessment_id}', [AssessmentController::class, 'update'])->name('assessments.update');
+    Route::delete('/assessments/{assessment_id}', [AssessmentController::class, 'destroy'])->name('assessments.destroy');
     Route::get('/assessments/{assessment_id}/scores', [AssessmentController::class, 'scores'])->name('assessments.scores');
 
     // Reports
