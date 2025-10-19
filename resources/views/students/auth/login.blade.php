@@ -132,13 +132,14 @@
                         </button>
                     </div>
 
-                    <!-- Register Link -->
+                    <!-- Account Information -->
                     <div class="text-center">
                         <p class="text-sm text-gray-600">
                             Don't have an account? 
-                            <a href="{{ route('student.register') }}" class="font-medium text-blue-600 hover:text-blue-500">
-                                Sign up here
-                            </a>
+                            <span class="font-medium text-blue-600">Contact your instructor to create one</span>
+                        </p>
+                        <p class="text-xs text-gray-500 mt-2">
+                            Student accounts are created by administrators only
                         </p>
                     </div>
                 </form>

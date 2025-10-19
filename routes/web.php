@@ -135,12 +135,10 @@ Route::post('/attendance/update/{club_id}', [AttendanceController::class, 'updat
 
 require __DIR__.'/auth.php';
 
-// Student Authentication Routes
+// Student Authentication Routes (Login Only)
 Route::middleware('guest')->group(function () {
     Route::get('/student/login', [App\Http\Controllers\StudentAuthController::class, 'showLoginForm'])->name('student.login');
     Route::post('/student/login', [App\Http\Controllers\StudentAuthController::class, 'login'])->name('student.login.post');
-    Route::get('/student/register', [App\Http\Controllers\StudentAuthController::class, 'showRegisterForm'])->name('student.register');
-    Route::post('/student/register', [App\Http\Controllers\StudentAuthController::class, 'register'])->name('student.register.post');
 });
 
 // Student Protected Routes

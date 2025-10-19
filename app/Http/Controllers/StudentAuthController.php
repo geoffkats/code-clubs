@@ -46,51 +46,6 @@ class StudentAuthController extends Controller
         ]);
     }
 
-    /**
-     * Show the student registration form
-     */
-    public function showRegisterForm()
-    {
-        return view('students.auth.register');
-    }
-
-    /**
-     * Handle student registration
-     */
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'student_first_name' => 'required|string|max:255',
-            'student_last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:students',
-            'password' => 'required|string|min:8|confirmed',
-            'student_id_number' => 'required|string|max:50|unique:students',
-            'student_grade_level' => 'required|string|max:10',
-            'student_parent_name' => 'required|string|max:255',
-            'student_parent_email' => 'required|string|email|max:255',
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        $student = Student::create([
-            'student_first_name' => $request->student_first_name,
-            'student_last_name' => $request->student_last_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'student_id_number' => $request->student_id_number,
-            'student_grade_level' => $request->student_grade_level,
-            'student_parent_name' => $request->student_parent_name,
-            'student_parent_email' => $request->student_parent_email,
-            'school_id' => 1, // Default school for now
-        ]);
-
-        Auth::guard('student')->login($student);
-
-        return redirect()->route('student.dashboard')
-            ->with('success', 'Account created successfully! Welcome to your dashboard.');
-    }
 
     /**
      * Handle student logout
