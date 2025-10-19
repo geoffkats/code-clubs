@@ -20,11 +20,11 @@
         <!-- Action Buttons -->
         <div class="flex flex-wrap gap-4 mb-8">
             <button onclick="showEmailModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                </svg>
-                Send to Parent
-            </button>
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    Send to Parent
+                </button>
             
             <a href="{{ route('reports.public', ['report_id' => $report->id]) }}?code={{ $report->access_code?->access_code_plain_preview ?? 'demo' }}" 
                target="_blank"
@@ -267,14 +267,14 @@
                 <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Assessment Scores</h3>
                     @if($assessments->count() > 0)
-                        <div class="space-y-4">
+                    <div class="space-y-4">
                             @foreach($assessments as $assessment)
                                 <div class="bg-gray-50 rounded-lg p-4">
                                     <div class="flex justify-between items-center mb-2">
-                                        <div>
+                        <div>
                                             <h4 class="font-semibold text-gray-900">{{ $assessment['name'] }}</h4>
                                             <p class="text-sm text-gray-600">{{ $assessment['type'] }} • Week {{ $assessment['week'] }}</p>
-                                        </div>
+                            </div>
                                         <div class="text-right">
                                             @if($assessment['score'] !== null)
                                                 <div class="text-2xl font-bold text-blue-600">{{ $assessment['percentage'] }}%</div>
@@ -282,15 +282,15 @@
                                             @else
                                                 <div class="text-lg text-gray-400">Not Completed</div>
                                             @endif
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
                                     @if($assessment['score'] !== null)
                                         <div class="w-full bg-gray-200 rounded-full h-2">
                                             <div class="bg-gradient-to-r from-blue-400 to-blue-600 h-2 rounded-full" 
                                                  style="width: {{ $assessment['percentage'] }}%"></div>
-                                        </div>
+                            </div>
                                     @endif
-                                </div>
+                            </div>
                             @endforeach
                         </div>
                     @else
@@ -328,7 +328,7 @@
                                 <div class="flex justify-between items-center text-xs text-purple-600">
                                     <span>{{ $project['created_at']->format('M j, Y') }}</span>
                                     <span>{{ number_format($project['file_size'] / 1024, 1) }} KB</span>
-                                </div>
+                            </div>
                             </div>
                         @endforeach
                     </div>
@@ -549,7 +549,10 @@
             studentName: "{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}",
             clubName: "{{ $report->club->club_name }}",
             accessCode: "{{ $report->access_code?->access_code_plain_preview ?? 'N/A' }}",
-            reportUrl: "{{ url('/parent-welcome') }}"
+                reportUrl: "{{ url('/parent-welcome') }}",
+                projectsCompleted: "{{ count(json_decode($report->scratch_project_ids ?? '[]', true)) }}",
+                skillScore: "{{ round($report->report_overall_score) }}",
+                attendanceRate: "{{ number_format($attendance_percentage, 1) }}"
         };
 
         // Email Modal Functions
@@ -603,7 +606,10 @@
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
-                })
+                }),
+                projects_completed: currentReportData.projectsCompleted || '0',
+                skill_score: currentReportData.skillScore || '0',
+                attendance_rate: currentReportData.attendanceRate || '0'
             };
             
             // Send email using EmailJS

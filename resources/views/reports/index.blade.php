@@ -113,7 +113,11 @@
         @if($reports->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($reports as $report)
-                    <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group" data-report-id="{{ $report->id }}">
+                    <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group" 
+                         data-report-id="{{ $report->id }}"
+                         data-projects-completed="{{ count(json_decode($report->scratch_project_ids ?? '[]', true)) }}"
+                         data-skill-score="{{ round($report->report_overall_score) }}"
+                         data-attendance-rate="{{ $report->club->sessions->count() > 0 ? round(($report->club->sessions->filter(function($session) use ($report) { return $session->attendance_records->where('student_id', $report->student->id)->where('attendance_status', 'present')->count() > 0; })->count() / $report->club->sessions->count()) * 100) : 0 }}">
                         <!-- Enterprise Report Header -->
                         <div class="bg-gradient-to-br from-slate-700 via-blue-700 to-indigo-800 p-6 text-white relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>
@@ -436,7 +440,10 @@
                 studentName: document.querySelector(`[data-report-id="${reportId}"] .student-name`)?.textContent || 'Student',
                 clubName: document.querySelector(`[data-report-id="${reportId}"] .club-name`)?.textContent || 'Coding Club',
                 accessCode: document.querySelector(`[data-report-id="${reportId}"] .access-code`)?.textContent || 'N/A',
-                reportUrl: `${window.location.origin}/parent-welcome`
+                reportUrl: `${window.location.origin}/parent-welcome`,
+                projectsCompleted: document.querySelector(`[data-report-id="${reportId}"]`)?.dataset.projectsCompleted || '0',
+                skillScore: document.querySelector(`[data-report-id="${reportId}"]`)?.dataset.skillScore || '0',
+                attendanceRate: document.querySelector(`[data-report-id="${reportId}"]`)?.dataset.attendanceRate || '0'
             };
             
             document.getElementById('emailForm').action = '{{ route("reports.send", ":id") }}'.replace(':id', reportId);
@@ -486,12 +493,15 @@
                 club_name: currentReportData.clubName,
                 access_code: currentReportData.accessCode,
                 report_url: currentReportData.reportUrl,
-                sender_name: 'Code Club System',
+                sender_name: 'Code Academy Uganda',
                 current_date: new Date().toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
-                })
+                }),
+                projects_completed: currentReportData.projectsCompleted || '0',
+                skill_score: currentReportData.skillScore || '0',
+                attendance_rate: currentReportData.attendanceRate || '0'
             };
             
             // EmailJS is now configured - use real email sending
