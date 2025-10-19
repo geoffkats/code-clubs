@@ -661,7 +661,7 @@
             const modal = document.createElement('div');
             modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4';
             modal.innerHTML = `
-                <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+                <div class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
                     <div class="flex items-center justify-between p-6 border-b border-gray-200">
                         <h3 class="text-xl font-bold text-gray-900">🎮 Scratch Project Preview</h3>
                         <button onclick="closePreview()" class="text-gray-500 hover:text-gray-700 transition-colors">
@@ -674,7 +674,7 @@
                         <div class="bg-gray-100 rounded-xl p-4 mb-4">
                             <p class="text-sm text-gray-600 mb-2">Project ID: <span class="font-mono font-bold">${projectId}</span></p>
                             <div class="flex space-x-3">
-                                <a href="https://scratch.mit.edu/projects/${projectId}" 
+                                <a href="https://scratch.mit.edu/projects/${projectId}"
                                    target="_blank"
                                    class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-all duration-200 flex items-center">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -682,40 +682,112 @@
                                     </svg>
                                     Open in Scratch
                                 </a>
-                                <button onclick="closePreview()" 
+                                <button onclick="closePreview()"
                                         class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all duration-200">
                                     Close Preview
                                 </button>
                             </div>
                         </div>
+                        
+                        <!-- Scratch Project Embed -->
                         <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border border-orange-200">
-                            <div class="text-center">
+                            <div class="text-center mb-6">
                                 <div class="text-6xl mb-4">🎨</div>
-                                <h4 class="text-lg font-semibold text-orange-800 mb-2">Scratch Project Preview</h4>
-                                <p class="text-orange-700 mb-4">Click "Open in Scratch" to view your child's amazing coding creation!</p>
-                                <div class="bg-white rounded-lg p-4 border border-orange-200">
-                                    <p class="text-sm text-gray-600">💡 <strong>Tip:</strong> This project showcases your child's creativity and coding skills. You can see their interactive stories, games, and animations!</p>
+                                <h4 class="text-lg font-semibold text-orange-800 mb-2">Your Child's Scratch Project</h4>
+                                <p class="text-orange-700 mb-4">Watch your child's coding creation in action!</p>
+                            </div>
+                            
+                            <!-- Scratch Player Embed -->
+                            <div class="bg-white rounded-lg border border-orange-200 overflow-hidden">
+                                <div class="bg-orange-600 text-white p-3 text-center font-semibold">
+                                    🎮 Scratch Project Player
                                 </div>
+                                <div class="p-4">
+                                    <div id="scratch-player-${projectId}" class="scratch-player-container">
+                                        <div class="bg-gray-100 rounded-lg p-8 text-center">
+                                            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
+                                            <p class="text-gray-600 font-medium">Loading Scratch project...</p>
+                                            <p class="text-sm text-gray-500 mt-2">Project ID: ${projectId}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg p-4 border border-orange-200 mt-4">
+                                <p class="text-sm text-gray-600">💡 <strong>Tip:</strong> Click the green flag to start the project! Use the arrow keys or mouse to interact with your child's creation.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            
+
             document.body.appendChild(modal);
-            
+
+            // Load Scratch player after modal is added
+            setTimeout(() => {
+                loadScratchPlayer(projectId);
+            }, 100);
+
             // Add close function to window
             window.closePreview = function() {
                 document.body.removeChild(modal);
                 delete window.closePreview;
             };
-            
+
             // Close on backdrop click
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     window.closePreview();
                 }
             });
+        }
+        
+        function loadScratchPlayer(projectId) {
+            const container = document.getElementById(`scratch-player-${projectId}`);
+            if (!container) return;
+            
+            // Create iframe for Scratch player
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://scratch.mit.edu/projects/${projectId}/embed`;
+            iframe.width = '100%';
+            iframe.height = '500';
+            iframe.frameBorder = '0';
+            iframe.scrolling = 'no';
+            iframe.allowFullscreen = true;
+            iframe.style.borderRadius = '8px';
+            iframe.style.border = 'none';
+            
+            // Add loading error handling
+            iframe.onload = function() {
+                console.log('Scratch player loaded successfully');
+            };
+            
+            iframe.onerror = function() {
+                container.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+                        <div class="text-red-600 text-4xl mb-3">⚠️</div>
+                        <h4 class="text-red-800 font-semibold mb-2">Unable to Load Project</h4>
+                        <p class="text-red-700 text-sm mb-4">The Scratch project could not be loaded. This might be because:</p>
+                        <ul class="text-red-600 text-sm text-left max-w-md mx-auto mb-4">
+                            <li>• The project ID is invalid</li>
+                            <li>• The project is private or deleted</li>
+                            <li>• Network connectivity issues</li>
+                        </ul>
+                        <a href="https://scratch.mit.edu/projects/${projectId}" 
+                           target="_blank"
+                           class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all duration-200 inline-flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            Try Opening in Scratch
+                        </a>
+                    </div>
+                `;
+            };
+            
+            // Replace loading spinner with iframe
+            container.innerHTML = '';
+            container.appendChild(iframe);
         }
     </script>
 </x-layouts.app>
