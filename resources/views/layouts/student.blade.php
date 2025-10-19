@@ -17,7 +17,8 @@
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
-
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         .hero-pattern {
@@ -39,9 +40,8 @@
 <body class="h-full bg-slate-900 dark">
     <div class="min-h-full" x-data="{ sidebarOpen: false }">
         <!-- Sidebar -->
-        <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-e border-slate-200/60 dark:border-slate-700/60 shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0" 
+        <div class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-800/90 backdrop-blur-xl border-e border-slate-700/60 shadow-2xl lg:translate-x-0" 
              :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
-             x-show="sidebarOpen"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="-translate-x-full"
              x-transition:enter-end="translate-x-0"
@@ -49,7 +49,7 @@
              x-transition:leave-start="translate-x-0"
              x-transition:leave-end="-translate-x-full">
             
-            <div class="flex items-center justify-between h-16 px-6 border-b border-slate-200/60 dark:border-slate-700/60">
+            <div class="flex items-center justify-between h-16 px-6 border-b border-slate-700/60">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
