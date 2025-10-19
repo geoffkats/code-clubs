@@ -30,19 +30,19 @@
         </div>
 
         <!-- Enterprise Filters and Actions Panel -->
-        <div class="bg-gradient-to-r from-white to-slate-50 rounded-3xl shadow-xl p-8 border border-slate-200 mb-8">
+        <div class="bg-gradient-to-r from-slate-800 to-slate-700 dark:from-slate-800 dark:to-slate-700 rounded-3xl shadow-xl p-8 border border-slate-600 dark:border-slate-600 mb-8">
             <div class="space-y-6">
                 <!-- Search and Filters Row -->
                 <div class="flex flex-wrap items-center justify-between gap-6">
                     <!-- Search Bar -->
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center">
-                            <div class="bg-emerald-100 rounded-lg p-2 mr-3">
-                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-emerald-500/20 rounded-lg p-2 mr-3">
+                                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                             </div>
-                            <label class="text-sm font-semibold text-slate-700">Search:</label>
+                            <label class="text-sm font-semibold text-slate-300">Search:</label>
                         </div>
                         <form method="GET" action="{{ route('reports.index') }}" class="flex items-center space-x-2">
                             <input type="hidden" name="club_id" value="{{ $clubId }}">
@@ -50,14 +50,14 @@
                                    name="search" 
                                    value="{{ $search }}"
                                    placeholder="Search by student name, club, or report..."
-                                   class="px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-white shadow-sm font-medium text-slate-700 min-w-[300px]">
+                                   class="px-4 py-3 border-2 border-slate-600 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-slate-700 dark:bg-slate-700 shadow-sm font-medium text-slate-200 dark:text-slate-200 min-w-[300px] placeholder-slate-400">
                             <button type="submit" 
                                     class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
                                 Search
                             </button>
                             @if($search)
                                 <a href="{{ route('reports.index', ['club_id' => $clubId]) }}" 
-                                   class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-200">
+                                   class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-200">
                                     Clear
                                 </a>
                             @endif
@@ -67,15 +67,15 @@
                     <!-- Advanced Club Filter -->
                 <div class="flex items-center space-x-4">
                         <div class="flex items-center">
-                            <div class="bg-blue-100 rounded-lg p-2 mr-3">
-                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div class="bg-blue-500/20 rounded-lg p-2 mr-3">
+                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
                                 </svg>
                             </div>
-                            <label class="text-sm font-semibold text-slate-700">Club Filter:</label>
+                            <label class="text-sm font-semibold text-slate-300">Club Filter:</label>
                         </div>
                         <select onchange="filterByClub(this.value)" 
-                                class="px-6 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm font-medium text-slate-700 min-w-[200px]">
+                                class="px-6 py-3 border-2 border-slate-600 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-700 dark:bg-slate-700 shadow-sm font-medium text-slate-200 dark:text-slate-200 min-w-[200px]">
                         <option value="">All Clubs</option>
                         @foreach($clubs as $club)
                             <option value="{{ $club->id }}" {{ $clubId == $club->id ? 'selected' : '' }}>
@@ -109,11 +109,108 @@
             </div>
         </div>
 
+        <!-- Statistics Cards -->
+        @if($reports->count() > 0)
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <!-- Total Reports -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl p-6 border border-slate-600 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400">Total Reports</p>
+                        <p class="text-3xl font-bold text-white">{{ $reports->total() }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Average Score -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl p-6 border border-slate-600 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400">Average Score</p>
+                        <p class="text-3xl font-bold text-white">{{ number_format($reports->avg('report_overall_score'), 1) }}%</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Clubs -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl p-6 border border-slate-600 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400">Active Clubs</p>
+                        <p class="text-3xl font-bold text-white">{{ $clubs->count() }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Reports -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl p-6 border border-slate-600 shadow-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-slate-400">This Week</p>
+                        <p class="text-3xl font-bold text-white">{{ $reports->where('report_generated_at', '>=', now()->subWeek())->count() }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Filters -->
+        <div class="bg-gradient-to-r from-slate-800 to-slate-700 dark:from-slate-800 dark:to-slate-700 rounded-2xl p-6 border border-slate-600 dark:border-slate-600 mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-slate-200">Quick Filters</h3>
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-slate-400">Filter by:</span>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="filterByScore('excellent')" 
+                        class="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg text-sm font-medium transition-all duration-200">
+                    <i class="fas fa-star mr-2"></i>Excellent (90%+)
+                </button>
+                <button onclick="filterByScore('good')" 
+                        class="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-sm font-medium transition-all duration-200">
+                    <i class="fas fa-thumbs-up mr-2"></i>Good (70-89%)
+                </button>
+                <button onclick="filterByScore('average')" 
+                        class="px-4 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white rounded-lg text-sm font-medium transition-all duration-200">
+                    <i class="fas fa-minus mr-2"></i>Average (50-69%)
+                </button>
+                <button onclick="filterByScore('poor')" 
+                        class="px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white rounded-lg text-sm font-medium transition-all duration-200">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Needs Improvement (<50%)
+                </button>
+                <button onclick="clearFilters()" 
+                        class="px-4 py-2 bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white rounded-lg text-sm font-medium transition-all duration-200">
+                    <i class="fas fa-times mr-2"></i>Clear All
+                </button>
+            </div>
+        </div>
+        @endif
+
         <!-- Reports Grid -->
         @if($reports->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($reports as $report)
-                    <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group" 
+                    <div class="bg-slate-800 dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-600 dark:border-slate-600 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group" 
                          data-report-id="{{ $report->id }}"
                          data-projects-completed="{{ count(json_decode($report->scratch_project_ids ?? '[]', true)) }}"
                          data-skill-score="{{ round($report->report_overall_score) }}"
@@ -156,11 +253,11 @@
                             <!-- Quick Stats -->
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-gray-900">{{ round($report->report_overall_score) }}%</div>
-                                    <div class="text-sm text-gray-500">Overall Score</div>
+                                    <div class="text-2xl font-bold text-slate-200 dark:text-slate-200">{{ round($report->report_overall_score) }}%</div>
+                                    <div class="text-sm text-slate-400 dark:text-slate-400">Overall Score</div>
                                 </div>
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-gray-900">
+                                    <div class="text-2xl font-bold text-slate-200 dark:text-slate-200">
                                         @if($report->report_generated_at)
                                             @if(is_string($report->report_generated_at))
                                                 {{ \Carbon\Carbon::parse($report->report_generated_at)->format('M j') }}
@@ -171,13 +268,13 @@
                                             N/A
                                         @endif
                                     </div>
-                                    <div class="text-sm text-gray-500">Generated</div>
+                                    <div class="text-sm text-slate-400 dark:text-slate-400">Generated</div>
                                 </div>
                             </div>
 
                             <!-- Progress Bar -->
                             <div class="mb-4">
-                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="w-full bg-slate-600 dark:bg-slate-600 rounded-full h-2">
                                     <div class="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-1000" 
                                          style="width: {{ $report->report_overall_score }}%"></div>
                                 </div>
@@ -185,7 +282,7 @@
 
                             <!-- Summary Preview -->
                             <div class="mb-6">
-                                <p class="text-gray-600 text-sm line-clamp-3">{{ Str::limit($report->report_summary_text, 100) }}</p>
+                                <p class="text-slate-400 dark:text-slate-400 text-sm line-clamp-3">{{ Str::limit($report->report_summary_text, 100) }}</p>
                             </div>
 
                             <!-- Enterprise Action Buttons -->
@@ -261,10 +358,10 @@
                         </div>
 
                         <!-- Report Footer -->
-                        <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
+                        <div class="bg-slate-700/50 dark:bg-slate-700/50 px-6 py-4 border-t border-slate-600 dark:border-slate-600">
                             <div class="space-y-3">
                                 <!-- Generated Date -->
-                            <div class="flex items-center justify-between text-sm text-gray-500">
+                            <div class="flex items-center justify-between text-sm text-slate-400 dark:text-slate-400">
                                 <span>
                                     @if($report->report_generated_at)
                                         @if(is_string($report->report_generated_at))
@@ -648,6 +745,60 @@
                     document.body.removeChild(toast);
                 }, 300);
             }, 3000);
+        }
+    </script>
+
+    <!-- Quick Filter Functions -->
+    <script>
+        function filterByScore(level) {
+            const reports = document.querySelectorAll('[data-report-id]');
+            reports.forEach(report => {
+                const score = parseInt(report.querySelector('.text-3xl.font-bold.text-white').textContent);
+                let show = false;
+                
+                switch(level) {
+                    case 'excellent':
+                        show = score >= 90;
+                        break;
+                    case 'good':
+                        show = score >= 70 && score < 90;
+                        break;
+                    case 'average':
+                        show = score >= 50 && score < 70;
+                        break;
+                    case 'poor':
+                        show = score < 50;
+                        break;
+                }
+                
+                report.style.display = show ? 'block' : 'none';
+            });
+            
+            // Update button states
+            document.querySelectorAll('[onclick^="filterByScore"]').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-white', 'ring-opacity-50');
+            });
+            event.target.classList.add('ring-2', 'ring-white', 'ring-opacity-50');
+        }
+        
+        function clearFilters() {
+            const reports = document.querySelectorAll('[data-report-id]');
+            reports.forEach(report => {
+                report.style.display = 'block';
+            });
+            
+            // Remove active states from filter buttons
+            document.querySelectorAll('[onclick^="filterByScore"], [onclick="clearFilters()"]').forEach(btn => {
+                btn.classList.remove('ring-2', 'ring-white', 'ring-opacity-50');
+            });
+        }
+        
+        function filterByClub(clubId) {
+            if (clubId) {
+                window.location.href = `{{ route:\'reports.index\') }}?club_id=${clubId}`;
+            } else {
+                window.location.href = `{{ route:\'reports.index\') }}`;
+            }
         }
     </script>
 
