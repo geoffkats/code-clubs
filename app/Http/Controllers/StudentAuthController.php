@@ -92,7 +92,7 @@ class StudentAuthController extends Controller
             // Get recent activities with optimized queries
             $recentAssessments = $student->assessment_scores()
                 ->select(['id', 'assessment_id', 'score_value', 'score_max_value', 'created_at'])
-                ->with(['assessment:id,assessment_name,assessment_type'])
+                ->with(['assessment:id,assessment_name,assessment_type,club_id', 'assessment.club:id,club_name'])
                 ->latest()
                 ->take(5)
                 ->get();
@@ -105,6 +105,7 @@ class StudentAuthController extends Controller
                     'sessions_schedule.id',
                     'sessions_schedule.session_date',
                     'sessions_schedule.session_time',
+                    'sessions_schedule.session_week_number',
                     'clubs.club_name',
                     'clubs.club_level'
                 ])
@@ -120,6 +121,11 @@ class StudentAuthController extends Controller
                 'upcomingSessions' => $upcomingSessions
             ];
         });
+
+        // Extract data from cache
+        $stats = $dashboardData['stats'];
+        $recentAssessments = $dashboardData['recentAssessments'];
+        $upcomingSessions = $dashboardData['upcomingSessions'];
 
         return view('students.dashboard', compact('student', 'stats', 'recentAssessments', 'upcomingSessions'));
     }
