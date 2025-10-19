@@ -261,6 +261,8 @@
                 students: [],
                 
                 async loadSessions() {
+                    console.log('loadSessions called with selectedClub:', this.selectedClub);
+                    
                     if (!this.selectedClub) {
                         this.sessions = [];
                         this.students = [];
@@ -268,10 +270,31 @@
                     }
                     
                     try {
-                        const response = await fetch(`/api/clubs/${this.selectedClub}/sessions`);
+                        console.log('Fetching sessions for club:', this.selectedClub);
+                        const response = await fetch(`/api/clubs/${this.selectedClub}/sessions`, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        });
+                        
+                        console.log('Response status:', response.status);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
                         const data = await response.json();
+                        console.log('Response data:', data);
+                        
                         this.sessions = data.sessions || [];
                         this.students = data.students || [];
+                        
+                        console.log('Sessions loaded:', this.sessions);
+                        console.log('Students loaded:', this.students);
                     } catch (error) {
                         console.error('Error loading sessions:', error);
                         this.sessions = [];
