@@ -136,24 +136,6 @@
                         </flux:navlist>
                     </div>
 
-                    <!-- Tools -->
-                    <div class="space-y-1">
-                        <h3 class="px-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
-                            Tools
-                        </h3>
-                        
-                        <flux:navlist variant="outline" class="space-y-1">
-                            <flux:navlist.item 
-                                icon="code-bracket" 
-                                :href="route('scratch.ide')" 
-                                :current="request()->routeIs('scratch.*')" 
-                                wire:navigate
-                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                            >
-                                {{ __('Scratch IDE') }}
-                            </flux:navlist.item>
-                        </flux:navlist>
-                    </div>
                 </div>
 
                 <!-- User Profile Section -->
@@ -196,8 +178,5 @@
         </div>
 
         @livewireScripts
-        
-        <!-- Alpine.js -->
-        <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </body>
 </html>

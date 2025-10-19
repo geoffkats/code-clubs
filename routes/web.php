@@ -125,10 +125,6 @@ Route::get('/students/{student_id}/dashboard', function(int $student_id) {
     return view('students.dashboard', compact('student'));
 })->name('students.dashboard');
 
-// Scratch IDE
-Route::get('/scratch/ide', function() {
-    return view('scratch.ide');
-})->name('scratch.ide');
 
 // Attendance Management
 Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');

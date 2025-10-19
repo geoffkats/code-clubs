@@ -16,12 +16,6 @@ use Illuminate\Support\Facades\Log;
  */
 class AIReportGeneratorService
 {
-    private $realAIService;
-    
-    public function __construct()
-    {
-        $this->realAIService = new RealAIService();
-    }
     /**
      * Generate comprehensive report content based on student data
      * 
@@ -37,18 +31,7 @@ class AIReportGeneratorService
             // Calculate performance metrics
             $metrics = $this->calculatePerformanceMetrics($report);
             
-            // Prepare student data for AI generation
-            $studentData = [
-                'name' => $report->student->student_first_name . ' ' . $report->student->student_last_name,
-                'club_name' => $report->club->club_name,
-                'age' => $report->student->age ?? null,
-                'grade' => $report->student->grade ?? null,
-            ];
-            
-            // Generate content using real AI service
-            $aiContent = $this->realAIService->generateReportContent($studentData, $metrics);
-            
-            // Combine AI content with calculated scores
+            // Generate content based on metrics - use AI-generated scores based on actual performance
             $content = [
                 'student_initials' => $this->generateStudentInitials($report->student),
                 'problem_solving_score' => $this->calculateSkillScore($metrics, 'problem_solving'),
@@ -56,12 +39,12 @@ class AIReportGeneratorService
                 'collaboration_score' => $this->calculateSkillScore($metrics, 'collaboration'),
                 'persistence_score' => $this->calculateSkillScore($metrics, 'persistence'),
                 'scratch_project_ids' => $this->generateProjectIds($metrics),
-                'favorite_concept' => $aiContent['favorite_concept'],
-                'challenges_overcome' => $aiContent['challenges_overcome'],
-                'special_achievements' => $aiContent['special_achievements'],
-                'areas_for_growth' => $aiContent['areas_for_growth'],
-                'next_steps' => $aiContent['next_steps'],
-                'parent_feedback' => $aiContent['parent_feedback'],
+                'favorite_concept' => $this->generateFavoriteConcept($metrics),
+                'challenges_overcome' => $this->generateChallengesOvercome($metrics),
+                'special_achievements' => $this->generateSpecialAchievements($metrics),
+                'areas_for_growth' => $this->generateAreasForGrowth($metrics),
+                'next_steps' => $this->generateNextSteps($metrics),
+                'parent_feedback' => $this->generateParentFeedback($metrics),
             ];
             
             Log::info('AI Report content generated', [
