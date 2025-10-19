@@ -16,65 +16,84 @@ class ReportController extends Controller
 	{
 		$clubId = $request->get('club_id');
 		$search = $request->get('search');
-		$perPage = $request->get('per_page', 12); // Default 12 reports per page
+		$perPage = $request->get('per_page', 12);
 		$user = auth()->user();
 		
-		// Build the base query with efficient eager loading
-		$query = Report::with(['student', 'club.sessions.attendance_records', 'access_code']);
+		// Create cache key for this query
+		$cacheKey = 'reports_index_' . md5(serialize($request->only(['club_id', 'search', 'per_page'])));
 		
-		// Apply club filter if specified
-		if ($clubId) {
-			$club = Club::findOrFail($clubId);
-			$query->where('club_id', $clubId);
-		}
-		
-		// Apply search filter if specified
-		if ($search) {
-			$query->whereHas('student', function($q) use ($search) {
-				$q->where('student_first_name', 'like', "%{$search}%")
-				  ->orWhere('student_last_name', 'like', "%{$search}%");
-			})->orWhereHas('club', function($q) use ($search) {
-				$q->where('club_name', 'like', "%{$search}%");
-			})->orWhere('report_name', 'like', "%{$search}%");
-		}
-		
-		// Get paginated results
-		$reports = $query->orderBy('created_at', 'desc')
-			->paginate($perPage)
-			->withQueryString(); // Preserve query parameters in pagination links
-		
-		// Calculate attendance percentages efficiently using database queries
-		$reportIds = $reports->pluck('id');
-		$attendanceData = \DB::table('reports')
-			->join('clubs', 'reports.club_id', '=', 'clubs.id')
-			->join('sessions_schedule', 'clubs.id', '=', 'sessions_schedule.club_id')
-			->leftJoin('attendance_records', function($join) {
-				$join->on('sessions_schedule.id', '=', 'attendance_records.session_id')
-					 ->where('attendance_records.attendance_status', '=', 'present');
-			})
-			->select([
-				'reports.id as report_id',
-				'reports.student_id',
-				\DB::raw('COUNT(DISTINCT sessions_schedule.id) as total_sessions'),
-				\DB::raw('COUNT(DISTINCT CASE WHEN attendance_records.student_id = reports.student_id THEN sessions_schedule.id END) as attended_sessions')
-			])
-			->whereIn('reports.id', $reportIds)
-			->groupBy('reports.id', 'reports.student_id')
-			->get()
-			->keyBy('report_id');
-		
-		// Set attendance percentages
-		foreach ($reports as $report) {
-			$data = $attendanceData->get($report->id);
-			if ($data && $data->total_sessions > 0) {
-				$report->attendance_percentage = round(($data->attended_sessions / $data->total_sessions) * 100);
-		} else {
-				$report->attendance_percentage = 0;
+		// Try to get from cache first (5 minutes cache)
+		$cachedData = \Cache::remember($cacheKey, 300, function() use ($clubId, $search, $perPage) {
+			// Build optimized query with selective eager loading
+			$query = Report::select(['id', 'student_id', 'club_id', 'report_name', 'report_generated_at', 'created_at'])
+				->with([
+					'student:id,student_first_name,student_last_name,student_id_number',
+					'club:id,club_name,club_level',
+					'access_code:id,report_id,access_code,expires_at'
+				]);
+			
+			// Apply filters
+			if ($clubId) {
+				$query->where('club_id', $clubId);
 			}
-		}
+			
+			if ($search) {
+				$query->where(function($q) use ($search) {
+					$q->whereHas('student', function($subQ) use ($search) {
+						$subQ->where('student_first_name', 'like', "%{$search}%")
+							->orWhere('student_last_name', 'like', "%{$search}%");
+					})->orWhereHas('club', function($subQ) use ($search) {
+						$subQ->where('club_name', 'like', "%{$search}%");
+					})->orWhere('report_name', 'like', "%{$search}%");
+				});
+			}
+			
+			// Get paginated results
+			$reports = $query->orderBy('created_at', 'desc')
+				->paginate($perPage)
+				->withQueryString();
+			
+			// Calculate attendance percentages with optimized query
+			$reportIds = $reports->pluck('id');
+			$attendanceData = \DB::table('reports')
+				->join('clubs', 'reports.club_id', '=', 'clubs.id')
+				->join('sessions_schedule', 'clubs.id', '=', 'sessions_schedule.club_id')
+				->leftJoin('attendance_records', function($join) {
+					$join->on('sessions_schedule.id', '=', 'attendance_records.session_id')
+						 ->where('attendance_records.attendance_status', '=', 'present');
+				})
+				->select([
+					'reports.id as report_id',
+					'reports.student_id',
+					\DB::raw('COUNT(DISTINCT sessions_schedule.id) as total_sessions'),
+					\DB::raw('COUNT(DISTINCT CASE WHEN attendance_records.student_id = reports.student_id THEN sessions_schedule.id END) as attended_sessions')
+				])
+				->whereIn('reports.id', $reportIds)
+				->groupBy('reports.id', 'reports.student_id')
+				->get()
+				->keyBy('report_id');
+			
+			// Attach attendance data to reports
+			foreach ($reports as $report) {
+				$data = $attendanceData->get($report->id);
+				$report->attendance_percentage = $data && $data->total_sessions > 0 
+					? round(($data->attended_sessions / $data->total_sessions) * 100) 
+					: 0;
+			}
+			
+			// Get clubs for filter dropdown (cached separately)
+			$clubs = \Cache::remember('clubs_list', 600, function() {
+				return Club::select(['id', 'club_name'])->orderBy('club_name')->get();
+			});
+			
+			return [
+				'reports' => $reports,
+				'clubs' => $clubs
+			];
+		});
 		
-		// Get clubs for filter dropdown
-		$clubs = Club::orderBy('club_name')->get();
+		$reports = $cachedData['reports'];
+		$clubs = $cachedData['clubs'];
 		
 		return view('reports.index', compact('reports', 'clubs', 'clubId', 'search', 'perPage'));
 	}
