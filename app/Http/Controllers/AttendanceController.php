@@ -152,24 +152,34 @@ class AttendanceController extends Controller
 	 */
 	public function getClubData(int $club_id)
 	{
-		$club = Club::with(['sessions', 'students'])->findOrFail($club_id);
-		
-		return response()->json([
-			'sessions' => $club->sessions->map(function($session) {
-				return [
-					'id' => $session->id,
-					'session_week_number' => $session->session_week_number,
-					'session_date' => $session->session_date ? $session->session_date->format('Y-m-d') : 'TBD'
-				];
-			}),
-			'students' => $club->students->map(function($student) {
-				return [
-					'id' => $student->id,
-					'student_first_name' => $student->student_first_name,
-					'student_last_name' => $student->student_last_name
-				];
-			})
-		]);
+		try {
+			$club = Club::with(['sessions', 'students'])->findOrFail($club_id);
+			
+			\Log::info('API getClubData called for club_id: ' . $club_id);
+			\Log::info('Club found: ' . $club->club_name);
+			\Log::info('Sessions count: ' . $club->sessions->count());
+			\Log::info('Students count: ' . $club->students->count());
+			
+			return response()->json([
+				'sessions' => $club->sessions->map(function($session) {
+					return [
+						'id' => $session->id,
+						'session_week_number' => $session->session_week_number,
+						'session_date' => $session->session_date ? $session->session_date->format('Y-m-d') : 'TBD'
+					];
+				}),
+				'students' => $club->students->map(function($student) {
+					return [
+						'id' => $student->id,
+						'student_first_name' => $student->student_first_name,
+						'student_last_name' => $student->student_last_name
+					];
+				})
+			]);
+		} catch (\Exception $e) {
+			\Log::error('API getClubData error: ' . $e->getMessage());
+			return response()->json(['error' => 'Failed to load club data'], 500);
+		}
 	}
 }
 
