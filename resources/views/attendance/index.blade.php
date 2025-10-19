@@ -199,10 +199,11 @@
                         </svg>
                     </button>
                 </div>
-                <form class="space-y-4">
+                <form method="POST" :action="`/attendance/bulk/${selectedClub}`" class="space-y-4" x-data="bulkAttendanceForm()">
+                    @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Select Club</label>
-                        <select class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select x-model="selectedClub" @change="loadSessions()" name="club_id" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Choose a club...</option>
                             @foreach($clubs as $club)
                             <option value="{{ $club->id }}">{{ $club->club_name }} - {{ $club->school->school_name ?? 'N/A' }}</option>
@@ -211,15 +212,38 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Select Session</label>
-                        <select class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <select x-model="selectedSession" name="session_id" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="">Choose a session...</option>
+                            <template x-for="session in sessions" :key="session.id">
+                                <option :value="session.id" x-text="`Week ${session.session_week_number} - ${session.session_date}`"></option>
+                            </template>
                         </select>
                     </div>
+                    
+                    <!-- Students List -->
+                    <div x-show="students.length > 0" class="space-y-3">
+                        <h4 class="text-lg font-semibold text-slate-700 dark:text-slate-300">Student Attendance</h4>
+                        <div class="max-h-60 overflow-y-auto space-y-2">
+                            <template x-for="student in students" :key="student.id">
+                                <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                                    <span x-text="`${student.student_first_name} ${student.student_last_name}`" class="font-medium text-slate-700 dark:text-slate-300"></span>
+                                    <select :name="`attendance[${student.id}][status]`" class="px-3 py-1 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white">
+                                        <option value="present">Present</option>
+                                        <option value="absent">Absent</option>
+                                        <option value="late">Late</option>
+                                        <option value="excused">Excused</option>
+                                    </select>
+                                    <input type="hidden" :name="`attendance[${student.id}][student_id]`" :value="student.id">
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    
                     <div class="flex items-center justify-end space-x-4 pt-4">
                         <button type="button" @click="showBulkModal=false" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                             Cancel
                         </button>
-                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        <button type="submit" :disabled="!selectedClub || !selectedSession" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed">
                             Update Attendance
                         </button>
                     </div>
@@ -227,4 +251,34 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function bulkAttendanceForm() {
+            return {
+                selectedClub: null,
+                selectedSession: null,
+                sessions: [],
+                students: [],
+                
+                async loadSessions() {
+                    if (!this.selectedClub) {
+                        this.sessions = [];
+                        this.students = [];
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch(`/api/clubs/${this.selectedClub}/sessions`);
+                        const data = await response.json();
+                        this.sessions = data.sessions || [];
+                        this.students = data.students || [];
+                    } catch (error) {
+                        console.error('Error loading sessions:', error);
+                        this.sessions = [];
+                        this.students = [];
+                    }
+                }
+            }
+        }
+    </script>
 </x-layouts.app>

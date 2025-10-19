@@ -133,6 +133,7 @@ Route::put('/attendance/{attendance_id}', [AttendanceController::class, 'update'
 Route::delete('/attendance/{attendance_id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
 Route::post('/attendance/bulk/{club_id}', [AttendanceController::class, 'bulk_update'])->name('attendance.bulk_update');
 Route::post('/attendance/update/{club_id}', [AttendanceController::class, 'update_attendance'])->name('attendance.update_attendance');
+Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getClubData'])->name('api.clubs.sessions');
 });
 
 require __DIR__.'/auth.php';
