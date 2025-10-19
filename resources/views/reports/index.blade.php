@@ -494,50 +494,85 @@
                 })
             };
             
-            // Send email using EmailJS
-            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
-                .then(function(response) {
-                    console.log('Email sent successfully!', response.status, response.text);
-                    showToast(`Report sent successfully to ${parentEmail}!`, 'success');
+            // For testing purposes - show success message immediately
+            // TODO: Replace with actual EmailJS when configured
+            if ('YOUR_SERVICE_ID' === 'YOUR_SERVICE_ID') {
+                // EmailJS not configured yet - show test message
+                setTimeout(() => {
+                    showToast(`Test: Report would be sent to ${parentEmail}!`, 'success');
+                    alert(`✅ Test Success!\n\nReport would be sent to: ${parentEmail}\nStudent: ${currentReportData.studentName}\nAccess Code: ${currentReportData.accessCode}\n\nTo enable actual email sending, configure your EmailJS credentials.`);
                     closeEmailModal();
-                }, function(error) {
-                    console.error('Failed to send email:', error);
-                    showToast('Failed to send email. Please try again.', 'error');
-                })
-                .finally(function() {
+                    
                     // Reset button
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
-                });
+                }, 1000);
+            } else {
+                // Send email using EmailJS (when configured)
+                emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+                    .then(function(response) {
+                        console.log('Email sent successfully!', response.status, response.text);
+                        showToast(`Report sent successfully to ${parentEmail}!`, 'success');
+                        closeEmailModal();
+                    }, function(error) {
+                        console.error('Failed to send email:', error);
+                        showToast('Failed to send email. Please try again.', 'error');
+                        alert(`❌ Email Error: ${error.text || 'Unknown error occurred'}`);
+                    })
+                    .finally(function() {
+                        // Reset button
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    });
+            }
         });
 
         // Toast notification function
         function showToast(message, type = 'success') {
+            console.log('Showing toast:', message, type); // Debug log
+            
             const toast = document.createElement('div');
-            toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 ${
-                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            toast.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-xl border-2 transition-all duration-300 transform ${
+                type === 'success' 
+                    ? 'bg-green-500 text-white border-green-600' 
+                    : 'bg-red-500 text-white border-red-600'
             }`;
+            
+            toast.style.transform = 'translateX(100%)'; // Start off-screen
+            toast.style.transition = 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out';
+            
             toast.innerHTML = `
                 <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-6 h-6 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         ${type === 'success' 
                             ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
                             : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
                         }
                     </svg>
-                    ${message}
+                    <div>
+                        <div class="font-semibold">${type === 'success' ? 'Success!' : 'Error!'}</div>
+                        <div class="text-sm opacity-90">${message}</div>
+                    </div>
                 </div>
             `;
             
             document.body.appendChild(toast);
             
-            // Auto remove after 3 seconds
+            // Animate in
+            setTimeout(() => {
+                toast.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto remove after 4 seconds
             setTimeout(() => {
                 toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
                 setTimeout(() => {
-                    document.body.removeChild(toast);
+                    if (document.body.contains(toast)) {
+                        document.body.removeChild(toast);
+                    }
                 }, 300);
-            }, 3000);
+            }, 4000);
         }
 
         // Close modal with Escape key
