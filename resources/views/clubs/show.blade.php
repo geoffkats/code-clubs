@@ -296,7 +296,7 @@
                                         <div class="flex items-center justify-between">
                                             <div class="flex-1">
                                                 <div class="flex items-center justify-between mb-2">
-                                                    <h4 class="font-medium text-slate-900 dark:text-white">{{ $assessment->assessment_name }}</h4>
+                                                <h4 class="font-medium text-slate-900 dark:text-white">{{ $assessment->assessment_name }}</h4>
                                                     <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-lg text-xs font-medium">
                                                         {{ ucfirst($assessment->assessment_type) }}
                                                     </span>

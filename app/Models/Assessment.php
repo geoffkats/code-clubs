@@ -21,6 +21,12 @@ class Assessment extends Model
 		'description',
 	];
 
+	protected $casts = [
+		'due_date' => 'date',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+	];
+
 	public function club(): BelongsTo
 	{
 		return $this->belongsTo(Club::class);

@@ -126,10 +126,10 @@
                             🇺🇬 Made in Uganda, For Africa
                         </span>
                     </div>
-                    <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
+                <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
                         Managing Code Clubs
                         <span class="uganda-text">Across Uganda</span>
-                    </h1>
+                </h1>
                     <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-2xl">
                         The comprehensive platform for managing coding clubs, tracking student progress, generating reports, and connecting parents with their children's coding journey.
                     </p>

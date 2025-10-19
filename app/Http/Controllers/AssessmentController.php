@@ -319,6 +319,38 @@ class AssessmentController extends Controller
 			->with('success', "AI-generated assessment '{$assessment->assessment_name}' created successfully with {$request->question_count} questions!");
 	}
 	
+	private function getQuestionTypesForQuiz($topic, $questionCount)
+	{
+		if (str_contains(strtolower($topic), 'scratch')) {
+			return ['multiple_choice', 'image_question', 'multiple_choice', 'image_question', 'text_question'];
+		}
+		return ['multiple_choice', 'multiple_choice', 'multiple_choice', 'text_question'];
+	}
+
+	private function getQuestionTypesForTest($topic, $questionCount)
+	{
+		if (str_contains(strtolower($topic), 'scratch')) {
+			return ['multiple_choice', 'image_question', 'text_question', 'practical_project', 'image_question'];
+		}
+		return ['multiple_choice', 'multiple_choice', 'text_question', 'practical_project'];
+	}
+
+	private function getQuestionTypesForAssignment($topic, $questionCount)
+	{
+		if (str_contains(strtolower($topic), 'scratch')) {
+			return ['image_question', 'practical_project', 'text_question', 'image_question'];
+		}
+		return ['text_question', 'practical_project', 'text_question'];
+	}
+
+	private function getQuestionTypesForProject($topic, $questionCount)
+	{
+		if (str_contains(strtolower($topic), 'scratch')) {
+			return ['image_question', 'practical_project', 'practical_project', 'text_question'];
+		}
+		return ['practical_project', 'practical_project', 'text_question'];
+	}
+
 	private function generateAIAssessment($topic, $difficulty, $questionCount, $assessmentType, $clubName)
 	{
 		$difficultyMultiplier = match($difficulty) {
@@ -333,12 +365,12 @@ class AssessmentController extends Controller
 		// Get topic-specific content
 		$topicContent = $this->getTopicContent($topic);
 		
-		// Generate different types of questions based on assessment type
+		// Generate different types of questions based on assessment type and topic
 		$questionTypes = match($assessmentType) {
-			'quiz' => ['multiple_choice', 'multiple_choice', 'multiple_choice', 'text_question'],
-			'test' => ['multiple_choice', 'multiple_choice', 'text_question', 'practical_project'],
-			'assignment' => ['text_question', 'practical_project', 'text_question'],
-			'project' => ['practical_project', 'practical_project', 'text_question'],
+			'quiz' => $this->getQuestionTypesForQuiz($topic, $questionCount),
+			'test' => $this->getQuestionTypesForTest($topic, $questionCount),
+			'assignment' => $this->getQuestionTypesForAssignment($topic, $questionCount),
+			'project' => $this->getQuestionTypesForProject($topic, $questionCount),
 		};
 		
 		for ($i = 0; $i < $questionCount; $i++) {
@@ -368,6 +400,11 @@ class AssessmentController extends Controller
 				case 'text_question':
 					$question['correct_answer'] = $this->generateTextAnswer($topic, $topicContent, $difficulty);
 					break;
+					
+				case 'image_question':
+					$question['image_description'] = $this->generateImageQuestionDescription($topic, $topicContent, $difficulty);
+					$question['correct_answer'] = $this->generateImageQuestionAnswer($topic, $topicContent, $difficulty);
+					break;
 			}
 			
 			$questions[] = $question;
@@ -384,16 +421,47 @@ class AssessmentController extends Controller
 	private function getTopicContent($topic)
 	{
 		$content = [
-			'Scratch Basics' => [
-				'concepts' => ['sprites', 'motion blocks', 'events', 'loops', 'costumes'],
+			'scratch_basics' => [
+				'concepts' => ['sprites', 'motion blocks', 'events', 'loops', 'costumes', 'stage', 'backdrop'],
 				'output_format' => 'scratch_project',
 				'questions' => [
 					'What is the purpose of motion blocks in Scratch?',
 					'How do you make a sprite move continuously?',
 					'What is the difference between forever and repeat loops?'
-				]
+				],
+				'block_types' => ['motion', 'looks', 'sound', 'events', 'control', 'sensing', 'operators', 'variables']
 			],
-			'Python Basics' => [
+			'scratch_animations' => [
+				'concepts' => ['animation', 'costumes', 'timing', 'transitions', 'effects', 'sprites'],
+				'output_format' => 'scratch_project',
+				'questions' => [
+					'How do you create smooth animations in Scratch?',
+					'What is the purpose of costume changes?',
+					'How do you control animation timing?'
+				],
+				'block_types' => ['looks', 'motion', 'control', 'events']
+			],
+			'scratch_games' => [
+				'concepts' => ['game mechanics', 'scoring', 'collision detection', 'levels', 'player interaction'],
+				'output_format' => 'scratch_project',
+				'questions' => [
+					'How do you detect collisions between sprites?',
+					'What is the purpose of scoring systems?',
+					'How do you create different game levels?'
+				],
+				'block_types' => ['sensing', 'control', 'variables', 'operators', 'motion']
+			],
+			'scratch_storytelling' => [
+				'concepts' => ['narrative', 'dialogue', 'scenes', 'characters', 'interaction'],
+				'output_format' => 'scratch_project',
+				'questions' => [
+					'How do you create interactive stories?',
+					'What is the purpose of dialogue in storytelling?',
+					'How do you manage scene transitions?'
+				],
+				'block_types' => ['looks', 'sound', 'control', 'events']
+			],
+			'python_basics' => [
 				'concepts' => ['variables', 'loops', 'functions', 'conditionals', 'data types'],
 				'output_format' => 'python_file',
 				'questions' => [
@@ -402,7 +470,7 @@ class AssessmentController extends Controller
 					'What are the different data types in Python?'
 				]
 			],
-			'Robotics Projects' => [
+			'robotics_basics' => [
 				'concepts' => ['sensors', 'motors', 'programming', 'circuitry', 'automation'],
 				'output_format' => 'robotics_project',
 				'questions' => [
@@ -411,7 +479,7 @@ class AssessmentController extends Controller
 					'How do you program a robot to follow a line?'
 				]
 			],
-			'HTML Basics' => [
+			'html_basics' => [
 				'concepts' => ['tags', 'elements', 'attributes', 'structure', 'forms'],
 				'output_format' => 'html_file',
 				'questions' => [
@@ -436,6 +504,10 @@ class AssessmentController extends Controller
 		
 		if ($type === 'practical_project') {
 			return "Create a {$topic} project that demonstrates your understanding of the concepts we've covered.";
+		}
+		
+		if ($type === 'image_question') {
+			return "Q{$number}: Look at the image below and answer the following question: {$baseQuestion}";
 		}
 		
 		return "Q{$number}: {$baseQuestion}";
@@ -519,13 +591,90 @@ class AssessmentController extends Controller
 	private function generateTextAnswer($topic, $content, $difficulty)
 	{
 		$answers = [
-			'Scratch Basics' => "Scratch uses visual blocks to create programs. Sprites are the characters that perform actions, motion blocks control movement, events trigger actions, and loops repeat commands.",
-			'Python Basics' => "Python is a programming language that uses variables to store data, functions to organize code, loops to repeat actions, and conditionals to make decisions.",
-			'Robotics Projects' => "Robotics combines programming, engineering, and problem-solving. Robots use sensors to gather information, processors to make decisions, and actuators to perform actions.",
-			'HTML Basics' => "HTML (HyperText Markup Language) is used to create web pages. It uses tags to define elements, attributes to provide additional information, and structure to organize content."
+			'scratch_basics' => "Scratch uses visual blocks to create programs. Sprites are the characters that perform actions, motion blocks control movement, events trigger actions, and loops repeat commands.",
+			'scratch_animations' => "Animations in Scratch are created by changing costumes, using timing blocks, and controlling sprite movement. Costumes allow sprites to change appearance, creating visual effects.",
+			'scratch_games' => "Game development in Scratch involves collision detection, scoring systems, level progression, and player interaction. Games use sensing blocks to detect user input and sprite interactions.",
+			'scratch_storytelling' => "Interactive storytelling in Scratch combines narrative elements with user interaction. Stories use dialogue, scene changes, character movement, and sound to create engaging experiences.",
+			'python_basics' => "Python is a programming language that uses variables to store data, functions to organize code, loops to repeat actions, and conditionals to make decisions.",
+			'robotics_basics' => "Robotics combines programming, engineering, and problem-solving. Robots use sensors to gather information, processors to make decisions, and actuators to perform actions.",
+			'html_basics' => "HTML (HyperText Markup Language) is used to create web pages. It uses tags to define elements, attributes to provide additional information, and structure to organize content."
 		];
 		
 		return $answers[$topic] ?? "This topic involves understanding programming concepts, problem-solving, and creating digital solutions.";
+	}
+
+	private function generateImageQuestionDescription($topic, $content, $difficulty)
+	{
+		$descriptions = [
+			'scratch_basics' => [
+				"Identify which Scratch block category is shown in the image: motion, looks, sound, events, control, sensing, operators, or variables.",
+				"Look at the Scratch blocks in the image and identify what action this code would perform.",
+				"Examine the Scratch interface in the image and identify the different components: stage, sprite area, blocks palette, and scripts area.",
+				"Identify which type of loop block is shown in the image: repeat, forever, or repeat until."
+			],
+			'scratch_animations' => [
+				"Look at the costume changes in the image and identify what animation technique is being used.",
+				"Examine the timing blocks in the image and determine how long the animation will last.",
+				"Identify which visual effect block is being used in the image: change color, set size, or change transparency.",
+				"Look at the sprite movement pattern in the image and identify the type of motion being created."
+			],
+			'scratch_games' => [
+				"Identify which sensing block in the image would detect when two sprites touch.",
+				"Look at the scoring system in the image and identify how points are being tracked.",
+				"Examine the game mechanics in the image and identify what type of game is being created.",
+				"Identify which operator block in the image would be used to compare two values."
+			],
+			'scratch_storytelling' => [
+				"Look at the dialogue blocks in the image and identify what the character is saying.",
+				"Examine the scene transition in the image and identify how the backdrop is being changed.",
+				"Identify which sound block in the image would play background music.",
+				"Look at the character interaction in the image and identify what event triggers the dialogue."
+			]
+		];
+
+		$topicDescriptions = $descriptions[$topic] ?? [
+			"Examine the programming concept shown in the image and identify what it represents.",
+			"Look at the code structure in the image and identify the programming pattern being used."
+		];
+
+		return $topicDescriptions[array_rand($topicDescriptions)];
+	}
+
+	private function generateImageQuestionAnswer($topic, $content, $difficulty)
+	{
+		$answers = [
+			'scratch_basics' => [
+				"Motion blocks control sprite movement and rotation.",
+				"Events blocks trigger actions when something happens.",
+				"Control blocks manage program flow and loops.",
+				"Sensing blocks detect user input and sprite interactions."
+			],
+			'scratch_animations' => [
+				"Costume changes create the illusion of movement.",
+				"Timing blocks control animation speed and duration.",
+				"Visual effects enhance the appearance of animations.",
+				"Motion blocks create smooth sprite movement."
+			],
+			'scratch_games' => [
+				"Collision detection determines when sprites interact.",
+				"Scoring systems track player progress and achievements.",
+				"Game mechanics define how players interact with the game.",
+				"Operator blocks perform mathematical and logical operations."
+			],
+			'scratch_storytelling' => [
+				"Dialogue blocks display character speech and thoughts.",
+				"Scene transitions change the story setting and mood.",
+				"Sound blocks add audio effects and background music.",
+				"Event blocks trigger story progression and character interactions."
+			]
+		];
+
+		$topicAnswers = $answers[$topic] ?? [
+			"This image shows a fundamental programming concept.",
+			"The code structure demonstrates good programming practices."
+		];
+
+		return $topicAnswers[array_rand($topicAnswers)];
 	}
 }
 

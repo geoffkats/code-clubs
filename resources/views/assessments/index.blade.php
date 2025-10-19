@@ -39,7 +39,7 @@
                             </svg>
                             Create Assessment
                         </button>
-                        <button @click="showAI = !showAI; console.log('AI button clicked, showAI:', showAI)" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                        <button @click="showAI = !showAI" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
                             <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                             </svg>
@@ -67,209 +67,194 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Active Quizzes</p>
-                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $assessments->where('assessment_type', 'quiz')->count() ?? 0 }}</p>
-                        </div>
-                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Tests</p>
-                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $assessments->where('assessment_type', 'test')->count() ?? 0 }}</p>
+                            <p class="text-sm font-medium text-slate-600 dark:text-slate-400">This Month</p>
+                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $assessments->where('created_at', '>=', now()->startOfMonth())->count() ?? 0 }}</p>
                         </div>
                         <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center text-white">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                             </svg>
                         </div>
                     </div>
                 </div>
-
                 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Assignments</p>
-                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $assessments->where('assessment_type', 'assignment')->count() ?? 0 }}</p>
+                            <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Active</p>
+                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $assessments->where('due_date', '>=', now())->count() ?? 0 }}</p>
                         </div>
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white">
+                        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Filters -->
-            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 mb-8">
-                <div class="flex flex-col md:flex-row gap-4">
-                    <div class="flex-1">
-                        <div class="relative">
-                            <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                            <input type="text" placeholder="Search assessments..." class="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Clubs</p>
+                            <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $clubs->count() ?? 0 }}</p>
                         </div>
-                    </div>
-                    <div class="md:w-64">
-                        <select x-model="selectedClub" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                            <option value="">All Clubs</option>
-                            @foreach($clubs as $club)
-                                <option value="{{ $club->id }}">{{ $club->club_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="md:w-48">
-                        <select class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                            <option value="">All Types</option>
-                            <option value="quiz">Quiz</option>
-                            <option value="test">Test</option>
-                            <option value="assignment">Assignment</option>
-                            <option value="project">Project</option>
-                        </select>
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Assessments Grid -->
-            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700">
+                <div class="p-6 border-b border-slate-200 dark:border-slate-700">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white">All Assessments</h2>
                 </div>
                 
                 @if($assessments->count() > 0)
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                         @foreach($assessments as $assessment)
-                            <div class="group relative bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 rounded-xl border border-slate-200 dark:border-slate-600 p-6 hover:shadow-lg transition-all duration-300">
-                                <!-- Assessment Header -->
-                                <div class="flex items-start justify-between mb-4">
-                                    <div class="flex-1">
-                                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                                            {{ $assessment->assessment_name }}
-                                        </h3>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400">
-                                            {{ $assessment->club->club_name ?? 'No Club' }}
-                                        </p>
+                            <div class="group relative bg-gradient-to-br from-white via-slate-50 to-slate-100 dark:from-slate-800 dark:via-slate-700 dark:to-slate-600 rounded-2xl border border-slate-200/60 dark:border-slate-600/60 p-6 hover:shadow-2xl hover:shadow-amber-500/10 hover:-translate-y-2 transition-all duration-500 ease-out overflow-hidden">
+                                <!-- Decorative Background -->
+                                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full -translate-y-16 translate-x-16 group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+                                <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/20 to-pink-500/20 rounded-full translate-y-12 -translate-x-12 group-hover:scale-125 transition-transform duration-700 ease-out"></div>
+                                
+                                <!-- Assessment Type Icon -->
+                                <div class="relative z-10 flex items-start justify-between mb-6">
+                                    <div class="w-14 h-14 bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                        @switch($assessment->assessment_type)
+                                            @case('quiz')
+                                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                                @break
+                                            @case('assignment')
+                                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                @break
+                                            @case('test')
+                                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                                </svg>
+                                                @break
+                                            @case('project')
+                                                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                                </svg>
+                                                @break
+                                        @endswitch
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-lg text-xs font-medium">
+                                        <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full shadow-sm">
                                             {{ ucfirst($assessment->assessment_type) }}
                                         </span>
-                                    </div>
-                                </div>
-
-                                <!-- Assessment Details -->
-                                <div class="space-y-3 mb-4">
-                                    <div class="flex items-center text-sm text-slate-600 dark:text-slate-400">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
                                         @if($assessment->due_date)
-                                            Due: {{ \Carbon\Carbon::parse($assessment->due_date)->format('M d, Y') }}
-                                        @else
-                                            No due date
-                                        @endif
-                                    </div>
-                                    <div class="flex items-center text-sm text-slate-600 dark:text-slate-400">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
-                                        </svg>
-                                        {{ $assessment->total_points ?? 0 }} points
-                                    </div>
-                                    <div class="flex items-center text-sm text-slate-600 dark:text-slate-400">
-                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        {{ $assessment->questions->count() }} questions
-                                        @if($assessment->questions->count() > 0)
-                                            <span class="ml-2 text-xs">
-                                                ({{ $assessment->questions->where('question_type', 'multiple_choice')->count() }} MC, 
-                                                {{ $assessment->questions->where('question_type', 'practical_project')->count() }} Projects,
-                                                {{ $assessment->questions->where('question_type', 'image_question')->count() }} Images,
-                                                {{ $assessment->questions->where('question_type', 'text_question')->count() }} Text)
+                                            <span class="px-3 py-1 text-xs font-medium bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm">
+                                                {{ \Carbon\Carbon::parse($assessment->due_date)->format('M j') }}
                                             </span>
                                         @endif
                                     </div>
+                                </div>
+
+                                <!-- Assessment Content -->
+                                <div class="relative z-10 space-y-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors duration-300">
+                                            {{ $assessment->assessment_name }}
+                                        </h3>
+                                        <div class="flex items-center text-slate-600 dark:text-slate-400 mb-3">
+                                            <svg class="w-4 h-4 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                            {{ $assessment->club->club_name ?? 'No Club' }}
+                                    </div>
+                                    </div>
+
                                     @if($assessment->description)
-                                        <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                                            {{ Str::limit($assessment->description, 100) }}
+                                        <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
+                                            {{ $assessment->description }}
                                         </p>
                                     @endif
+
+                                    <!-- Stats Row -->
+                                    <div class="flex items-center justify-between py-3 border-t border-slate-200/50 dark:border-slate-600/50">
+                                        <div class="flex items-center space-x-4">
+                                            @if($assessment->questions->count() > 0)
+                                                <div class="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                                                    <div class="w-8 h-8 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900 dark:to-teal-900 rounded-lg flex items-center justify-center mr-2">
+                                                        <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="font-medium">{{ $assessment->questions->count() }}</span>
+                                                    <span class="ml-1">Questions</span>
+                                                </div>
+                                            @endif
+                                            @if($assessment->total_points)
+                                                <div class="flex items-center text-sm text-slate-600 dark:text-slate-400">
+                                                    <div class="w-8 h-8 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 rounded-lg flex items-center justify-center mr-2">
+                                                        <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <span class="font-medium">{{ $assessment->total_points }}</span>
+                                                    <span class="ml-1">Points</span>
+                                                </div>
+                                    @endif
+                                </div>
+                                        <div class="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-lg">
+                                            {{ $assessment->created_at->format('M j, Y') }}
+                                    </div>
+                                    </div>
                                 </div>
 
-                                <!-- Progress Stats -->
-                                <div class="grid grid-cols-2 gap-4 mb-4">
-                                    <div class="text-center">
-                                        <div class="text-lg font-bold text-blue-600">{{ $assessment->scores_count ?? 0 }}</div>
-                                        <span class="text-xs text-slate-500">Submissions</span>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="text-lg font-bold text-emerald-600">{{ $assessment->average_score ?? 0 }}%</div>
-                                        <span class="text-xs text-slate-500">Avg Score</span>
-                                    </div>
-                                </div>
-
-                                <!-- Actions -->
-                                <div class="flex items-center justify-between">
+                                <!-- Action Buttons -->
+                                <div class="relative z-10 flex items-center justify-between pt-4 border-t border-slate-200/50 dark:border-slate-600/50 mt-6">
                                     <div class="flex items-center space-x-2">
-                                        <a href="{{ route('assessments.show', $assessment->id) }}" class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
-                                            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                            </svg>
-                                            View
+                                        <a href="{{ route('assessments.show', $assessment->id) }}" class="group/btn px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-sm font-medium rounded-xl hover:from-blue-600 hover:to-indigo-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                                            <span class="flex items-center">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                                View
+                                            </span>
                                         </a>
-                                        <a href="{{ route('assessments.scores', $assessment->id) }}" class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg font-medium hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors text-xs">
-                                            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                            </svg>
-                                            Scores
-                                        </a>
-                                    </div>
-                                    <div class="flex items-center space-x-1">
-                                        <a href="{{ route('assessments.edit', $assessment->id) }}" class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors" title="Edit Assessment">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <a href="{{ route('assessments.edit', $assessment->id) }}" class="group/btn px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-medium rounded-xl hover:from-amber-600 hover:to-orange-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                                            <span class="flex items-center">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                             </svg>
+                                                Edit
+                                            </span>
                                         </a>
-                                        <form method="POST" action="{{ route('assessments.destroy', $assessment->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this assessment? This action cannot be undone.')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete Assessment">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                                </svg>
-                                            </button>
-                                        </form>
                                     </div>
+                                    <form method="POST" action="{{ route('assessments.destroy', $assessment->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this assessment?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="group/btn px-3 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-medium rounded-xl hover:from-red-600 hover:to-pink-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         @endforeach
                     </div>
-
-                    <!-- Pagination -->
-                    <div class="px-6 py-4 border-t border-slate-200 dark:border-slate-700">
-                        {{ $assessments->links() }}
-                    </div>
                 @else
-                    <!-- Empty State -->
-                    <div class="text-center py-12">
-                        <svg class="w-16 h-16 text-slate-400 dark:text-slate-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-12 text-center">
+                        <div class="w-24 h-24 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900 dark:to-orange-900 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-12 h-12 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                         </svg>
-                        <h3 class="text-lg font-medium text-slate-900 dark:text-white mb-2">No assessments found</h3>
-                        <p class="text-slate-600 dark:text-slate-400 mb-4">Get started by creating your first assessment</p>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">No Assessments Yet</h3>
+                        <p class="text-slate-600 dark:text-slate-400 mb-6">Create your first assessment to get started with quizzes, tests, and assignments.</p>
                         <button @click="showCreate = true" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">
                             Create First Assessment
                         </button>
@@ -280,9 +265,8 @@
 
         <!-- Create Assessment Modal -->
         <div x-show="showCreate" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div class="w-full max-w-4xl max-h-[90vh] rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col">
-                <!-- Modal Header -->
-                <div class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
                     <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create New Assessment</h3>
                     <button @click="showCreate=false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                         <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -290,464 +274,146 @@
                         </svg>
                     </button>
                 </div>
-                
-                <!-- Scrollable Content -->
-                <div class="flex-1 overflow-y-auto p-6">
-                <form method="post" action="#" class="space-y-4" id="createAssessmentForm" enctype="multipart/form-data">
+                <form id="createAssessmentForm" method="post" action="#" class="p-6 space-y-6">
                     @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
+                        <select name="club_id" id="clubSelect" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                            <option value="">Select a Club</option>
+                            @foreach($clubs as $club)
+                                <option value="{{ $club->id }}">{{ $club->club_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
-                            <select name="club_id" id="clubSelect" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
-                                <option value="">Select a club</option>
-                                @foreach($clubs as $club)
-                                    @php
-                                        $clubType = '';
-                                        if (stripos($club->club_name, 'robot') !== false) {
-                                            $clubType = '🤖 Robotics';
-                                        } elseif (stripos($club->club_name, 'python') !== false) {
-                                            $clubType = '🐍 Python';
-                                        } elseif (stripos($club->club_name, 'web') !== false || stripos($club->club_name, 'html') !== false || stripos($club->club_name, 'css') !== false || stripos($club->club_name, 'javascript') !== false) {
-                                            $clubType = '🌐 Web Development';
-                                        } elseif (stripos($club->club_name, 'scratch') !== false) {
-                                            $clubType = '🎨 Scratch';
-                                        } elseif (stripos($club->club_name, 'java') !== false) {
-                                            $clubType = '☕ Java';
-                                        } elseif (stripos($club->club_name, 'mobile') !== false || stripos($club->club_name, 'app') !== false) {
-                                            $clubType = '📱 Mobile Development';
-                                        } else {
-                                            $clubType = '💻 Coding';
-                                        }
-                                    @endphp
-                                    <option value="{{ $club->id }}">{{ $club->club_name }} {{ $clubType }} - {{ $club->school->school_name ?? 'No School' }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Assessment Name</label>
-                            <input name="assessment_name" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="e.g., Python Basics Quiz" required>
+                            <input name="assessment_name" type="text" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Assessment Type</label>
-                            <select name="assessment_type" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
-                                <option value="quiz">📝 Quiz (Multiple Choice Questions)</option>
-                                <option value="test">📊 Test (Mixed Questions)</option>
-                                <option value="assignment">📋 Assignment (Text Questions)</option>
-                                <option value="project">🎯 Project (Practical Work)</option>
+                            <select name="assessment_type" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                                <option value="quiz">Quiz</option>
+                                <option value="assignment">Assignment</option>
+                                <option value="test">Test</option>
+                                <option value="project">Project</option>
                             </select>
                         </div>
                     </div>
-                    <!-- Question Management Section -->
-                    <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
-                        <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Add Questions</h4>
-                        
-                        <!-- Question Type Selection -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                            <button type="button" onclick="addQuestion('multiple_choice')" class="p-3 border-2 border-blue-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors">
-                                <div class="text-center">
-                                    <div class="text-2xl mb-1">📝</div>
-                                    <div class="text-sm font-medium text-slate-700 dark:text-slate-300">Multiple Choice</div>
-                                </div>
-                            </button>
-                            <button type="button" onclick="addQuestion('practical_project')" class="p-3 border-2 border-green-200 rounded-lg hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors">
-                                <div class="text-center">
-                                    <div class="text-2xl mb-1">🎯</div>
-                                    <div class="text-sm font-medium text-slate-700 dark:text-slate-300">Practical Project</div>
-                                </div>
-                            </button>
-                            <button type="button" onclick="addQuestion('image_question')" class="p-3 border-2 border-purple-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
-                                <div class="text-center">
-                                    <div class="text-2xl mb-1">🖼️</div>
-                                    <div class="text-sm font-medium text-slate-700 dark:text-slate-300">Image Question</div>
-                                </div>
-                            </button>
-                            <button type="button" onclick="addQuestion('text_question')" class="p-3 border-2 border-orange-200 rounded-lg hover:border-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors">
-                                <div class="text-center">
-                                    <div class="text-2xl mb-1">📝</div>
-                                    <div class="text-sm font-medium text-slate-700 dark:text-slate-300">Text Question</div>
-                                </div>
-                            </button>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Description</label>
+                        <textarea name="description" rows="3" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Total Points</label>
+                            <input name="total_points" type="number" min="1" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                         </div>
-                        
-                        <!-- Questions Container -->
-                        <div id="questionsContainer" class="space-y-4">
-                            <p class="text-slate-500 dark:text-slate-400 text-center py-8">Click a question type above to add questions to your assessment</p>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Due Date</label>
+                            <input name="due_date" type="date" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
                         </div>
+                    </div>
+                    <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <button type="button" @click="showCreate=false" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" form="createAssessmentForm" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">
+                            Create Assessment
+                        </button>
                     </div>
                 </form>
-                </div>
-                
-                <!-- Modal Footer -->
-                <div class="flex items-center justify-end space-x-3 p-6 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
-                    <button type="button" @click="showCreate=false" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit" form="createAssessmentForm" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">
-                        Create Assessment
-                    </button>
-                </div>
             </div>
         </div>
-    </div>
 
-    <!-- JavaScript to handle form submission and question management -->
-    <script>
-        let questionCounter = 0;
-        
-        document.getElementById('createAssessmentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const clubId = document.getElementById('clubSelect').value;
-            if (!clubId) {
-                alert('Please select a club first.');
-                return;
-            }
-            
-            // Update form action with the selected club_id
-            this.action = `{{ route('assessments.store', ['club_id' => ':club_id']) }}`.replace(':club_id', clubId);
-            
-            // Submit the form
-            this.submit();
-        });
-        
-        function addQuestion(type) {
-            questionCounter++;
-            const container = document.getElementById('questionsContainer');
-            
-            // Remove the placeholder text if it exists
-            const placeholder = container.querySelector('p');
-            if (placeholder) {
-                placeholder.remove();
-            }
-            
-            let questionHtml = '';
-            
-            switch(type) {
-                case 'multiple_choice':
-                    questionHtml = createMultipleChoiceQuestion(questionCounter);
-                    break;
-                case 'practical_project':
-                    questionHtml = createPracticalProjectQuestion(questionCounter);
-                    break;
-                case 'image_question':
-                    questionHtml = createImageQuestion(questionCounter);
-                    break;
-                case 'text_question':
-                    questionHtml = createTextQuestion(questionCounter);
-                    break;
-            }
-            
-            container.insertAdjacentHTML('beforeend', questionHtml);
-        }
-        
-        function createMultipleChoiceQuestion(counter) {
-            return `
-                <div class="question-item bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-                    <div class="flex items-center justify-between mb-3">
-                        <h5 class="font-medium text-slate-900 dark:text-white">Question ${counter} - Multiple Choice</h5>
-                        <button type="button" onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <input type="hidden" name="questions[${counter}][type]" value="multiple_choice">
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Question Text</label>
-                            <textarea name="questions[${counter}][question_text]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" placeholder="Enter your question here..." required></textarea>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option A</label>
-                                <input name="questions[${counter}][option_a]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option B</label>
-                                <input name="questions[${counter}][option_b]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option C</label>
-                                <input name="questions[${counter}][option_c]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option D</label>
-                                <input name="questions[${counter}][option_d]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Correct Answer</label>
-                            <select name="questions[${counter}][correct_answer]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
-                                <option value="">Select correct answer</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Points</label>
-                            <input name="questions[${counter}][points]" type="number" value="1" min="1" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function createPracticalProjectQuestion(counter) {
-            return `
-                <div class="question-item bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-                    <div class="flex items-center justify-between mb-3">
-                        <h5 class="font-medium text-slate-900 dark:text-white">Question ${counter} - Practical Project</h5>
-                        <button type="button" onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <input type="hidden" name="questions[${counter}][type]" value="practical_project">
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project Title</label>
-                            <input name="questions[${counter}][question_text]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="e.g., Create a Calculator App" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project Instructions</label>
-                            <textarea name="questions[${counter}][project_instructions]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="3" placeholder="Describe what students need to build..." required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Output Format</label>
-                            <select name="questions[${counter}][project_output_format]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
-                                <option value="">Select output format</option>
-                                <option value="scratch_project">🎨 Scratch Project</option>
-                                <option value="python_file">🐍 Python File</option>
-                                <option value="html_file">🌐 HTML File</option>
-                                <option value="javascript_file">📜 JavaScript File</option>
-                                <option value="mobile_app">📱 Mobile App</option>
-                                <option value="robotics_project">🤖 Robotics Project</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Requirements (one per line)</label>
-                            <textarea name="questions[${counter}][project_requirements]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="3" placeholder="• Must have at least 3 functions&#10;• Should include error handling&#10;• Must be interactive"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Points</label>
-                            <input name="questions[${counter}][points]" type="number" value="10" min="1" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function createImageQuestion(counter) {
-            return `
-                <div class="question-item bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-                    <div class="flex items-center justify-between mb-3">
-                        <h5 class="font-medium text-slate-900 dark:text-white">Question ${counter} - Image Question</h5>
-                        <button type="button" onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <input type="hidden" name="questions[${counter}][type]" value="image_question">
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Question Text</label>
-                            <textarea name="questions[${counter}][question_text]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" placeholder="What do you see in this image? What is wrong with this code?" required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Upload Image</label>
-                            <input type="file" name="questions[${counter}][image_file]" accept="image/*" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" onchange="previewImage(this, 'preview-${counter}')">
-                            <div id="preview-${counter}" class="mt-2 hidden">
-                                <img class="max-w-full h-32 object-contain rounded-lg border border-slate-200 dark:border-slate-600" alt="Image preview">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Image Description</label>
-                            <textarea name="questions[${counter}][image_description]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" placeholder="Describe what students should see or identify in the image..."></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Expected Answer</label>
-                            <textarea name="questions[${counter}][correct_answer]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" placeholder="What should students identify or explain?"></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Points</label>
-                            <input name="questions[${counter}][points]" type="number" value="5" min="1" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function createTextQuestion(counter) {
-            return `
-                <div class="question-item bg-slate-50 dark:bg-slate-800 rounded-lg p-4 border border-slate-200 dark:border-slate-700">
-                    <div class="flex items-center justify-between mb-3">
-                        <h5 class="font-medium text-slate-900 dark:text-white">Question ${counter} - Text Question</h5>
-                        <button type="button" onclick="removeQuestion(this)" class="text-red-500 hover:text-red-700">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <input type="hidden" name="questions[${counter}][type]" value="text_question">
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Question Text</label>
-                            <textarea name="questions[${counter}][question_text]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" placeholder="Explain the concept of..." required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sample Answer (for reference)</label>
-                            <textarea name="questions[${counter}][correct_answer]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="3" placeholder="Key points students should mention..."></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Points</label>
-                            <input name="questions[${counter}][points]" type="number" value="3" min="1" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function removeQuestion(button) {
-            button.closest('.question-item').remove();
-            
-            // Show placeholder if no questions left
-            const container = document.getElementById('questionsContainer');
-            if (container.children.length === 0) {
-                container.innerHTML = '<p class="text-slate-500 dark:text-slate-400 text-center py-8">Click a question type above to add questions to your assessment</p>';
-            }
-        }
-        
-        function previewImage(input, previewId) {
-            const preview = document.getElementById(previewId);
-            const file = input.files[0];
-            
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = preview.querySelector('img');
-                    img.src = e.target.result;
-                    preview.classList.remove('hidden');
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.classList.add('hidden');
-            }
-        }
-    </script>
-
-    <!-- AI Generate Assessment Modal -->
-    <div x-show="showAI" 
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-50 overflow-y-auto" 
-         style="display: none;"
-         x-init="console.log('Modal initialized, showAI:', showAI)"
-         x-effect="console.log('showAI changed to:', showAI)">
-        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <!-- Background overlay -->
-            <div class="fixed inset-0 transition-opacity bg-slate-500 bg-opacity-75 backdrop-blur-sm" 
-                 @click="showAI = false"></div>
-
-            <!-- Modal panel -->
-            <div class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-700">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">🤖 AI Generate Assessment</h3>
-                    <button @click="showAI = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- AI Generate Assessment Modal -->
+        <div x-show="showAI" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">AI Generate Assessment</h3>
+                    <button @click="showAI=false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
-
                 <form method="POST" action="#" @submit="handleAISubmit($event)">
                     @csrf
-                    
-                    <div class="space-y-4">
+                    <div class="p-6 space-y-6">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
                             <select x-model="selectedClub" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                <option value="">Select a club</option>
-                                <template x-for="club in clubs" :key="club.id">
-                                    <option :value="club.id" x-text="club.club_name"></option>
-                                </template>
+                                <option value="">Select a Club</option>
+                                @foreach($clubs as $club)
+                                    <option value="{{ $club->id }}">{{ $club->club_name }}</option>
+                                @endforeach
                             </select>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Programming Topic</label>
                             <select name="topic" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                <option value="">Select a programming topic</option>
-                                <optgroup label="🎨 Visual Programming">
-                                    <option value="Scratch Basics">Scratch Basics - Sprites, Motion, Events</option>
-                                    <option value="Scratch Games">Scratch Games - Interactive Projects</option>
-                                    <option value="Scratch Animation">Scratch Animation - Storytelling</option>
-                                    <option value="Scratch Art">Scratch Art - Digital Drawing</option>
+                                <optgroup label="Scratch Programming">
+                                    <option value="scratch_basics">Scratch Basics</option>
+                                    <option value="scratch_animations">Scratch Animations</option>
+                                    <option value="scratch_games">Scratch Games</option>
+                                    <option value="scratch_storytelling">Scratch Storytelling</option>
                                 </optgroup>
-                                <optgroup label="🐍 Python Programming">
-                                    <option value="Python Basics">Python Basics - Variables, Loops, Functions</option>
-                                    <option value="Python Games">Python Games - Pygame, Turtle Graphics</option>
-                                    <option value="Python Web">Python Web - Flask, HTML Integration</option>
-                                    <option value="Python Data">Python Data - Lists, Dictionaries, Files</option>
+                                <optgroup label="Python Programming">
+                                    <option value="python_basics">Python Basics</option>
+                                    <option value="python_loops">Python Loops</option>
+                                    <option value="python_functions">Python Functions</option>
+                                    <option value="python_data_structures">Python Data Structures</option>
                                 </optgroup>
-                                <optgroup label="🌐 Web Development">
-                                    <option value="HTML Basics">HTML Basics - Structure, Tags, Forms</option>
-                                    <option value="CSS Styling">CSS Styling - Colors, Layouts, Animations</option>
-                                    <option value="JavaScript Basics">JavaScript Basics - Variables, Functions, Events</option>
-                                    <option value="Web Projects">Web Projects - Complete Websites</option>
+                                <optgroup label="Robotics">
+                                    <option value="robotics_basics">Robotics Basics</option>
+                                    <option value="robotics_sensors">Robotics Sensors</option>
+                                    <option value="robotics_programming">Robotics Programming</option>
                                 </optgroup>
-                                <optgroup label="🤖 Robotics & Electronics">
-                                    <option value="Arduino Basics">Arduino Basics - Sensors, LEDs, Motors</option>
-                                    <option value="Robotics Projects">Robotics Projects - Building Robots</option>
-                                    <option value="Circuit Design">Circuit Design - Breadboards, Components</option>
-                                    <option value="IoT Basics">IoT Basics - Internet of Things</option>
+                                <optgroup label="Web Development">
+                                    <option value="html_basics">HTML Basics</option>
+                                    <option value="css_styling">CSS Styling</option>
+                                    <option value="javascript_basics">JavaScript Basics</option>
                                 </optgroup>
-                                <optgroup label="📱 Mobile Development">
-                                    <option value="App Inventor">App Inventor - Mobile App Creation</option>
-                                    <option value="Thunkable">Thunkable - No-Code Mobile Apps</option>
-                                    <option value="Flutter Basics">Flutter Basics - Cross-Platform Apps</option>
+                                <optgroup label="Mobile Development">
+                                    <option value="mobile_app_basics">Mobile App Basics</option>
+                                    <option value="mobile_ui_design">Mobile UI Design</option>
                                 </optgroup>
-                                <optgroup label="🎮 Game Development">
-                                    <option value="Unity Basics">Unity Basics - 3D Game Development</option>
-                                    <option value="Game Design">Game Design - Characters, Levels, Mechanics</option>
-                                    <option value="2D Games">2D Games - Platformers, Puzzles</option>
+                                <optgroup label="Game Development">
+                                    <option value="game_design">Game Design</option>
+                                    <option value="game_mechanics">Game Mechanics</option>
                                 </optgroup>
                             </select>
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Difficulty Level</label>
-                            <select name="difficulty" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                <option value="beginner">🟢 Beginner</option>
-                                <option value="intermediate">🟡 Intermediate</option>
-                                <option value="advanced">🔴 Advanced</option>
-                            </select>
-                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Difficulty Level</label>
+                                <select name="difficulty" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="beginner">Beginner</option>
+                                    <option value="intermediate">Intermediate</option>
+                                    <option value="advanced">Advanced</option>
+                                </select>
+                            </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Assessment Type</label>
-                            <select name="assessment_type" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                                <option value="quiz">📝 Quiz (Multiple Choice)</option>
-                                <option value="test">📊 Test (Mixed Questions)</option>
-                                <option value="assignment">📋 Assignment (Text Questions)</option>
-                                <option value="project">🎯 Project (Practical Work)</option>
-                            </select>
-                        </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Assessment Type</label>
+                                <select name="assessment_type" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option value="quiz">Quiz</option>
+                                    <option value="assignment">Assignment</option>
+                                    <option value="test">Test</option>
+                                    <option value="project">Project</option>
+                                </select>
+                            </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Number of Questions</label>
-                            <input name="question_count" type="number" min="3" max="20" value="5" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Number of Questions</label>
+                                <input name="question_count" type="number" min="3" max="20" value="5" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end space-x-3 mt-6">
+                    <div class="flex items-center justify-end space-x-3 p-6 border-t border-slate-200 dark:border-slate-700">
                         <button type="button" @click="showAI = false" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
                             Cancel
                         </button>
@@ -759,4 +425,17 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Handle form submission for create assessment
+        document.getElementById('createAssessmentForm').addEventListener('submit', function(e) {
+            const clubId = document.getElementById('clubSelect').value;
+            if (!clubId) {
+                alert('Please select a club first');
+                e.preventDefault();
+                return;
+            }
+            this.action = `{{ route('assessments.store', ['club_id' => ':club_id']) }}`.replace(':club_id', clubId);
+        });
+    </script>
 </x-layouts.app>

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->json('project_requirements')->nullable(); // For practical projects
             $table->string('project_output_format')->nullable(); // For practical projects (e.g., 'scratch_project', 'python_file', 'html_file')
             $table->text('image_description')->nullable(); // For image-based questions
+            $table->string('image_url')->nullable(); // For uploaded images
+            $table->string('image_filename')->nullable(); // Original filename
             $table->unsignedInteger('points')->default(1);
             $table->unsignedInteger('order')->default(0); // For ordering questions
             $table->timestamps();

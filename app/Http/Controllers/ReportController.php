@@ -68,7 +68,7 @@ class ReportController extends Controller
 			$data = $attendanceData->get($report->id);
 			if ($data && $data->total_sessions > 0) {
 				$report->attendance_percentage = round(($data->attended_sessions / $data->total_sessions) * 100);
-			} else {
+		} else {
 				$report->attendance_percentage = 0;
 			}
 		}
