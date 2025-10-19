@@ -52,6 +52,42 @@ class StudentController extends Controller
 
 		return redirect()->route('students.index')->with('success', 'Student added and enrolled in club successfully!');
 	}
+
+	public function show(Student $student)
+	{
+		$student->load(['clubs.school']);
+		return view('students.show', compact('student'));
+	}
+
+	public function edit(Student $student)
+	{
+		$clubs = Club::with('school')->orderBy('club_name')->get();
+		$student->load(['clubs']);
+		return view('students.edit', compact('student', 'clubs'));
+	}
+
+	public function update(Request $request, Student $student)
+	{
+		$data = $request->validate([
+			'student_first_name' => ['required', 'string'],
+			'student_last_name' => ['required', 'string'],
+			'student_grade_level' => ['required', 'string'],
+			'student_parent_name' => ['required', 'string'],
+			'student_parent_email' => ['required', 'email'],
+			'student_parent_phone' => ['nullable', 'string'],
+			'student_medical_info' => ['nullable', 'string'],
+		]);
+
+		$student->update($data);
+
+		return redirect()->route('students.index')->with('success', 'Student updated successfully!');
+	}
+
+	public function destroy(Student $student)
+	{
+		$student->delete();
+		return redirect()->route('students.index')->with('success', 'Student deleted successfully!');
+	}
 }
 
 
