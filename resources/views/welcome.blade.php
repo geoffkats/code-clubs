@@ -92,8 +92,11 @@
                     <a href="#features" class="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
                     <a href="#about" class="text-gray-600 hover:text-blue-600 transition-colors">About</a>
                     <a href="#contact" class="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
+                    <a href="{{ route('student.login') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all text-sm">
+                        <i class="fas fa-user-graduate mr-1"></i>Student Login
+                    </a>
                     <a href="{{ route('login') }}" class="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:from-yellow-600 hover:to-red-600 transition-all transform hover:scale-105">
-                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                        <i class="fas fa-sign-in-alt mr-2"></i>Admin Login
                     </a>
                 </div>
                 
@@ -134,8 +137,11 @@
                         The comprehensive platform for managing coding clubs, tracking student progress, generating reports, and connecting parents with their children's coding journey.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                        <a href="{{ route('login') }}" class="bg-yellow-500 text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-yellow-600 transition-all transform hover:scale-105 shadow-lg">
-                            <i class="fas fa-sign-in-alt mr-2"></i>Access Club Portal
+                        <a href="{{ route('login') }}" class="bg-yellow-500 text-white px-6 py-4 rounded-xl text-lg font-semibold hover:bg-yellow-600 transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Admin Portal
+                        </a>
+                        <a href="{{ route('student.login') }}" class="bg-blue-500 text-white px-6 py-4 rounded-xl text-lg font-semibold hover:bg-blue-600 transition-all transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-user-graduate mr-2"></i>Student Portal
                         </a>
                         <a href="#features" class="border-2 border-gray-600 text-gray-600 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-50 transition-all">
                             <i class="fas fa-play mr-2"></i>Learn More
@@ -488,8 +494,11 @@
                 Join educators across Uganda who are using our system to efficiently manage their coding clubs and track student progress.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('login') }}" class="bg-white text-gray-900 px-8 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Access System
+                <a href="{{ route('login') }}" class="bg-white text-gray-900 px-6 py-4 rounded-xl text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Admin Access
+                </a>
+                <a href="{{ route('student.login') }}" class="bg-blue-600 text-white px-6 py-4 rounded-xl text-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-user-graduate mr-2"></i>Student Access
                 </a>
                 <a href="#contact" class="border-2 border-white text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-white/10 transition-all">
                     <i class="fas fa-envelope mr-2"></i>Contact Us
