@@ -26,7 +26,7 @@ class ReportController extends Controller
 		$cacheTTL = config('app.env') === 'production' ? 600 : 300; // 10 min prod, 5 min dev
 		$cachedData = \Cache::remember($cacheKey, $cacheTTL, function() use ($clubId, $search, $perPage) {
 			// Build optimized query with selective eager loading
-			$query = Report::select(['id', 'student_id', 'club_id', 'report_name', 'report_generated_at', 'created_at'])
+			$query = Report::select(['id', 'student_id', 'club_id', 'report_name', 'report_overall_score', 'report_generated_at', 'created_at'])
 				->with([
 					'student:id,student_first_name,student_last_name,student_id_number',
 					'club:id,club_name,club_level',
