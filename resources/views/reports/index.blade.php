@@ -132,7 +132,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-slate-400">Average Score</p>
-                        <p class="text-3xl font-bold text-white">{{ number_format($reports->avg('report_overall_score'), 1) }}%</p>
+                        <p class="text-3xl font-bold text-white">{{ number_format($reports->avg('report_overall_score') ?? 0, 1) }}%</p>
                     </div>
                     <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,7 +240,7 @@
                                 </div>
                                 <div class="text-right">
                                         <div class="bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-3">
-                                            <div class="text-3xl font-bold text-white">{{ round($report->report_overall_score) }}%</div>
+                                            <div class="text-3xl font-bold text-white">{{ round($report->report_overall_score ?? 0) }}%</div>
                                             <div class="text-xs text-blue-200 font-medium">Overall Score</div>
                                         </div>
                                     </div>
@@ -253,7 +253,7 @@
                             <!-- Quick Stats -->
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div class="text-center">
-                                    <div class="text-2xl font-bold text-slate-200 dark:text-slate-200">{{ round($report->report_overall_score) }}%</div>
+                                    <div class="text-2xl font-bold text-slate-200 dark:text-slate-200">{{ round($report->report_overall_score ?? 0) }}%</div>
                                     <div class="text-sm text-slate-400 dark:text-slate-400">Overall Score</div>
                                 </div>
                                 <div class="text-center">
@@ -276,7 +276,7 @@
                             <div class="mb-4">
                                 <div class="w-full bg-slate-600 dark:bg-slate-600 rounded-full h-2">
                                     <div class="bg-gradient-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-1000" 
-                                         style="width: {{ $report->report_overall_score }}%"></div>
+                                         style="width: {{ $report->report_overall_score ?? 0 }}%"></div>
                                 </div>
                             </div>
 
