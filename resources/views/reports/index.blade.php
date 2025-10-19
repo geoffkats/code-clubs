@@ -65,7 +65,7 @@
                     </div>
                     
                     <!-- Advanced Club Filter -->
-                    <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4">
                         <div class="flex items-center">
                             <div class="bg-blue-100 rounded-lg p-2 mr-3">
                                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,35 +76,35 @@
                         </div>
                         <select onchange="filterByClub(this.value)" 
                                 class="px-6 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm font-medium text-slate-700 min-w-[200px]">
-                            <option value="">All Clubs</option>
-                            @foreach($clubs as $club)
-                                <option value="{{ $club->id }}" {{ $clubId == $club->id ? 'selected' : '' }}>
-                                    {{ $club->club_name }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <option value="">All Clubs</option>
+                        @foreach($clubs as $club)
+                            <option value="{{ $club->id }}" {{ $clubId == $club->id ? 'selected' : '' }}>
+                                {{ $club->club_name }}
+                            </option>
+                        @endforeach
+                    </select>
                     </div>
                 </div>
-                
+
                 <!-- Actions Row -->
                 <div class="flex flex-wrap items-center justify-between gap-6">
                     <!-- Generate Reports Action -->
-                    @if($clubId)
+                @if($clubId)
                         <a href="{{ route('reports.generate', ['club_id' => $clubId]) }}" 
                            class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                            title="🤖 AI will automatically analyze assessments and attendance to generate personalized content for each student's report">
                             <div class="bg-white/20 rounded-lg p-2 mr-3">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
                             </div>
                             🤖 Generate AI Reports
-                        </a>
+                    </a>
                     @else
                         <div class="bg-slate-100 rounded-xl px-6 py-3 text-slate-600 font-medium">
                             Select a club to generate reports
                         </div>
-                    @endif
+                @endif
                 </div>
             </div>
         </div>
@@ -113,16 +113,16 @@
         @if($reports->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($reports as $report)
-                    <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group">
+                    <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 group" data-report-id="{{ $report->id }}">
                         <!-- Enterprise Report Header -->
                         <div class="bg-gradient-to-br from-slate-700 via-blue-700 to-indigo-800 p-6 text-white relative overflow-hidden">
                             <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>
                             <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-12 -translate-x-12"></div>
                             <div class="relative z-10">
                             <div class="flex items-center justify-between mb-4">
-                                    <div>
+                                <div>
                                         <div class="flex items-center mb-1">
-                                            <h3 class="text-xl font-bold text-white">{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}</h3>
+                                            <h3 class="text-xl font-bold text-white student-name">{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}</h3>
                                             <div class="ml-3 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1">
                                                 <span class="text-xs font-bold text-white">{{ $report->student_initials ?? strtoupper(substr($report->student->student_first_name, 0, 1) . substr($report->student->student_last_name, 0, 1)) }}</span>
                                             </div>
@@ -131,12 +131,12 @@
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                             </svg>
-                                            <span class="text-sm font-medium">{{ $report->club->club_name }}</span>
+                                            <span class="text-sm font-medium club-name">{{ $report->club->club_name }}</span>
                                             @if($report->student->student_grade_level)
                                                 <span class="text-xs text-blue-300 ml-2">• {{ $report->student->student_grade_level }}</span>
                                             @endif
                                         </div>
-                                    </div>
+                                </div>
                                 <div class="text-right">
                                         <div class="bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-3">
                                             <div class="text-3xl font-bold text-white">{{ round($report->report_overall_score) }}%</div>
@@ -242,7 +242,7 @@
                                         </button>
                                     </form>
                                     <form method="post" action="{{ route('reports.destroy', $report->id) }}" class="inline">
-                                        @csrf
+                                    @csrf
                                         @method('DELETE')
                                         <button type="submit" 
                                                 class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-center shadow-md hover:shadow-lg flex items-center justify-center"
@@ -260,18 +260,18 @@
                         <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
                             <div class="space-y-3">
                                 <!-- Generated Date -->
-                                <div class="flex items-center justify-between text-sm text-gray-500">
-                                    <span>
-                                        @if($report->report_generated_at)
-                                            @if(is_string($report->report_generated_at))
-                                                {{ \Carbon\Carbon::parse($report->report_generated_at)->format('M j, Y') }}
-                                            @else
-                                                {{ $report->report_generated_at->format('M j, Y') }}
-                                            @endif
+                            <div class="flex items-center justify-between text-sm text-gray-500">
+                                <span>
+                                    @if($report->report_generated_at)
+                                        @if(is_string($report->report_generated_at))
+                                            {{ \Carbon\Carbon::parse($report->report_generated_at)->format('M j, Y') }}
                                         @else
-                                            Not generated
+                                            {{ $report->report_generated_at->format('M j, Y') }}
                                         @endif
-                                    </span>
+                                    @else
+                                        Not generated
+                                    @endif
+                                </span>
                                 </div>
                                 
                                 <!-- Access Code with Copy Feature -->
@@ -280,7 +280,7 @@
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <div class="text-xs font-medium text-blue-700 mb-1">Access Code</div>
-                                                <div class="text-sm font-mono font-bold text-blue-900 bg-white px-2 py-1 rounded border">
+                                                <div class="text-sm font-mono font-bold text-blue-900 bg-white px-2 py-1 rounded border access-code">
                                                     {{ $report->access_code->access_code_plain_preview }}
                                                 </div>
                                             </div>
@@ -407,8 +407,16 @@
         </div>
     </div>
 
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
     <!-- JavaScript for filtering and email modal -->
     <script>
+        // Initialize EmailJS
+        (function() {
+            emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
+        })();
+
         function filterByClub(clubId) {
             if (clubId) {
                 window.location.href = '{{ route("reports.index") }}?club_id=' + clubId;
@@ -417,8 +425,20 @@
             }
         }
 
+        // Global variables to store report data
+        let currentReportData = {};
+
         // Email Modal Functions
         function showEmailModal(reportId, currentEmail) {
+            // Store report data for EmailJS
+            currentReportData = {
+                reportId: reportId,
+                studentName: document.querySelector(`[data-report-id="${reportId}"] .student-name`)?.textContent || 'Student',
+                clubName: document.querySelector(`[data-report-id="${reportId}"] .club-name`)?.textContent || 'Coding Club',
+                accessCode: document.querySelector(`[data-report-id="${reportId}"] .access-code`)?.textContent || 'N/A',
+                reportUrl: `${window.location.origin}/r/${reportId}?code=${document.querySelector(`[data-report-id="${reportId}"] .access-code`)?.textContent || 'demo'}`
+            };
+            
             document.getElementById('emailForm').action = '{{ route("reports.send", ":id") }}'.replace(':id', reportId);
             document.getElementById('parentEmail').value = currentEmail || '';
             document.getElementById('currentEmail').textContent = currentEmail || 'Not provided';
@@ -437,11 +457,20 @@
             }
         });
 
-        // Email form submission with loading state
+        // Email form submission with EmailJS
         document.getElementById('emailForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
+            const parentEmail = document.getElementById('parentEmail').value;
             
+            if (!parentEmail) {
+                showToast('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            // Update button to show loading state
             submitBtn.innerHTML = `
                 <svg class="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
@@ -449,7 +478,67 @@
                 Sending...
             `;
             submitBtn.disabled = true;
+            
+            // Prepare EmailJS template parameters
+            const templateParams = {
+                to_email: parentEmail,
+                student_name: currentReportData.studentName,
+                club_name: currentReportData.clubName,
+                access_code: currentReportData.accessCode,
+                report_url: currentReportData.reportUrl,
+                sender_name: 'Code Club System',
+                current_date: new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })
+            };
+            
+            // Send email using EmailJS
+            emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', templateParams)
+                .then(function(response) {
+                    console.log('Email sent successfully!', response.status, response.text);
+                    showToast(`Report sent successfully to ${parentEmail}!`, 'success');
+                    closeEmailModal();
+                }, function(error) {
+                    console.error('Failed to send email:', error);
+                    showToast('Failed to send email. Please try again.', 'error');
+                })
+                .finally(function() {
+                    // Reset button
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
         });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+                type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+            }`;
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        ${type === 'success' 
+                            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+                            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>'
+                        }
+                    </svg>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
 
         // Close modal with Escape key
         document.addEventListener('keydown', function(e) {
