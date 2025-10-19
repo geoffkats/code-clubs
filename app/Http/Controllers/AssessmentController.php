@@ -676,6 +676,28 @@ class AssessmentController extends Controller
 
 		return $topicAnswers[array_rand($topicAnswers)];
 	}
+
+	/**
+	 * Grade a project submission
+	 */
+	public function grade(Request $request, $scoreId)
+	{
+		$request->validate([
+			'score_value' => 'required|numeric|min:0',
+			'status' => 'required|in:submitted,graded',
+			'admin_feedback' => 'nullable|string|max:1000',
+		]);
+
+		$score = \App\Models\AssessmentScore::findOrFail($scoreId);
+		
+		$score->update([
+			'score_value' => $request->score_value,
+			'status' => $request->status,
+			'admin_feedback' => $request->admin_feedback,
+		]);
+
+		return redirect()->back()->with('success', 'Grade saved successfully!');
+	}
 }
 
 

@@ -235,6 +235,13 @@
                                             <div class="text-xs text-slate-400 dark:text-slate-500">
                                                 {{ $score->created_at->format('M d, Y \a\t g:i A') }}
                                             </div>
+                                            @if($score->status === 'submitted')
+                                                <div class="mt-2">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                                                        Awaiting Review
+                                                    </span>
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                     
@@ -289,6 +296,19 @@
                                                             <p class="text-sm text-slate-700 dark:text-slate-300">
                                                                 {{ $score->student_answers[$question->id] ?? 'No submission provided' }}
                                                             </p>
+                                                            @if($score->submission_file_path)
+                                                                <div class="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
+                                                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Project File:</p>
+                                                                    <a href="{{ asset('storage/' . $score->submission_file_path) }}" 
+                                                                       download="{{ $score->submission_file_name }}"
+                                                                       class="inline-flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-sm hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
+                                                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                                        </svg>
+                                                                        {{ $score->submission_file_name }}
+                                                                    </a>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         @if($question->project_instructions)
                                                             <p class="text-sm text-slate-600 dark:text-slate-300">
@@ -326,6 +346,65 @@
                                             </div>
                                         @endforeach
                                     </div>
+                                    
+                                    <!-- Grading Form for Project Submissions -->
+                                    @if($score->status === 'submitted' && $assessment->questions->where('question_type', 'practical_project')->count() > 0)
+                                        <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 rounded-lg">
+                                            <h5 class="font-medium text-yellow-900 dark:text-yellow-300 mb-3">Grade This Submission</h5>
+                                            <form method="POST" action="{{ route('assessments.grade', $score->id) }}" class="space-y-4">
+                                                @csrf
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label for="score_value_{{ $score->id }}" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                                            Score (0-{{ $score->score_max_value }})
+                                                        </label>
+                                                        <input type="number" 
+                                                               name="score_value" 
+                                                               id="score_value_{{ $score->id }}"
+                                                               min="0" 
+                                                               max="{{ $score->score_max_value }}"
+                                                               value="{{ $score->score_value }}"
+                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
+                                                               required>
+                                                    </div>
+                                                    <div>
+                                                        <label for="status_{{ $score->id }}" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                                            Status
+                                                        </label>
+                                                        <select name="status" 
+                                                                id="status_{{ $score->id }}"
+                                                                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white">
+                                                            <option value="submitted" {{ $score->status === 'submitted' ? 'selected' : '' }}>Submitted</option>
+                                                            <option value="graded" {{ $score->status === 'graded' ? 'selected' : '' }}>Graded</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label for="admin_feedback_{{ $score->id }}" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                                        Feedback (Optional)
+                                                    </label>
+                                                    <textarea name="admin_feedback" 
+                                                              id="admin_feedback_{{ $score->id }}"
+                                                              rows="3"
+                                                              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:text-white"
+                                                              placeholder="Provide feedback to the student...">{{ $score->admin_feedback }}</textarea>
+                                                </div>
+                                                <div class="flex justify-end">
+                                                    <button type="submit" 
+                                                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                                        Save Grade
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    @endif
+                                    
+                                    @if($score->admin_feedback)
+                                        <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg">
+                                            <h5 class="font-medium text-blue-900 dark:text-blue-300 mb-2">Admin Feedback</h5>
+                                            <p class="text-sm text-blue-800 dark:text-blue-200">{{ $score->admin_feedback }}</p>
+                                        </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>

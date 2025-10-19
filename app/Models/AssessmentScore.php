@@ -15,6 +15,11 @@ class AssessmentScore extends Model
 		'student_id',
 		'score_value',
 		'score_max_value',
+		'submission_text',
+		'submission_file_path',
+		'submission_file_name',
+		'status',
+		'admin_feedback',
 	];
 
 	public function assessment(): BelongsTo

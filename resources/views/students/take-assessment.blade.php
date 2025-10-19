@@ -40,7 +40,7 @@
         </div>
 
         <!-- Assessment Form -->
-        <form method="POST" action="{{ route('student.assessment.submit', $assessment->id) }}" class="space-y-8">
+        <form method="POST" action="{{ route('student.assessment.submit', $assessment->id) }}" class="space-y-8" enctype="multipart/form-data">
             @csrf
             
             @foreach($assessment->questions as $index => $question)
@@ -105,16 +105,34 @@
                                         </div>
                                     @endif
                                     
-                                    <div>
-                                        <label for="answer_{{ $question->id }}" class="block text-sm font-medium text-gray-700 mb-2">
-                                            Describe your project or paste your code:
-                                        </label>
-                                        <textarea name="answers[{{ $question->id }}]" 
-                                                  id="answer_{{ $question->id }}"
-                                                  rows="6" 
-                                                  required
-                                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                                  placeholder="Describe what you created, paste your code, or explain your approach..."></textarea>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label for="answer_{{ $question->id }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Describe your project or paste your code:
+                                            </label>
+                                            <textarea name="answers[{{ $question->id }}]" 
+                                                      id="answer_{{ $question->id }}"
+                                                      rows="6" 
+                                                      required
+                                                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                                      placeholder="Describe what you created, paste your code, or explain your approach..."></textarea>
+                                        </div>
+                                        
+                                        <div>
+                                            <label for="project_file_{{ $question->id }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Upload Project File (Optional):
+                                            </label>
+                                            <div class="flex items-center space-x-4">
+                                                <input type="file" 
+                                                       name="project_files[{{ $question->id }}]" 
+                                                       id="project_file_{{ $question->id }}"
+                                                       accept=".sb,.sb2,.sb3,.py,.js,.html,.css,.zip,.rar,.pdf,.doc,.docx"
+                                                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                                <div class="text-xs text-gray-500">
+                                                    Supported: Scratch (.sb, .sb2, .sb3), Python (.py), Web files, Documents, Archives
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 @break

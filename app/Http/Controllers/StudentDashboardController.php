@@ -93,6 +93,7 @@ class StudentDashboardController extends Controller
         $validator = Validator::make($request->all(), [
             'answers' => 'required|array',
             'answers.*' => 'required|string',
+            'project_files.*' => 'nullable|file|mimes:sb,sb2,sb3,py,js,html,css,zip,rar,pdf,doc,docx|max:10240', // 10MB max
         ]);
 
         if ($validator->fails()) {
@@ -100,42 +101,66 @@ class StudentDashboardController extends Controller
         }
 
         $answers = $request->input('answers');
+        $projectFiles = $request->file('project_files', []);
         $totalScore = 0;
         $maxScore = 0;
+        $submissionText = '';
+        $submissionFilePath = null;
+        $submissionFileName = null;
 
-        // Calculate score
+        // Check if this is a project-based assessment
+        $isProjectBased = $assessment->questions->where('question_type', 'practical_project')->count() > 0;
+
+        // Calculate score and handle submissions
         foreach ($assessment->questions as $question) {
             $maxScore += $question->points;
             
             if (isset($answers[$question->id])) {
                 $studentAnswer = $answers[$question->id];
                 
-                // Check if answer is correct based on question type
-                switch ($question->question_type) {
-                    case 'multiple_choice':
-                        if ($studentAnswer === $question->correct_answer) {
-                            $totalScore += $question->points;
-                        }
-                        break;
-                    case 'practical_project':
-                        // For practical projects, assume partial credit for any submission
-                        $totalScore += $question->points * 0.8; // 80% for attempting
-                        break;
-                    case 'text_question':
-                        // For text questions, give full credit for any reasonable answer
-                        if (strlen($studentAnswer) > 10) {
-                            $totalScore += $question->points;
-                        } else {
-                            $totalScore += $question->points * 0.5; // 50% for short answers
-                        }
-                        break;
-                    case 'image_question':
-                        // For image questions, give partial credit for any answer
-                        $totalScore += $question->points * 0.7;
-                        break;
+                // Handle project submissions
+                if ($question->question_type === 'practical_project') {
+                    $submissionText .= "Question {$question->id}: {$studentAnswer}\n\n";
+                    
+                    // Handle file upload for this question
+                    if (isset($projectFiles[$question->id]) && $projectFiles[$question->id]->isValid()) {
+                        $file = $projectFiles[$question->id];
+                        $filename = time() . '_' . $student->id . '_' . $file->getClientOriginalName();
+                        $path = $file->storeAs('student_submissions', $filename, 'public');
+                        
+                        $submissionFilePath = $path;
+                        $submissionFileName = $file->getClientOriginalName();
+                    }
+                    
+                    // For project-based assessments, don't auto-grade - set to 0 until admin reviews
+                    $totalScore = 0;
+                } else {
+                    // Auto-grade other question types
+                    switch ($question->question_type) {
+                        case 'multiple_choice':
+                            if ($studentAnswer === $question->correct_answer) {
+                                $totalScore += $question->points;
+                            }
+                            break;
+                        case 'text_question':
+                            if (strlen($studentAnswer) > 10) {
+                                $totalScore += $question->points;
+                            } else {
+                                $totalScore += $question->points * 0.5;
+                            }
+                            break;
+                        case 'image_question':
+                            $totalScore += $question->points * 0.7;
+                            break;
+                        default:
+                            $totalScore += $question->points * 0.5;
+                    }
                 }
             }
         }
+
+        // Determine status based on assessment type
+        $status = $isProjectBased ? 'submitted' : 'graded';
 
         // Save the score
         AssessmentScore::create([
@@ -143,7 +168,11 @@ class StudentDashboardController extends Controller
             'assessment_id' => $assessment->id,
             'score_value' => $totalScore,
             'score_max_value' => $maxScore,
-            'submitted_at' => now(),
+            'submission_text' => $submissionText ?: json_encode($answers),
+            'submission_file_path' => $submissionFilePath,
+            'submission_file_name' => $submissionFileName,
+            'status' => $status,
+            'student_answers' => $answers,
         ]);
 
         return redirect()->route('student.assessment.show', $assessmentId)
