@@ -137,7 +137,7 @@
                                             </div>
                                             <p class="text-sm text-gray-600 mb-2">{{ $assessment->club->club_name }}</p>
                                             <p class="text-xs text-gray-500">
-                                                Completed on {{ $score->submitted_at->format('M d, Y \a\t g:i A') }}
+                                                Completed on {{ $score->created_at->format('M d, Y \a\t g:i A') }}
                                             </p>
                                         </div>
                                         
