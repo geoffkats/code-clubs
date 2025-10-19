@@ -149,8 +149,11 @@ class AssessmentController extends Controller
 		// Update assessment
 		$assessment->update($data);
 		
-		// Handle questions update
+				// Handle questions update
 		if ($request->has('questions') && is_array($request->questions)) {
+			// Get existing questions to preserve image data
+			$existingQuestions = $assessment->questions->keyBy('order');
+			
 			// Delete existing questions
 			$assessment->questions()->delete();
 			
@@ -193,6 +196,13 @@ class AssessmentController extends Controller
 							
 							$questionData['image_url'] = $path;
 							$questionData['image_filename'] = $imageFile->getClientOriginalName();
+						} else {
+							// Preserve existing image data if no new image uploaded
+							$existingQuestion = $existingQuestions->get($index + 1);
+							if ($existingQuestion && $existingQuestion->question_type === 'image_question') {
+								$questionData['image_url'] = $existingQuestion->image_url;
+								$questionData['image_filename'] = $existingQuestion->image_filename;
+							}
 						}
 						break;
 				}
@@ -228,11 +238,157 @@ class AssessmentController extends Controller
 
 	public function scores(int $assessment_id)
 	{
-		$assessment = Assessment::with(['club.school', 'scores.student'])->findOrFail($assessment_id);
+		$assessment = Assessment::with(['club.school', 'scores.student', 'questions'])->findOrFail($assessment_id);
 		$scores = $assessment->scores;
 		$students = $assessment->club->students;
 		
 		return view('assessments.scores', compact('assessment', 'scores', 'students'));
+	}
+
+	public function store_scores(Request $request, int $assessment_id)
+	{
+		$assessment = Assessment::findOrFail($assessment_id);
+		
+		$request->validate([
+			'scores' => ['required', 'array'],
+			'scores.*.student_id' => ['required', 'integer', 'exists:students,id'],
+			'scores.*.score' => ['required', 'numeric', 'min:0', 'max:100'],
+			'scores.*.feedback' => ['nullable', 'string', 'max:1000'],
+		]);
+		
+		foreach ($request->scores as $scoreData) {
+			\App\Models\AssessmentScore::updateOrCreate(
+				[
+					'assessment_id' => $assessment->id,
+					'student_id' => $scoreData['student_id']
+				],
+				[
+					'score' => $scoreData['score'],
+					'feedback' => $scoreData['feedback'] ?? '',
+				]
+			);
+		}
+		
+		return redirect()->route('assessments.scores', $assessment->id)
+			->with('success', 'Assessment scores saved successfully!');
+	}
+
+	public function ai_generate(Request $request, int $club_id)
+	{
+		$club = Club::with('students')->findOrFail($club_id);
+		
+		$request->validate([
+			'topic' => ['required', 'string', 'max:255'],
+			'difficulty' => ['required', 'in:beginner,intermediate,advanced'],
+			'question_count' => ['required', 'integer', 'min:3', 'max:20'],
+			'assessment_type' => ['required', 'in:quiz,assignment,test,project'],
+		]);
+		
+		// AI-generated assessment data
+		$aiData = $this->generateAIAssessment(
+			$request->topic,
+			$request->difficulty,
+			$request->question_count,
+			$request->assessment_type,
+			$club->club_name
+		);
+		
+		// Create the assessment
+		$assessment = Assessment::create([
+			'club_id' => $club->id,
+			'assessment_type' => $request->assessment_type,
+			'assessment_name' => $aiData['title'],
+			'description' => $aiData['description'],
+			'total_points' => $aiData['total_points'],
+			'due_date' => now()->addDays(7), // Default due in 1 week
+		]);
+		
+		// Create questions
+		foreach ($aiData['questions'] as $index => $questionData) {
+			\App\Models\AssessmentQuestion::create([
+				'assessment_id' => $assessment->id,
+				'question_type' => $questionData['type'],
+				'question_text' => $questionData['text'],
+				'question_options' => $questionData['options'] ?? null,
+				'correct_answer' => $questionData['correct_answer'] ?? null,
+				'project_instructions' => $questionData['instructions'] ?? null,
+				'project_requirements' => $questionData['requirements'] ?? null,
+				'project_output_format' => $questionData['output_format'] ?? null,
+				'points' => $questionData['points'],
+				'order' => $index + 1,
+			]);
+		}
+		
+		return redirect()->route('assessments.show', $assessment->id)
+			->with('success', "AI-generated assessment '{$assessment->assessment_name}' created successfully with {$request->question_count} questions!");
+	}
+	
+	private function generateAIAssessment($topic, $difficulty, $questionCount, $assessmentType, $clubName)
+	{
+		// This is a simplified AI generation - in a real implementation, you'd use an AI service
+		$difficultyMultiplier = match($difficulty) {
+			'beginner' => 1,
+			'intermediate' => 1.5,
+			'advanced' => 2,
+		};
+		
+		$questions = [];
+		$totalPoints = 0;
+		
+		// Generate different types of questions based on assessment type
+		$questionTypes = match($assessmentType) {
+			'quiz' => ['multiple_choice', 'multiple_choice', 'multiple_choice', 'text_question'],
+			'test' => ['multiple_choice', 'multiple_choice', 'text_question', 'practical_project'],
+			'assignment' => ['text_question', 'practical_project', 'text_question'],
+			'project' => ['practical_project', 'practical_project', 'text_question'],
+		};
+		
+		for ($i = 0; $i < $questionCount; $i++) {
+			$questionType = $questionTypes[$i % count($questionTypes)];
+			$points = (int)(5 * $difficultyMultiplier);
+			$totalPoints += $points;
+			
+			$question = [
+				'type' => $questionType,
+				'text' => "Question " . ($i + 1) . " about {$topic}",
+				'points' => $points,
+			];
+			
+			switch ($questionType) {
+				case 'multiple_choice':
+					$question['options'] = [
+						'A' => "Option A for {$topic}",
+						'B' => "Option B for {$topic}",
+						'C' => "Option C for {$topic}",
+						'D' => "Option D for {$topic}",
+					];
+					$question['correct_answer'] = ['A', 'B', 'C', 'D'][array_rand(['A', 'B', 'C', 'D'])];
+					break;
+					
+				case 'practical_project':
+					$question['instructions'] = "Create a {$topic} project for {$clubName}";
+					$question['requirements'] = [
+						"Must demonstrate understanding of {$topic}",
+						"Should be interactive and engaging",
+						"Must include proper documentation",
+					];
+					$question['output_format'] = 'scratch_project';
+					break;
+					
+				case 'text_question':
+					$question['correct_answer'] = "Sample answer for {$topic} question";
+					break;
+			}
+			
+			$questions[] = $question;
+		}
+		
+		return [
+			'title' => "{$difficulty} {$topic} Assessment",
+			'description' => "AI-generated assessment on {$topic} for {$clubName} students at {$difficulty} level",
+			'total_points' => $totalPoints,
+			'questions' => $questions,
+		];
 	}
 }
 

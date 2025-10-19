@@ -2,6 +2,7 @@
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50 to-orange-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" 
          x-data="{ 
              showCreate: false,
+             showAI: false,
              selectedClub: '',
              clubs: @js($clubs ?? [])
          }">
@@ -28,6 +29,12 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
                             Create Assessment
+                        </button>
+                        <button @click="showAI = true" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                            <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                            AI Generate
                         </button>
                     </div>
                 </div>
@@ -622,4 +629,87 @@
             }
         }
     </script>
+
+    <!-- AI Generate Assessment Modal -->
+    <div x-show="showAI" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity bg-slate-500 bg-opacity-75 backdrop-blur-sm" 
+                 @click="showAI = false"></div>
+
+            <!-- Modal panel -->
+            <div class="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-slate-800 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-700">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">🤖 AI Generate Assessment</h3>
+                    <button @click="showAI = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <form method="POST" :action="`/clubs/${selectedClub}/assessments/ai-generate`" @submit="showAI = false">
+                    @csrf
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
+                            <select x-model="selectedClub" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option value="">Select a club</option>
+                                <template x-for="club in clubs" :key="club.id">
+                                    <option :value="club.id" x-text="club.club_name"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Topic</label>
+                            <input name="topic" type="text" required placeholder="e.g., Python Basics, Scratch Games, Web Development" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Difficulty Level</label>
+                            <select name="difficulty" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option value="beginner">🟢 Beginner</option>
+                                <option value="intermediate">🟡 Intermediate</option>
+                                <option value="advanced">🔴 Advanced</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Assessment Type</label>
+                            <select name="assessment_type" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option value="quiz">📝 Quiz (Multiple Choice)</option>
+                                <option value="test">📊 Test (Mixed Questions)</option>
+                                <option value="assignment">📋 Assignment (Text Questions)</option>
+                                <option value="project">🎯 Project (Practical Work)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Number of Questions</label>
+                            <input name="question_count" type="number" min="3" max="20" value="5" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-end space-x-3 mt-6">
+                        <button type="button" @click="showAI = false" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium">
+                            🤖 Generate Assessment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </x-layouts.app>
