@@ -656,7 +656,7 @@
                     </button>
                 </div>
 
-                <form method="POST" :action="`/clubs/${selectedClub}/assessments/ai-generate`" @submit="showAI = false">
+                <form method="POST" :action="selectedClub ? `/clubs/${selectedClub}/assessments/ai-generate` : '#'" @submit="if (!selectedClub) { alert('Please select a club first'); $event.preventDefault(); } else { showAI = false; }">
                     @csrf
                     
                     <div class="space-y-4">
@@ -671,8 +671,44 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Topic</label>
-                            <input name="topic" type="text" required placeholder="e.g., Python Basics, Scratch Games, Web Development" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Programming Topic</label>
+                            <select name="topic" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                <option value="">Select a programming topic</option>
+                                <optgroup label="🎨 Visual Programming">
+                                    <option value="Scratch Basics">Scratch Basics - Sprites, Motion, Events</option>
+                                    <option value="Scratch Games">Scratch Games - Interactive Projects</option>
+                                    <option value="Scratch Animation">Scratch Animation - Storytelling</option>
+                                    <option value="Scratch Art">Scratch Art - Digital Drawing</option>
+                                </optgroup>
+                                <optgroup label="🐍 Python Programming">
+                                    <option value="Python Basics">Python Basics - Variables, Loops, Functions</option>
+                                    <option value="Python Games">Python Games - Pygame, Turtle Graphics</option>
+                                    <option value="Python Web">Python Web - Flask, HTML Integration</option>
+                                    <option value="Python Data">Python Data - Lists, Dictionaries, Files</option>
+                                </optgroup>
+                                <optgroup label="🌐 Web Development">
+                                    <option value="HTML Basics">HTML Basics - Structure, Tags, Forms</option>
+                                    <option value="CSS Styling">CSS Styling - Colors, Layouts, Animations</option>
+                                    <option value="JavaScript Basics">JavaScript Basics - Variables, Functions, Events</option>
+                                    <option value="Web Projects">Web Projects - Complete Websites</option>
+                                </optgroup>
+                                <optgroup label="🤖 Robotics & Electronics">
+                                    <option value="Arduino Basics">Arduino Basics - Sensors, LEDs, Motors</option>
+                                    <option value="Robotics Projects">Robotics Projects - Building Robots</option>
+                                    <option value="Circuit Design">Circuit Design - Breadboards, Components</option>
+                                    <option value="IoT Basics">IoT Basics - Internet of Things</option>
+                                </optgroup>
+                                <optgroup label="📱 Mobile Development">
+                                    <option value="App Inventor">App Inventor - Mobile App Creation</option>
+                                    <option value="Thunkable">Thunkable - No-Code Mobile Apps</option>
+                                    <option value="Flutter Basics">Flutter Basics - Cross-Platform Apps</option>
+                                </optgroup>
+                                <optgroup label="🎮 Game Development">
+                                    <option value="Unity Basics">Unity Basics - 3D Game Development</option>
+                                    <option value="Game Design">Game Design - Characters, Levels, Mechanics</option>
+                                    <option value="2D Games">2D Games - Platformers, Puzzles</option>
+                                </optgroup>
+                            </select>
                         </div>
 
                         <div>

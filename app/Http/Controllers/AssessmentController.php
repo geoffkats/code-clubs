@@ -250,27 +250,23 @@ class AssessmentController extends Controller
 		$assessment = Assessment::findOrFail($assessment_id);
 		
 		$request->validate([
-			'scores' => ['required', 'array'],
-			'scores.*.student_id' => ['required', 'integer', 'exists:students,id'],
-			'scores.*.score' => ['required', 'numeric', 'min:0', 'max:100'],
-			'scores.*.feedback' => ['nullable', 'string', 'max:1000'],
+			'student_id' => ['required', 'integer', 'exists:students,id'],
+			'score' => ['required', 'numeric', 'min:0'],
 		]);
 		
-		foreach ($request->scores as $scoreData) {
-			\App\Models\AssessmentScore::updateOrCreate(
-				[
-					'assessment_id' => $assessment->id,
-					'student_id' => $scoreData['student_id']
-				],
-				[
-					'score' => $scoreData['score'],
-					'feedback' => $scoreData['feedback'] ?? '',
-				]
-			);
-		}
+		\App\Models\AssessmentScore::updateOrCreate(
+			[
+				'assessment_id' => $assessment->id,
+				'student_id' => $request->student_id
+			],
+			[
+				'score_value' => $request->score,
+				'score_max_value' => $assessment->total_points ?? 100,
+			]
+		);
 		
 		return redirect()->route('assessments.scores', $assessment->id)
-			->with('success', 'Assessment scores saved successfully!');
+			->with('success', 'Assessment score saved successfully!');
 	}
 
 	public function ai_generate(Request $request, int $club_id)
@@ -325,7 +321,6 @@ class AssessmentController extends Controller
 	
 	private function generateAIAssessment($topic, $difficulty, $questionCount, $assessmentType, $clubName)
 	{
-		// This is a simplified AI generation - in a real implementation, you'd use an AI service
 		$difficultyMultiplier = match($difficulty) {
 			'beginner' => 1,
 			'intermediate' => 1.5,
@@ -334,6 +329,9 @@ class AssessmentController extends Controller
 		
 		$questions = [];
 		$totalPoints = 0;
+		
+		// Get topic-specific content
+		$topicContent = $this->getTopicContent($topic);
 		
 		// Generate different types of questions based on assessment type
 		$questionTypes = match($assessmentType) {
@@ -350,33 +348,25 @@ class AssessmentController extends Controller
 			
 			$question = [
 				'type' => $questionType,
-				'text' => "Question " . ($i + 1) . " about {$topic}",
+				'text' => $this->generateQuestionText($topic, $topicContent, $i + 1, $questionType, $difficulty),
 				'points' => $points,
 			];
 			
 			switch ($questionType) {
 				case 'multiple_choice':
-					$question['options'] = [
-						'A' => "Option A for {$topic}",
-						'B' => "Option B for {$topic}",
-						'C' => "Option C for {$topic}",
-						'D' => "Option D for {$topic}",
-					];
-					$question['correct_answer'] = ['A', 'B', 'C', 'D'][array_rand(['A', 'B', 'C', 'D'])];
+					$question['options'] = $this->generateMultipleChoiceOptions($topic, $topicContent, $difficulty);
+					$question['correct_answer'] = $question['options']['correct'];
+					unset($question['options']['correct']);
 					break;
 					
 				case 'practical_project':
-					$question['instructions'] = "Create a {$topic} project for {$clubName}";
-					$question['requirements'] = [
-						"Must demonstrate understanding of {$topic}",
-						"Should be interactive and engaging",
-						"Must include proper documentation",
-					];
-					$question['output_format'] = 'scratch_project';
+					$question['instructions'] = $this->generateProjectInstructions($topic, $topicContent, $clubName, $difficulty);
+					$question['requirements'] = $this->generateProjectRequirements($topic, $topicContent, $difficulty);
+					$question['output_format'] = $topicContent['output_format'];
 					break;
 					
 				case 'text_question':
-					$question['correct_answer'] = "Sample answer for {$topic} question";
+					$question['correct_answer'] = $this->generateTextAnswer($topic, $topicContent, $difficulty);
 					break;
 			}
 			
@@ -384,11 +374,158 @@ class AssessmentController extends Controller
 		}
 		
 		return [
-			'title' => "{$difficulty} {$topic} Assessment",
+			'title' => "{$topic} Assessment - {$difficulty} Level",
 			'description' => "AI-generated assessment on {$topic} for {$clubName} students at {$difficulty} level",
 			'total_points' => $totalPoints,
 			'questions' => $questions,
 		];
+	}
+	
+	private function getTopicContent($topic)
+	{
+		$content = [
+			'Scratch Basics' => [
+				'concepts' => ['sprites', 'motion blocks', 'events', 'loops', 'costumes'],
+				'output_format' => 'scratch_project',
+				'questions' => [
+					'What is the purpose of motion blocks in Scratch?',
+					'How do you make a sprite move continuously?',
+					'What is the difference between forever and repeat loops?'
+				]
+			],
+			'Python Basics' => [
+				'concepts' => ['variables', 'loops', 'functions', 'conditionals', 'data types'],
+				'output_format' => 'python_file',
+				'questions' => [
+					'What is the difference between a variable and a constant?',
+					'How do you create a function in Python?',
+					'What are the different data types in Python?'
+				]
+			],
+			'Robotics Projects' => [
+				'concepts' => ['sensors', 'motors', 'programming', 'circuitry', 'automation'],
+				'output_format' => 'robotics_project',
+				'questions' => [
+					'How do sensors help robots make decisions?',
+					'What is the purpose of motors in robotics?',
+					'How do you program a robot to follow a line?'
+				]
+			],
+			'HTML Basics' => [
+				'concepts' => ['tags', 'elements', 'attributes', 'structure', 'forms'],
+				'output_format' => 'html_file',
+				'questions' => [
+					'What is the purpose of HTML tags?',
+					'How do you create a hyperlink in HTML?',
+					'What is the difference between div and span elements?'
+				]
+			]
+		];
+		
+		return $content[$topic] ?? [
+			'concepts' => ['programming', 'logic', 'problem solving'],
+			'output_format' => 'scratch_project',
+			'questions' => ['What is programming?', 'How do you solve problems with code?']
+		];
+	}
+	
+	private function generateQuestionText($topic, $content, $number, $type, $difficulty)
+	{
+		$questions = $content['questions'];
+		$baseQuestion = $questions[($number - 1) % count($questions)];
+		
+		if ($type === 'practical_project') {
+			return "Create a {$topic} project that demonstrates your understanding of the concepts we've covered.";
+		}
+		
+		return "Q{$number}: {$baseQuestion}";
+	}
+	
+	private function generateMultipleChoiceOptions($topic, $content, $difficulty)
+	{
+		$concepts = $content['concepts'];
+		$correctAnswer = $concepts[array_rand($concepts)];
+		
+		$options = ['A', 'B', 'C', 'D'];
+		$wrongAnswers = array_diff($concepts, [$correctAnswer]);
+		
+		if (count($wrongAnswers) < 3) {
+			$wrongAnswers = array_merge($wrongAnswers, ['variables', 'functions', 'loops', 'conditions']);
+		}
+		
+		$selectedWrong = array_slice(array_values($wrongAnswers), 0, 3);
+		$allOptions = array_merge([$correctAnswer], $selectedWrong);
+		shuffle($allOptions);
+		
+		$result = [];
+		foreach ($options as $key => $option) {
+			$result[$option] = $allOptions[$key];
+			if ($allOptions[$key] === $correctAnswer) {
+				$result['correct'] = $option;
+			}
+		}
+		
+		return $result;
+	}
+	
+	private function generateProjectInstructions($topic, $content, $clubName, $difficulty)
+	{
+		$baseInstructions = [
+			'Scratch Basics' => "Create an interactive Scratch project that demonstrates your understanding of sprites, motion, and events. Your project should be engaging and educational.",
+			'Python Basics' => "Write a Python program that demonstrates your understanding of variables, loops, and functions. Include comments explaining your code.",
+			'Robotics Projects' => "Design and program a robot that can perform a specific task using sensors and motors. Document your design process.",
+			'HTML Basics' => "Create a complete HTML webpage that demonstrates proper use of tags, elements, and structure. Make it visually appealing."
+		];
+		
+		return $baseInstructions[$topic] ?? "Create a project that demonstrates your understanding of {$topic} concepts.";
+	}
+	
+	private function generateProjectRequirements($topic, $content, $difficulty)
+	{
+		$baseRequirements = [
+			'Scratch Basics' => [
+				"Use at least 3 different types of motion blocks",
+				"Include at least one event trigger",
+				"Use loops to create continuous movement",
+				"Add sound effects or visual feedback"
+			],
+			'Python Basics' => [
+				"Define at least 2 functions",
+				"Use variables to store data",
+				"Include at least one loop",
+				"Add comments explaining your code"
+			],
+			'Robotics Projects' => [
+				"Use at least 2 different sensors",
+				"Program the robot to respond to sensor input",
+				"Create a clear task objective",
+				"Document the programming logic"
+			],
+			'HTML Basics' => [
+				"Use proper HTML5 structure",
+				"Include at least 5 different HTML tags",
+				"Add a form with input elements",
+				"Ensure the page is well-organized"
+			]
+		];
+		
+		return $baseRequirements[$topic] ?? [
+			"Demonstrate understanding of core concepts",
+			"Include proper documentation",
+			"Make the project interactive or engaging"
+		];
+	}
+	
+	private function generateTextAnswer($topic, $content, $difficulty)
+	{
+		$answers = [
+			'Scratch Basics' => "Scratch uses visual blocks to create programs. Sprites are the characters that perform actions, motion blocks control movement, events trigger actions, and loops repeat commands.",
+			'Python Basics' => "Python is a programming language that uses variables to store data, functions to organize code, loops to repeat actions, and conditionals to make decisions.",
+			'Robotics Projects' => "Robotics combines programming, engineering, and problem-solving. Robots use sensors to gather information, processors to make decisions, and actuators to perform actions.",
+			'HTML Basics' => "HTML (HyperText Markup Language) is used to create web pages. It uses tags to define elements, attributes to provide additional information, and structure to organize content."
+		];
+		
+		return $answers[$topic] ?? "This topic involves understanding programming concepts, problem-solving, and creating digital solutions.";
 	}
 }
 
