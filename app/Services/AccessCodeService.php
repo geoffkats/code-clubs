@@ -52,8 +52,8 @@ class AccessCodeService
             // Get report with student information
             $report = Report::with('student')->findOrFail($report_id);
             
-            // Generate unique access code with child's first name
-            $plain = $this->generateUniqueAccessCode($report->student->student_first_name);
+            // Generate unique access code with child's first name and report ID
+            $plain = $this->generateUniqueAccessCode($report->student->student_first_name, $report_id);
             $hash = Hash::make($plain);
             
             // Calculate expiration date
@@ -102,27 +102,31 @@ class AccessCodeService
      * @param string $firstName The child's first name
      * @return string The generated unique access code
      */
-    private function generateUniqueAccessCode(string $firstName): string
+    private function generateUniqueAccessCode(string $firstName, int $reportId): string
     {
         // Clean and normalize the first name
         $cleanName = strtolower(preg_replace('/[^a-zA-Z]/', '', $firstName));
         
-        // Generate a unique 4-digit number
-        $uniqueNumber = $this->generateUniqueNumber();
+        // Generate a deterministic 4-digit number
+        $uniqueNumber = $this->generateUniqueNumber($reportId, $firstName);
         
         // Combine name and number
         return $cleanName . '-' . $uniqueNumber;
     }
     
     /**
-     * Generate a unique 4-digit number
+     * Generate a deterministic 4-digit number based on report ID and student name
      * 
+     * @param int $reportId The report ID for consistency
+     * @param string $studentName The student name for uniqueness
      * @return string A 4-digit number
      */
-    private function generateUniqueNumber(): string
+    private function generateUniqueNumber(int $reportId, string $studentName): string
     {
-        // Generate a random 4-digit number between 1000-9999
-        return str_pad(random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
+        // Create a deterministic number based on report ID and student name hash
+        $hash = crc32($reportId . $studentName);
+        $number = abs($hash) % 9000 + 1000; // Ensure it's between 1000-9999
+        return str_pad($number, 4, '0', STR_PAD_LEFT);
     }
     
     /**
