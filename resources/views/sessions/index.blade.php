@@ -34,7 +34,7 @@
         <div class="px-6 py-8">
             <!-- Success/Error Messages -->
             @if(session('success'))
-                <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center justify-between">
+                <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg flex items-center justify-between animate-fade-in" style="display: none;">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -50,7 +50,7 @@
             @endif
 
             @if(session('error'))
-                <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center justify-between">
+                <div class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center justify-between animate-fade-in" style="display: none;">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -465,6 +465,35 @@
             </div>
         </div>
 
+        <!-- Message Animation CSS -->
+        <style>
+            .animate-fade-in {
+                animation: fadeIn 0.3s ease-in-out forwards;
+            }
+            
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+            }
+        </style>
+
         <!-- Alpine.js Calendar Functions -->
         <script>
             function calendarData() {
@@ -492,9 +521,31 @@
                         console.log('Initializing calendar with sessions:', this.sessions);
                         this.updateCalendar();
                         
+                        // Show flash messages with animation
+                        this.showFlashMessages();
+                        
                         // Watch for session changes and refresh calendar
                         this.$watch('sessions', () => {
                             this.updateCalendar();
+                        });
+                    },
+                    
+                    showFlashMessages() {
+                        // Show success messages
+                        const successMessages = document.querySelectorAll('.animate-fade-in');
+                        successMessages.forEach((message, index) => {
+                            setTimeout(() => {
+                                message.style.display = 'flex';
+                                // Auto-hide after 5 seconds
+                                setTimeout(() => {
+                                    if (message.parentElement) {
+                                        message.style.animation = 'fadeOut 0.3s ease-in-out forwards';
+                                        setTimeout(() => {
+                                            message.remove();
+                                        }, 300);
+                                    }
+                                }, 5000);
+                            }, index * 100); // Stagger messages if multiple
                         });
                     },
                     
