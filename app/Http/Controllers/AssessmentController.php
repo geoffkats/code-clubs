@@ -50,11 +50,18 @@ class AssessmentController extends Controller
 		// Handle questions creation
 		if ($request->has('questions') && is_array($request->questions)) {
 			foreach ($request->questions as $index => $questionData) {
+				// Ensure question_type is set
+				$questionType = $questionData['type'] ?? null;
+				if (!$questionType) {
+					continue; // Skip if no question type
+				}
+				
 				$questionData['assessment_id'] = $assessment->id;
 				$questionData['order'] = $index + 1;
+				$questionData['question_type'] = $questionType;
 				
 				// Handle different question types
-				switch ($questionData['type']) {
+				switch ($questionType) {
 					case 'multiple_choice':
 						$questionData['question_options'] = [
 							'A' => $questionData['option_a'] ?? '',
@@ -85,8 +92,8 @@ class AssessmentController extends Controller
 						break;
 				}
 				
-				// Remove image_file from data as it's not a database field
-				unset($questionData['image_file']);
+				// Remove fields that are not database columns
+				unset($questionData['type'], $questionData['image_file']);
 				
 				\App\Models\AssessmentQuestion::create($questionData);
 			}
