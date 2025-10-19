@@ -77,10 +77,41 @@
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.98);
+            background: rgba(248, 250, 252, 0.95);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(226, 232, 240, 0.5);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .form-text {
+            color: #1e293b !important;
+        }
+        
+        .form-label {
+            color: #334155 !important;
+        }
+        
+        .form-input {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-color: #cbd5e1 !important;
+            color: #1e293b !important;
+        }
+        
+        .form-input:focus {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-color: #3b82f6 !important;
+        }
+        
+        .form-input::placeholder {
+            color: #64748b !important;
+        }
+        
+        .form-icon {
+            color: #64748b !important;
+        }
+        
+        .form-border {
+            border-color: #e2e8f0 !important;
         }
         
         .input-focus:focus {
@@ -136,7 +167,7 @@
 
                     <!-- Email -->
                     <div class="space-y-2">
-                        <label for="email" class="block text-sm font-semibold text-gray-800">
+                        <label for="email" class="block text-sm font-semibold form-label">
                             <i class="fas fa-envelope mr-2 text-blue-600"></i>
                             Email Address
                         </label>
@@ -147,10 +178,10 @@
                                    autocomplete="email" 
                                    required 
                                    value="{{ old('email') }}"
-                                   class="input-focus appearance-none block w-full pl-12 pr-4 py-3 sm:py-4 border-2 border-gray-300 rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 text-sm sm:text-sm transition-all duration-300 @error('email') border-red-400 focus:ring-red-500 @enderror"
+                                   class="form-input input-focus appearance-none block w-full pl-12 pr-4 py-3 sm:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-sm transition-all duration-300 @error('email') border-red-400 focus:ring-red-500 @enderror"
                                    placeholder="Enter your email address">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-user text-gray-500"></i>
+                                <i class="fas fa-user form-icon"></i>
                             </div>
                         </div>
                         @error('email')
@@ -163,7 +194,7 @@
 
                     <!-- Password -->
                     <div class="space-y-2">
-                        <label for="password" class="block text-sm font-semibold text-gray-800">
+                        <label for="password" class="block text-sm font-semibold form-label">
                             <i class="fas fa-lock mr-2 text-blue-600"></i>
                             Password
                         </label>
@@ -173,13 +204,13 @@
                                    type="password" 
                                    autocomplete="current-password" 
                                    required
-                                   class="input-focus appearance-none block w-full pl-12 pr-12 py-3 sm:py-4 border-2 border-gray-300 rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-800 text-sm sm:text-sm transition-all duration-300 @error('password') border-red-400 focus:ring-red-500 @enderror"
+                                   class="form-input input-focus appearance-none block w-full pl-12 pr-12 py-3 sm:py-4 border-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-sm transition-all duration-300 @error('password') border-red-400 focus:ring-red-500 @enderror"
                                    placeholder="Enter your password">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-key text-gray-500"></i>
+                                <i class="fas fa-key form-icon"></i>
                             </div>
                             <div class="absolute inset-y-0 right-0 pr-4 flex items-center">
-                                <button type="button" onclick="togglePassword()" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                                <button type="button" onclick="togglePassword()" class="form-icon hover:text-gray-700 focus:outline-none">
                                     <i id="password-toggle" class="fas fa-eye"></i>
                                 </button>
                             </div>
@@ -199,7 +230,7 @@
                                    name="remember" 
                                    type="checkbox" 
                                    class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-lg transition-colors">
-                            <label for="remember" class="ml-3 block text-sm font-medium text-gray-800">
+                            <label for="remember" class="ml-3 block text-sm font-medium form-label">
                                 Remember me for 30 days
                             </label>
                         </div>
@@ -225,12 +256,12 @@
                     </div>
 
                     <!-- Account Information -->
-                    <div class="text-center space-y-3 pt-4 border-t border-gray-300">
-                        <p class="text-sm text-gray-700">
+                    <div class="text-center space-y-3 pt-4 form-border border-t">
+                        <p class="text-sm form-text">
                             Don't have an account? 
                             <span class="font-semibold text-blue-700 hover:text-blue-800 cursor-pointer transition-colors">Contact your instructor</span>
                         </p>
-                        <div class="flex items-center justify-center space-x-2 text-xs text-gray-600">
+                        <div class="flex items-center justify-center space-x-2 text-xs form-text">
                             <i class="fas fa-info-circle text-blue-500"></i>
                             <span>Student accounts are created by administrators only</span>
                         </div>
