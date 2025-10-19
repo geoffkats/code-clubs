@@ -77,10 +77,10 @@
         }
         
         .glass-effect {
-            background: rgba(248, 250, 252, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(226, 232, 240, 0.5);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
         }
         
         .form-text {
@@ -92,26 +92,27 @@
         }
         
         .form-input {
-            background-color: rgba(255, 255, 255, 0.8) !important;
-            border-color: #cbd5e1 !important;
+            background-color: #ffffff !important;
+            border-color: #d1d5db !important;
             color: #1e293b !important;
         }
         
         .form-input:focus {
-            background-color: rgba(255, 255, 255, 0.95) !important;
+            background-color: #ffffff !important;
             border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
         }
         
         .form-input::placeholder {
-            color: #64748b !important;
+            color: #6b7280 !important;
         }
         
         .form-icon {
-            color: #64748b !important;
+            color: #6b7280 !important;
         }
         
         .form-border {
-            border-color: #e2e8f0 !important;
+            border-color: #e5e7eb !important;
         }
         
         .input-focus:focus {
