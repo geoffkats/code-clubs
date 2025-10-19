@@ -98,7 +98,7 @@ class ReportController extends Controller
 			$accessCodeService = app(AccessCodeService::class);
 			$accessCodeService->create_access_code_for_report($report->id);
 			
-			return redirect()->back()->with('success', "🤖 AI content generated successfully for {$report->student->student_first_name} {$report->student->student_last_name}!");
+			return redirect()->route('reports.show', $report_id)->with('success', "🤖 AI content generated successfully for {$report->student->student_first_name} {$report->student->student_last_name}!");
 			
 		} catch (\Exception $e) {
 			\Log::error('Error generating AI content for single report', [
@@ -119,6 +119,9 @@ class ReportController extends Controller
 			'club.attachments',
 			'access_code'
 		])->findOrFail($report_id);
+		
+		// Refresh the access code relationship to ensure it's current
+		$report->load('access_code');
 		
 		// Get assessment data for this student
 		$assessments = $report->club->assessments->map(function($assessment) use ($report) {
