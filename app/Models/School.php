@@ -30,6 +30,18 @@ class School extends Model
 	{
 		return $this->hasMany(Club::class);
 	}
+
+	// Accessor for clubs count
+	public function getClubsCountAttribute(): int
+	{
+		return $this->clubs()->count();
+	}
+
+	// Accessor for students count
+	public function getStudentsCountAttribute(): int
+	{
+		return $this->students()->count();
+	}
 }
 
 

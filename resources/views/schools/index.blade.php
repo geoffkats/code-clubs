@@ -125,7 +125,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-1 0v14m-7-7h14"></path>
                                                 </svg>
                                             </a>
-                                            <button @click="$dispatch('delete-school', { id: {{ $school->id }}, name: '{{ addslashes($school->school_name) }}' })" class="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete School">
+                                            <button @click="console.log('Delete button clicked for school:', {{ $school->id }}); $dispatch('delete-school', { id: {{ $school->id }}, name: '{{ addslashes($school->school_name) }}' })" class="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete School">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                 </svg>
@@ -254,7 +254,7 @@
 
     <!-- Delete School Modal (global listener) -->
     <div x-data="{ open: false, school: { id: null, name: '' } }" 
-         x-on:delete-school.window="open = true; school.id = $event.detail.id; school.name = $event.detail.name;">
+         x-on:delete-school.window="console.log('Delete event received:', $event.detail); open = true; school.id = $event.detail.id; school.name = $event.detail.name;">
         <div x-show="open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-2xl">
                 <div class="flex items-center justify-between mb-6">
