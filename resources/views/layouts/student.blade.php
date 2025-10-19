@@ -111,6 +111,46 @@
                 </div>
             </nav>
 
+            <!-- Upcoming Sessions Section -->
+            <div class="px-4 py-4 border-t border-slate-200/60 dark:border-slate-700/60">
+                <h3 class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">Upcoming Sessions</h3>
+                @if(isset($upcomingSessions) && $upcomingSessions->count() > 0)
+                    <div class="space-y-2">
+                        @foreach($upcomingSessions->take(2) as $session)
+                            <div class="bg-slate-700/50 dark:bg-slate-700/50 rounded-lg p-3 border border-slate-600/50 dark:border-slate-600/50">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-6 h-6 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-md flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-calendar text-white text-xs"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-1">
+                                        <p class="text-xs font-medium text-slate-200 dark:text-slate-200 truncate">
+                                            {{ $session->club->club_name }}
+                                        </p>
+                                        <p class="text-xs text-slate-400 dark:text-slate-400">
+                                            {{ \Carbon\Carbon::parse($session->session_date)->format('M d') }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                        @if($upcomingSessions->count() > 2)
+                            <div class="text-center">
+                                <a href="{{ route('student.dashboard') }}" class="text-xs text-blue-400 hover:text-blue-300 transition-colors">
+                                    View all {{ $upcomingSessions->count() }} sessions
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    <div class="text-center py-4">
+                        <div class="w-8 h-8 bg-slate-700/50 rounded-lg flex items-center justify-center mx-auto mb-2">
+                            <i class="fas fa-calendar-times text-slate-400 text-sm"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 dark:text-slate-400">No upcoming sessions</p>
+                    </div>
+                @endif
+            </div>
+
             <!-- Student Profile Section -->
             <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-200/60 dark:border-slate-700/60 bg-slate-50/80 dark:bg-slate-800/80 backdrop-blur-xl">
                 <div class="flex items-center space-x-3 mb-4">
