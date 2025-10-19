@@ -7,8 +7,8 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Create Student Account</h1>
-                    <p class="mt-2 text-gray-600">Set up a new student account with login credentials</p>
+                    <h1 class="text-3xl font-bold text-gray-900">Edit Student Account</h1>
+                    <p class="mt-2 text-gray-600">Update student information and credentials</p>
                 </div>
                 <a href="{{ route('admin.students.index') }}" 
                    class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
@@ -21,11 +21,12 @@
         <div class="bg-white rounded-xl shadow-lg">
             <div class="p-6 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-900">Student Information</h2>
-                <p class="text-gray-600 mt-1">Fill in the student's details and set their login credentials</p>
+                <p class="text-gray-600 mt-1">Update the student's details and login credentials</p>
             </div>
             
-            <form method="POST" action="{{ route('admin.students.store') }}" class="p-6">
+            <form method="POST" action="{{ route('admin.students.update', $student) }}" class="p-6">
                 @csrf
+                @method('PUT')
                 
                 <!-- Student Name -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -36,7 +37,7 @@
                         <input type="text" 
                                id="student_first_name" 
                                name="student_first_name" 
-                               value="{{ old('student_first_name') }}"
+                               value="{{ old('student_first_name', $student->student_first_name) }}"
                                required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 @error('student_first_name') border-red-300 @enderror"
                                placeholder="Enter first name">
@@ -52,7 +53,7 @@
                         <input type="text" 
                                id="student_last_name" 
                                name="student_last_name" 
-                               value="{{ old('student_last_name') }}"
+                               value="{{ old('student_last_name', $student->student_last_name) }}"
                                required
                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 @error('student_last_name') border-red-300 @enderror"
                                placeholder="Enter last name">
@@ -74,7 +75,7 @@
                             <input type="email" 
                                    id="email" 
                                    name="email" 
-                                   value="{{ old('email') }}"
+                                   value="{{ old('email', $student->email) }}"
                                    required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-300 @enderror"
                                    placeholder="student@example.com">
@@ -85,26 +86,25 @@
                         
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Student ID (Auto-Generated)
+                                Student ID (Read-Only)
                             </label>
-                            <div class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600">
-                                <i class="fas fa-magic mr-2"></i>Will be generated automatically based on school
+                            <div class="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-900 font-mono">
+                                {{ $student->student_id_number }}
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Format: [School Code] + [Number] (e.g., CAU001, CAU002)</p>
+                            <p class="text-xs text-gray-500 mt-1">Student ID cannot be changed after creation</p>
                         </div>
                     </div>
                     
                     <div class="mt-4">
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
-                            Password *
+                            New Password (Optional)
                         </label>
                         <div class="flex">
                             <input type="password" 
                                    id="password" 
-                                   name="password" 
-                                   required
+                                   name="password"
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('password') border-red-300 @enderror"
-                                   placeholder="Enter password (min 8 characters)">
+                                   placeholder="Leave blank to keep current password">
                             <button type="button" 
                                     onclick="generatePassword()"
                                     class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
@@ -130,7 +130,7 @@
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 @error('student_grade_level') border-red-300 @enderror">
                             <option value="">Select Grade</option>
                             @for($i = 1; $i <= 12; $i++)
-                                <option value="{{ $i }}" {{ old('student_grade_level') == $i ? 'selected' : '' }}>
+                                <option value="{{ $i }}" {{ old('student_grade_level', $student->student_grade_level) == $i ? 'selected' : '' }}>
                                     Grade {{ $i }}
                                 </option>
                             @endfor
@@ -150,7 +150,7 @@
                                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 @error('school_id') border-red-300 @enderror">
                             <option value="">Select School</option>
                             @foreach($schools as $school)
-                                <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
+                                <option value="{{ $school->id }}" {{ old('school_id', $student->school_id) == $school->id ? 'selected' : '' }}>
                                     {{ $school->school_name }}
                                 </option>
                             @endforeach
@@ -173,7 +173,7 @@
                             <input type="text" 
                                    id="student_parent_name" 
                                    name="student_parent_name" 
-                                   value="{{ old('student_parent_name') }}"
+                                   value="{{ old('student_parent_name', $student->student_parent_name) }}"
                                    required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 @error('student_parent_name') border-red-300 @enderror"
                                    placeholder="Enter parent/guardian name">
@@ -189,7 +189,7 @@
                             <input type="email" 
                                    id="student_parent_email" 
                                    name="student_parent_email" 
-                                   value="{{ old('student_parent_email') }}"
+                                   value="{{ old('student_parent_email', $student->student_parent_email) }}"
                                    required
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 @error('student_parent_email') border-red-300 @enderror"
                                    placeholder="parent@example.com">
@@ -208,7 +208,7 @@
                     </a>
                     <button type="submit" 
                             class="bg-gradient-to-r from-yellow-500 to-red-600 text-white px-6 py-3 rounded-lg hover:from-yellow-600 hover:to-red-700 transition-all transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-user-plus mr-2"></i>Create Student Account
+                        <i class="fas fa-save mr-2"></i>Update Student Account
                     </button>
                 </div>
             </form>

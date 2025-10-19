@@ -72,7 +72,6 @@ class AdminStudentController extends Controller
             'student_last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:students',
             'password' => 'required|string|min:8',
-            'student_id_number' => 'required|string|max:50|unique:students',
             'student_grade_level' => 'required|string|max:10',
             'student_parent_name' => 'required|string|max:255',
             'student_parent_email' => 'required|string|email|max:255',
@@ -83,12 +82,15 @@ class AdminStudentController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        // Auto-generate Student ID
+        $studentId = $this->generateStudentId($request->school_id);
+
         $student = Student::create([
             'student_first_name' => $request->student_first_name,
             'student_last_name' => $request->student_last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'student_id_number' => $request->student_id_number,
+            'student_id_number' => $studentId,
             'student_grade_level' => $request->student_grade_level,
             'student_parent_name' => $request->student_parent_name,
             'student_parent_email' => $request->student_parent_email,
@@ -96,7 +98,7 @@ class AdminStudentController extends Controller
         ]);
 
         return redirect()->route('admin.students.index')
-            ->with('success', 'Student account created successfully! Login credentials have been set.');
+            ->with('success', "Student account created successfully! Student ID: {$studentId}");
     }
 
     /**
@@ -127,7 +129,6 @@ class AdminStudentController extends Controller
             'student_first_name' => 'required|string|max:255',
             'student_last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:students,email,' . $student->id,
-            'student_id_number' => 'required|string|max:50|unique:students,student_id_number,' . $student->id,
             'student_grade_level' => 'required|string|max:10',
             'student_parent_name' => 'required|string|max:255',
             'student_parent_email' => 'required|string|email|max:255',
@@ -143,7 +144,6 @@ class AdminStudentController extends Controller
             'student_first_name',
             'student_last_name',
             'email',
-            'student_id_number',
             'student_grade_level',
             'student_parent_name',
             'student_parent_email',
@@ -215,5 +215,32 @@ class AdminStudentController extends Controller
         }
         
         return $password;
+    }
+
+    /**
+     * Generate unique student ID based on school
+     */
+    private function generateStudentId($schoolId)
+    {
+        // Get school abbreviation (first 3 letters of school name)
+        $school = \App\Models\School::find($schoolId);
+        $schoolAbbr = strtoupper(substr($school->school_name, 0, 3));
+        
+        // Get the last student ID for this school
+        $lastStudent = Student::where('school_id', $schoolId)
+            ->where('student_id_number', 'like', $schoolAbbr . '%')
+            ->orderBy('student_id_number', 'desc')
+            ->first();
+        
+        if ($lastStudent) {
+            // Extract the number part and increment
+            $lastNumber = (int) substr($lastStudent->student_id_number, strlen($schoolAbbr));
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        
+        // Format with leading zeros (e.g., CAU001, CAU002, etc.)
+        return $schoolAbbr . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
     }
 }

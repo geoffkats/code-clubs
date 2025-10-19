@@ -215,32 +215,39 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex items-center space-x-3">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-2">
+                                        <!-- View Details Button -->
                                         <a href="{{ route('admin.students.show', $student) }}" 
-                                           class="text-blue-600 hover:text-blue-900 transition-colors"
+                                           class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
                                            title="View Details">
-                                            <i class="fas fa-eye"></i>
+                                            <i class="fas fa-eye mr-1"></i>View
                                         </a>
+                                        
+                                        <!-- Edit Button -->
                                         <a href="{{ route('admin.students.edit', $student) }}" 
-                                           class="text-yellow-600 hover:text-yellow-900 transition-colors"
+                                           class="inline-flex items-center px-2 py-1 text-xs font-medium text-yellow-600 bg-yellow-50 rounded-md hover:bg-yellow-100 transition-colors"
                                            title="Edit Student">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit mr-1"></i>Edit
                                         </a>
+                                        
+                                        <!-- Reset Password Button -->
                                         <a href="{{ route('admin.students.reset-password', $student) }}" 
-                                           class="text-purple-600 hover:text-purple-900 transition-colors"
+                                           class="inline-flex items-center px-2 py-1 text-xs font-medium text-purple-600 bg-purple-50 rounded-md hover:bg-purple-100 transition-colors"
                                            title="Reset Password">
-                                            <i class="fas fa-key"></i>
+                                            <i class="fas fa-key mr-1"></i>Password
                                         </a>
+                                        
+                                        <!-- Delete Button -->
                                         <form method="POST" action="{{ route('admin.students.destroy', $student) }}" 
                                               class="inline" 
                                               onsubmit="return confirm('Are you sure you want to delete this student account?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
-                                                    class="text-red-600 hover:text-red-900 transition-colors"
+                                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded-md hover:bg-red-100 transition-colors"
                                                     title="Delete Student">
-                                                <i class="fas fa-trash"></i>
+                                                <i class="fas fa-trash mr-1"></i>Delete
                                             </button>
                                         </form>
                                     </div>
