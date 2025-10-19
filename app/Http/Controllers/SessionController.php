@@ -60,10 +60,10 @@ class SessionController extends Controller
             $session = SessionSchedule::findOrFail($id);
             $session->delete();
             
-            return redirect()->route('sessions.index')
+            return redirect()->back()
                 ->with('success', 'Session deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('sessions.index')
+            return redirect()->back()
                 ->with('error', 'Failed to delete session. Please try again.');
         }
     }
