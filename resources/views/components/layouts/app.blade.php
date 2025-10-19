@@ -96,7 +96,7 @@
 
                             <flux:navlist.item 
                                 icon="clipboard-document-check" 
-                                :href="route('assessments.create', ['club_id' => 0])" 
+                                :href="route('assessments.index')" 
                                 :current="request()->routeIs('assessments.*')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"

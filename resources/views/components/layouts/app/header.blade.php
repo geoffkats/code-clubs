@@ -24,7 +24,7 @@
                 <flux:navbar.item icon="squares-2x2" :href="route('clubs.index')" :current="request()->routeIs('clubs.*')" wire:navigate>
                     {{ __('Clubs') }}
                 </flux:navbar.item>
-                <flux:navbar.item icon="clipboard-document-check" :href="route('assessments.create', ['club_id' => 0])" :current="request()->routeIs('assessments.*')" wire:navigate>
+                <flux:navbar.item icon="clipboard-document-check" :href="route('assessments.index')" :current="request()->routeIs('assessments.*')" wire:navigate>
                     {{ __('Assessments') }}
                 </flux:navbar.item>
                 <flux:navbar.item icon="chart-bar" :href="route('attendance.index')" :current="request()->routeIs('attendance.*')" wire:navigate>
@@ -131,7 +131,7 @@
                     <flux:navlist.item icon="squares-2x2" :href="route('clubs.index')" :current="request()->routeIs('clubs.*')" wire:navigate>
                     {{ __('Clubs') }}
                     </flux:navlist.item>
-                    <flux:navlist.item icon="clipboard-document-check" :href="route('assessments.create', ['club_id' => 0])" :current="request()->routeIs('assessments.*')" wire:navigate>
+                    <flux:navlist.item icon="clipboard-document-check" :href="route('assessments.index')" :current="request()->routeIs('assessments.*')" wire:navigate>
                     {{ __('Assessments') }}
                     </flux:navlist.item>
                     <flux:navlist.item icon="chart-bar" :href="route('attendance.index')" :current="request()->routeIs('attendance.*')" wire:navigate>
