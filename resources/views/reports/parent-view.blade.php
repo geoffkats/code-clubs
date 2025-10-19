@@ -18,9 +18,6 @@
                             🎓 {{ $report->student->student_first_name }} {{ $report->student->student_last_name }}'s Coding Journey
                         </h1>
                         <p class="text-lg text-gray-600">{{ $report->club->club_name }}</p>
-                        @if($report->club->school)
-                            <p class="text-md text-gray-500 font-medium">{{ $report->club->school->school_name }}</p>
-                        @endif
                         @if($report->student->student_grade_level)
                             <p class="text-sm text-gray-500">{{ $report->student->student_grade_level }}</p>
                         @endif

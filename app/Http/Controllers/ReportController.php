@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Club;
 use App\Models\Report;
 use App\Services\AccessCodeService;
+use App\Services\AIReportGeneratorService;
 use App\Services\EmailNotificationService;
 use App\Services\ReportGeneratorService;
 use Illuminate\Http\Request;
