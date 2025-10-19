@@ -256,7 +256,7 @@ class ReportController extends Controller
 	 */
 	public function edit(int $report_id)
 	{
-		$report = Report::with(['student', 'club', 'access_code'])->findOrFail($report_id);
+		$report = Report::select(['*'])->with(['student', 'club', 'access_code'])->findOrFail($report_id);
 		// Temporarily removing school ID check for consistency
 		return view('reports.edit', compact('report'));
 	}
@@ -323,6 +323,10 @@ class ReportController extends Controller
 				'student_grade_level' => $request->input('student_grade')
 			]);
 		}
+		
+		// Clear cache to ensure updated data is reflected
+		\Cache::forget('reports_index_' . md5(serialize(request()->only(['club_id', 'search', 'per_page']))));
+		\Cache::forget('reports_index_*'); // Clear all reports index cache
 		
 		return redirect()->route('reports.show', $report->id)
 			->with('success', 'Report updated successfully!');
