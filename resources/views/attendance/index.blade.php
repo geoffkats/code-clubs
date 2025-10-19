@@ -1,9 +1,7 @@
 <x-layouts.app>
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" 
          x-data="{ 
-             showBulkModal: false,
-             selectedClub: null,
-             selectedSession: null
+             showBulkModal: false
          }">
         <!-- Header Section -->
         <div class="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/60">
@@ -199,8 +197,9 @@
                         </svg>
                     </button>
                 </div>
-                <form method="POST" :action="`/attendance/bulk/${selectedClub}`" class="space-y-4" x-data="bulkAttendanceForm()">
-                    @csrf
+                <div x-data="bulkAttendanceForm()">
+                    <form method="POST" :action="`/attendance/bulk/${selectedClub}`" class="space-y-4">
+                        @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Select Club</label>
                         <select x-model="selectedClub" @change="loadSessions()" name="club_id" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
@@ -247,7 +246,8 @@
                             Update Attendance
                         </button>
                     </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

@@ -251,23 +251,23 @@
                                     <div class="flex items-center space-x-2">
                                         <!-- View Details Button -->
                                         <a href="{{ route('admin.students.show', $student) }}" 
-                                           class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-400 bg-blue-500/20 rounded-md hover:bg-blue-500/30 transition-colors"
+                                           class="inline-flex items-center justify-center w-8 h-8 text-blue-400 bg-blue-500/20 rounded-md hover:bg-blue-500/30 transition-colors"
                                            title="View Details">
-                                            <i class="fas fa-eye mr-1"></i>View
+                                            <i class="fas fa-eye text-sm"></i>
                                         </a>
                                         
                                         <!-- Edit Button -->
                                         <a href="{{ route('admin.students.edit', $student) }}" 
-                                           class="inline-flex items-center px-2 py-1 text-xs font-medium text-yellow-400 bg-yellow-500/20 rounded-md hover:bg-yellow-500/30 transition-colors"
+                                           class="inline-flex items-center justify-center w-8 h-8 text-yellow-400 bg-yellow-500/20 rounded-md hover:bg-yellow-500/30 transition-colors"
                                            title="Edit Student">
-                                            <i class="fas fa-edit mr-1"></i>Edit
+                                            <i class="fas fa-edit text-sm"></i>
                                         </a>
                                         
                                         <!-- Reset Password Button -->
                                         <a href="{{ route('admin.students.reset-password', $student) }}" 
-                                           class="inline-flex items-center px-2 py-1 text-xs font-medium text-purple-400 bg-purple-500/20 rounded-md hover:bg-purple-500/30 transition-colors"
+                                           class="inline-flex items-center justify-center w-8 h-8 text-purple-400 bg-purple-500/20 rounded-md hover:bg-purple-500/30 transition-colors"
                                            title="Reset Password">
-                                            <i class="fas fa-key mr-1"></i>Password
+                                            <i class="fas fa-key text-sm"></i>
                                         </a>
                                         
                                         <!-- Delete Button -->
@@ -277,9 +277,9 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" 
-                                                    class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-400 bg-red-500/20 rounded-md hover:bg-red-500/30 transition-colors"
+                                                    class="inline-flex items-center justify-center w-8 h-8 text-red-400 bg-red-500/20 rounded-md hover:bg-red-500/30 transition-colors"
                                                     title="Delete Student">
-                                                <i class="fas fa-trash mr-1"></i>Delete
+                                                <i class="fas fa-trash text-sm"></i>
                                             </button>
                                         </form>
                                     </div>
