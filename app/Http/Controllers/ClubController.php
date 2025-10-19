@@ -37,11 +37,11 @@ class ClubController extends Controller
 			->withCount(['students', 'sessions', 'assessments'])
 			->findOrFail($club_id);
 			
-		// Get recent assessments with scores
+		// Get recent assessments with scores and questions
 		$recentAssessments = $club->assessments()
 			->with(['scores' => function($query) {
 				$query->with('student')->orderBy('created_at', 'desc');
-			}])
+			}, 'questions'])
 			->orderBy('created_at', 'desc')
 			->limit(5)
 			->get();

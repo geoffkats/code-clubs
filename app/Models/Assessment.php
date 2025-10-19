@@ -35,6 +35,11 @@ class Assessment extends Model
 	{
 		return $this->morphMany(Attachment::class, 'attachable');
 	}
+
+	public function questions(): HasMany
+	{
+		return $this->hasMany(AssessmentQuestion::class)->orderBy('order');
+	}
 }
 
 

@@ -294,11 +294,25 @@
                                 @foreach($recentAssessments as $assessment)
                                     <div class="bg-slate-50 dark:bg-slate-700 rounded-xl p-4">
                                         <div class="flex items-center justify-between">
-                                            <div>
-                                                <h4 class="font-medium text-slate-900 dark:text-white">{{ $assessment->assessment_name }}</h4>
-                                                <p class="text-sm text-slate-600 dark:text-slate-400">{{ $assessment->created_at->format('M d, Y') }}</p>
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <h4 class="font-medium text-slate-900 dark:text-white">{{ $assessment->assessment_name }}</h4>
+                                                    <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-lg text-xs font-medium">
+                                                        {{ ucfirst($assessment->assessment_type) }}
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center space-x-4 text-sm text-slate-600 dark:text-slate-400">
+                                                    <span>{{ $assessment->created_at->format('M d, Y') }}</span>
+                                                    <span>{{ $assessment->questions->count() }} questions</span>
+                                                    @if($assessment->questions->count() > 0)
+                                                        <span class="text-xs">
+                                                            ({{ $assessment->questions->where('question_type', 'multiple_choice')->count() }} MC, 
+                                                            {{ $assessment->questions->where('question_type', 'practical_project')->count() }} Projects)
+                                                        </span>
+                                                    @endif
+                                                </div>
                                             </div>
-                                            <div class="text-right">
+                                            <div class="text-right ml-4">
                                                 <div class="text-lg font-bold text-slate-900 dark:text-white">{{ $assessment->scores->count() }}</div>
                                                 <div class="text-sm text-slate-600 dark:text-slate-400">scores</div>
                                             </div>

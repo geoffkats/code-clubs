@@ -11,7 +11,7 @@ class AssessmentController extends Controller
 {
 	public function index()
 	{
-		$assessments = Assessment::with(['club.school'])
+		$assessments = Assessment::with(['club.school', 'questions'])
 			->withCount(['scores'])
 			->orderBy('created_at', 'desc')
 			->paginate(20);
@@ -37,9 +37,44 @@ class AssessmentController extends Controller
 			'due_date' => ['nullable', 'date'],
 			'description' => ['nullable', 'string'],
 			'attachments.*' => ['nullable', 'file', 'max:10240'], // 10MB max
+			'questions' => ['nullable', 'array'],
+			'questions.*.type' => ['required_with:questions', 'in:multiple_choice,practical_project,image_question,text_question'],
+			'questions.*.question_text' => ['required_with:questions'],
+			'questions.*.points' => ['required_with:questions', 'integer', 'min:1'],
 		]);
+		
 		$data['club_id'] = $club->id;
 		$assessment = Assessment::create($data);
+		
+		// Handle questions creation
+		if ($request->has('questions') && is_array($request->questions)) {
+			foreach ($request->questions as $index => $questionData) {
+				$questionData['assessment_id'] = $assessment->id;
+				$questionData['order'] = $index + 1;
+				
+				// Handle different question types
+				switch ($questionData['type']) {
+					case 'multiple_choice':
+						$questionData['question_options'] = [
+							'A' => $questionData['option_a'] ?? '',
+							'B' => $questionData['option_b'] ?? '',
+							'C' => $questionData['option_c'] ?? '',
+							'D' => $questionData['option_d'] ?? '',
+						];
+						unset($questionData['option_a'], $questionData['option_b'], $questionData['option_c'], $questionData['option_d']);
+						break;
+						
+					case 'practical_project':
+						if (isset($questionData['project_requirements'])) {
+							$requirements = explode("\n", $questionData['project_requirements']);
+							$questionData['project_requirements'] = array_map('trim', array_filter($requirements));
+						}
+						break;
+				}
+				
+				\App\Models\AssessmentQuestion::create($questionData);
+			}
+		}
 		
 		// Handle file uploads
 		if ($request->hasFile('attachments')) {
@@ -50,7 +85,7 @@ class AssessmentController extends Controller
 			);
 		}
 		
-		return redirect()->route('assessments.index')->with('success', 'Assessment created successfully!');
+		return redirect()->route('assessments.index')->with('success', 'Assessment created successfully with ' . count($request->questions ?? []) . ' questions!');
 	}
 
 	public function scores(int $assessment_id)
