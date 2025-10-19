@@ -83,6 +83,33 @@ class ReportController extends Controller
 		return redirect()->route('reports.index', ['club_id' => $club->id])->with('success', '🤖 AI-powered reports generated successfully! Each report now contains personalized content based on student assessments and attendance.');
 	}
 
+	public function generate_ai_single(int $report_id, Request $request, AIReportGeneratorService $aiService)
+	{
+		try {
+			$report = Report::with(['student', 'club'])->findOrFail($report_id);
+			
+			// Generate AI content for this specific report
+			$aiContent = $aiService->generateReportContent($report);
+			
+			// Update the report with AI-generated content
+			$report->update($aiContent);
+			
+			// Regenerate access code to ensure it's current
+			$accessCodeService = app(AccessCodeService::class);
+			$accessCodeService->create_access_code_for_report($report->id);
+			
+			return redirect()->back()->with('success', "🤖 AI content generated successfully for {$report->student->student_first_name} {$report->student->student_last_name}!");
+			
+		} catch (\Exception $e) {
+			\Log::error('Error generating AI content for single report', [
+				'report_id' => $report_id,
+				'error' => $e->getMessage()
+			]);
+			
+			return redirect()->back()->with('error', 'Failed to generate AI content. Please try again.');
+		}
+	}
+
 	public function show(int $report_id)
 	{
 		$report = Report::with([

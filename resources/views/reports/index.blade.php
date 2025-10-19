@@ -197,21 +197,30 @@
                                 </a>
                                 
                                 <!-- Secondary Actions Row 1 -->
-                                <div class="grid grid-cols-2 gap-2">
+                                <div class="grid grid-cols-3 gap-1">
                                 <a href="{{ route('reports.pdf', $report->id) }}" 
-                                       class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-center shadow-md hover:shadow-lg flex items-center justify-center">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                       class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-center shadow-md hover:shadow-lg flex items-center justify-center">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                                         </svg>
-                                        PDF
                                     </a>
                                     <button onclick="showEmailModal({{ $report->id }}, '{{ $report->student->student_parent_email }}')" 
-                                            class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
-                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                         </svg>
-                                        Send
                                     </button>
+                                    <form method="post" action="{{ route('reports.generate-ai-single', $report->id) }}" class="inline">
+                                        @csrf
+                                        <button type="submit" 
+                                                class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-center shadow-md hover:shadow-lg flex items-center justify-center"
+                                                onclick="return confirm('Generate AI content for {{ $report->student->student_first_name }} {{ $report->student->student_last_name }}?')"
+                                                title="🤖 Generate AI content for this student">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 </div>
                                 
                                 <!-- CRUD Actions Row 2 -->

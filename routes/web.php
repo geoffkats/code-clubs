@@ -72,6 +72,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
 Route::get('/reports/{report_id}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
 Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->name('reports.send');
 Route::post('/reports/{report_id}/regenerate-access-code', [ReportController::class, 'regenerate_access_code'])->name('reports.regenerate-access-code');
+Route::post('/reports/{report_id}/generate-ai-single', [ReportController::class, 'generate_ai_single'])->name('reports.generate-ai-single');
 
 // Parent access routes (no authentication required)
 Route::get('/parent-access/{access_code}', [ReportController::class, 'parent_preview'])->name('reports.parent-preview');
