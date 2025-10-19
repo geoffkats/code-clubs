@@ -41,6 +41,7 @@ class AssessmentController extends Controller
 			'questions.*.type' => ['required_with:questions', 'in:multiple_choice,practical_project,image_question,text_question'],
 			'questions.*.question_text' => ['required_with:questions'],
 			'questions.*.points' => ['required_with:questions', 'integer', 'min:1'],
+			'questions.*.image_file' => ['nullable', 'image', 'max:5120'], // 5MB max for images
 		]);
 		
 		$data['club_id'] = $club->id;
@@ -70,7 +71,22 @@ class AssessmentController extends Controller
 							$questionData['project_requirements'] = array_map('trim', array_filter($requirements));
 						}
 						break;
+						
+					case 'image_question':
+						// Handle image upload
+						if ($request->hasFile("questions.{$index}.image_file")) {
+							$imageFile = $request->file("questions.{$index}.image_file");
+							$filename = time() . '_' . $imageFile->getClientOriginalName();
+							$path = $imageFile->storeAs('assessment_images', $filename, 'public');
+							
+							$questionData['image_url'] = $path;
+							$questionData['image_filename'] = $imageFile->getClientOriginalName();
+						}
+						break;
 				}
+				
+				// Remove image_file from data as it's not a database field
+				unset($questionData['image_file']);
 				
 				\App\Models\AssessmentQuestion::create($questionData);
 			}

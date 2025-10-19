@@ -250,8 +250,9 @@
 
         <!-- Create Assessment Modal -->
         <div x-show="showCreate" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div class="w-full max-w-2xl rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-2xl">
-                <div class="flex items-center justify-between mb-6">
+            <div class="w-full max-w-4xl max-h-[90vh] rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl flex flex-col">
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
                     <h3 class="text-xl font-bold text-slate-900 dark:text-white">Create New Assessment</h3>
                     <button @click="showCreate=false" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
                         <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,7 +260,10 @@
                         </svg>
                     </button>
                 </div>
-                <form method="post" action="#" class="space-y-4" id="createAssessmentForm">
+                
+                <!-- Scrollable Content -->
+                <div class="flex-1 overflow-y-auto p-6">
+                <form method="post" action="#" class="space-y-4" id="createAssessmentForm" enctype="multipart/form-data">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
@@ -340,15 +344,18 @@
                             <p class="text-slate-500 dark:text-slate-400 text-center py-8">Click a question type above to add questions to your assessment</p>
                         </div>
                     </div>
-                    <div class="flex items-center justify-end space-x-4 pt-4">
-                        <button type="button" @click="showCreate=false" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">
-                            Create Assessment
-                        </button>
-                    </div>
                 </form>
+                </div>
+                
+                <!-- Modal Footer -->
+                <div class="flex items-center justify-end space-x-3 p-6 border-t border-slate-200 dark:border-slate-700 flex-shrink-0">
+                    <button type="button" @click="showCreate=false" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" form="createAssessmentForm" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">
+                        Create Assessment
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -521,8 +528,15 @@
                             <textarea name="questions[${counter}][question_text]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" placeholder="What do you see in this image? What is wrong with this code?" required></textarea>
                         </div>
                         <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Upload Image</label>
+                            <input type="file" name="questions[${counter}][image_file]" accept="image/*" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" onchange="previewImage(this, 'preview-${counter}')">
+                            <div id="preview-${counter}" class="mt-2 hidden">
+                                <img class="max-w-full h-32 object-contain rounded-lg border border-slate-200 dark:border-slate-600" alt="Image preview">
+                            </div>
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Image Description</label>
-                            <textarea name="questions[${counter}][image_description]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" placeholder="Describe the image or provide image URL..."></textarea>
+                            <textarea name="questions[${counter}][image_description]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" placeholder="Describe what students should see or identify in the image..."></textarea>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Expected Answer</label>
@@ -574,6 +588,23 @@
             const container = document.getElementById('questionsContainer');
             if (container.children.length === 0) {
                 container.innerHTML = '<p class="text-slate-500 dark:text-slate-400 text-center py-8">Click a question type above to add questions to your assessment</p>';
+            }
+        }
+        
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            const file = input.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = preview.querySelector('img');
+                    img.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.classList.add('hidden');
             }
         }
     </script>

@@ -20,6 +20,8 @@ class AssessmentQuestion extends Model
         'project_requirements',
         'project_output_format',
         'image_description',
+        'image_url',
+        'image_filename',
         'points',
         'order'
     ];
