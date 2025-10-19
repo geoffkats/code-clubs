@@ -124,5 +124,28 @@ Route::post('/attendance/update/{club_id}', [AttendanceController::class, 'updat
 
 require __DIR__.'/auth.php';
 
+// Student Authentication Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/student/login', [App\Http\Controllers\StudentAuthController::class, 'showLoginForm'])->name('student.login');
+    Route::post('/student/login', [App\Http\Controllers\StudentAuthController::class, 'login'])->name('student.login.post');
+    Route::get('/student/register', [App\Http\Controllers\StudentAuthController::class, 'showRegisterForm'])->name('student.register');
+    Route::post('/student/register', [App\Http\Controllers\StudentAuthController::class, 'register'])->name('student.register.post');
+});
+
+// Student Protected Routes
+Route::middleware(['auth:student'])->prefix('student')->name('student.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\StudentAuthController::class, 'dashboard'])->name('dashboard');
+    Route::get('/profile', [App\Http\Controllers\StudentAuthController::class, 'profile'])->name('profile');
+    Route::put('/profile', [App\Http\Controllers\StudentAuthController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/logout', [App\Http\Controllers\StudentAuthController::class, 'logout'])->name('logout');
+    
+    // Student Dashboard Features
+    Route::get('/assignments', [App\Http\Controllers\StudentDashboardController::class, 'assignments'])->name('assignments');
+    Route::get('/assignments/{assessmentId}', [App\Http\Controllers\StudentDashboardController::class, 'showAssessment'])->name('assessment.show');
+    Route::post('/assignments/{assessmentId}/submit', [App\Http\Controllers\StudentDashboardController::class, 'submitAssessment'])->name('assessment.submit');
+    Route::get('/progress', [App\Http\Controllers\StudentDashboardController::class, 'progress'])->name('progress');
+    Route::get('/reports', [App\Http\Controllers\StudentDashboardController::class, 'reports'])->name('reports');
+});
+
 // Public parent report route (no auth)
 Route::get('/r/{report_id}', [ParentReportController::class, 'show_public'])->name('reports.public');
