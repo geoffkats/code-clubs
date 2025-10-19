@@ -13,13 +13,44 @@ class AdminStudentController extends Controller
     /**
      * Display a listing of students with management options
      */
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::with(['school', 'clubs'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(20);
-
-        return view('admin.students.index', compact('students'));
+        $query = Student::with(['school', 'clubs']);
+        
+        // Search functionality
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('student_first_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('student_last_name', 'like', "%{$searchTerm}%")
+                  ->orWhere('email', 'like', "%{$searchTerm}%")
+                  ->orWhere('student_id_number', 'like', "%{$searchTerm}%");
+            });
+        }
+        
+        // Filter by school
+        if ($request->filled('school_id')) {
+            $query->where('school_id', $request->school_id);
+        }
+        
+        // Filter by account status
+        if ($request->filled('status')) {
+            if ($request->status === 'with_password') {
+                $query->whereNotNull('password');
+            } elseif ($request->status === 'no_password') {
+                $query->whereNull('password');
+            }
+        }
+        
+        // Sorting
+        $sortBy = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+        $query->orderBy($sortBy, $sortDirection);
+        
+        $students = $query->paginate(25)->withQueryString();
+        $schools = \App\Models\School::orderBy('school_name')->get();
+        
+        return view('admin.students.index', compact('students', 'schools'));
     }
 
     /**
