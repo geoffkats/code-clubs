@@ -31,20 +31,13 @@ class AIReportGeneratorService
             // Calculate performance metrics
             $metrics = $this->calculatePerformanceMetrics($report);
             
-            // Generate content based on metrics - but preserve existing scores if they're higher
-            $existingScores = [
-                'problem_solving_score' => $report->problem_solving_score ?? 0,
-                'creativity_score' => $report->creativity_score ?? 0,
-                'collaboration_score' => $report->collaboration_score ?? 0,
-                'persistence_score' => $report->persistence_score ?? 0,
-            ];
-            
+            // Generate content based on metrics - use AI-generated scores based on actual performance
             $content = [
                 'student_initials' => $this->generateStudentInitials($report->student),
-                'problem_solving_score' => max($existingScores['problem_solving_score'], $this->calculateSkillScore($metrics, 'problem_solving')),
-                'creativity_score' => max($existingScores['creativity_score'], $this->calculateSkillScore($metrics, 'creativity')),
-                'collaboration_score' => max($existingScores['collaboration_score'], $this->calculateSkillScore($metrics, 'collaboration')),
-                'persistence_score' => max($existingScores['persistence_score'], $this->calculateSkillScore($metrics, 'persistence')),
+                'problem_solving_score' => $this->calculateSkillScore($metrics, 'problem_solving'),
+                'creativity_score' => $this->calculateSkillScore($metrics, 'creativity'),
+                'collaboration_score' => $this->calculateSkillScore($metrics, 'collaboration'),
+                'persistence_score' => $this->calculateSkillScore($metrics, 'persistence'),
                 'scratch_project_ids' => $this->generateProjectIds($metrics),
                 'favorite_concept' => $this->generateFavoriteConcept($metrics),
                 'challenges_overcome' => $this->generateChallengesOvercome($metrics),
@@ -57,7 +50,13 @@ class AIReportGeneratorService
             Log::info('AI Report content generated', [
                 'report_id' => $report->id,
                 'student_name' => $report->student->student_first_name,
-                'metrics' => $metrics
+                'metrics' => $metrics,
+                'generated_scores' => [
+                    'problem_solving' => $content['problem_solving_score'],
+                    'creativity' => $content['creativity_score'],
+                    'collaboration' => $content['collaboration_score'],
+                    'persistence' => $content['persistence_score']
+                ]
             ]);
             
             return $content;
@@ -180,10 +179,11 @@ class AIReportGeneratorService
      */
     private function determinePerformanceLevel(float $averageScore, float $attendancePercentage): string
     {
-        if ($averageScore >= 90 && $attendancePercentage >= 95) return 'excellent';
-        if ($averageScore >= 80 && $attendancePercentage >= 90) return 'very_good';
-        if ($averageScore >= 70 && $attendancePercentage >= 85) return 'good';
-        if ($averageScore >= 60 && $attendancePercentage >= 80) return 'satisfactory';
+        // More realistic thresholds that better reflect student performance
+        if ($averageScore >= 85 && $attendancePercentage >= 90) return 'excellent';
+        if ($averageScore >= 75 && $attendancePercentage >= 85) return 'very_good';
+        if ($averageScore >= 65 && $attendancePercentage >= 80) return 'good';
+        if ($averageScore >= 55 && $attendancePercentage >= 75) return 'satisfactory';
         return 'needs_improvement';
     }
     
@@ -205,27 +205,29 @@ class AIReportGeneratorService
     {
         // If no assessment data, provide reasonable default scores based on attendance
         if ($metrics['average_score'] == 0 && $metrics['total_assessments'] == 0) {
-            // Base score on attendance percentage with minimum of 3
-            $baseScore = max(3, ($metrics['attendance_percentage'] / 100) * 6);
+            // Base score on attendance percentage - no minimum floor for poor performers
+            $baseScore = ($metrics['attendance_percentage'] / 100) * 8;
         } else {
-            $baseScore = ($metrics['average_score'] / 100) * 10;
+            // Directly use assessment performance as the primary factor
+            $baseScore = ($metrics['average_score'] / 100) * 9;
         }
         
-        $attendanceBonus = ($metrics['attendance_percentage'] / 100) * 2;
+        // Attendance bonus - smaller impact to let assessment scores dominate
+        $attendanceBonus = ($metrics['attendance_percentage'] / 100) * 1;
         
-        // Add skill-specific adjustments
+        // Add skill-specific adjustments - smaller adjustments to preserve assessment impact
         $adjustments = [
-            'problem_solving' => 0.5,
-            'creativity' => 0.3,
-            'collaboration' => 0.7,
-            'persistence' => 0.4
+            'problem_solving' => 0.2,
+            'creativity' => 0.1,
+            'collaboration' => 0.3,
+            'persistence' => 0.2
         ];
         
         $adjustment = $adjustments[$skill] ?? 0;
         $finalScore = $baseScore + $attendanceBonus + $adjustment;
         
-        // Ensure minimum score of 3 and maximum of 10
-        return max(3, min(10, round($finalScore)));
+        // Ensure minimum score of 1 (not 3) and maximum of 10 to better differentiate performance
+        return max(1, min(10, round($finalScore)));
     }
     
     /**
