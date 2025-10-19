@@ -142,16 +142,6 @@
                             >
                                 {{ __('All Reports') }}
                             </flux:navlist.item>
-
-                            <flux:navlist.item 
-                                icon="sparkles" 
-                                :href="route('reports.ai-generate')" 
-                                :current="request()->routeIs('reports.ai-generate')" 
-                                wire:navigate
-                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                            >
-                                {{ __('AI Generate') }}
-                            </flux:navlist.item>
                         </flux:navlist>
                     </div>
                 </div>
