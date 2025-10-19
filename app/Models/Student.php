@@ -21,6 +21,8 @@ class Student extends Authenticatable
 		'student_grade_level',
 		'student_parent_name',
 		'student_parent_email',
+		'student_parent_phone',
+		'student_medical_info',
 		'email',
 		'password',
 		'student_id_number',

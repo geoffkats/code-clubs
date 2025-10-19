@@ -222,7 +222,7 @@
                         </svg>
                     </button>
                 </div>
-                <form method="post" :action="`/schools/${school.id}`" class="space-y-4">
+                <form method="POST" :action="`/schools/${school.id}`" class="space-y-4">
                     @csrf
                     @method('PUT')
                     <div>
@@ -238,8 +238,12 @@
                         <textarea name="address" x-model="school.address" rows="3" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent"></textarea>
                     </div>
                     <div class="flex items-center justify-end gap-3 pt-2">
-                        <button type="button" @click="open=false" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">Cancel</button>
-                        <button type="submit" class="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">Save Changes</button>
+                        <button type="button" @click="open=false" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium">
+                            Update School
+                        </button>
                     </div>
                 </form>
             </div>
