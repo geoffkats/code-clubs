@@ -109,7 +109,100 @@
                                         </div>
                                         
                                         <!-- Question form fields based on type -->
-                                        @include('assessments.partials.question-form', ['question' => $question, 'index' => $index])
+                                        <input type="hidden" name="questions[{{ $index }}][type]" value="{{ $question->question_type }}">
+                                        <div class="space-y-3">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Question Text</label>
+                                                <textarea name="questions[{{ $index }}][question_text]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2" required>{{ old('questions.'.$index.'.question_text', $question->question_text) }}</textarea>
+                                            </div>
+                                            
+                                            @if($question->question_type === 'multiple_choice')
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    @php
+                                                        $options = $question->question_options ?? [];
+                                                    @endphp
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option A</label>
+                                                        <input name="questions[{{ $index }}][option_a]" value="{{ old('questions.'.$index.'.option_a', $options['A'] ?? '') }}" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option B</label>
+                                                        <input name="questions[{{ $index }}][option_b]" value="{{ old('questions.'.$index.'.option_b', $options['B'] ?? '') }}" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option C</label>
+                                                        <input name="questions[{{ $index }}][option_c]" value="{{ old('questions.'.$index.'.option_c', $options['C'] ?? '') }}" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Option D</label>
+                                                        <input name="questions[{{ $index }}][option_d]" value="{{ old('questions.'.$index.'.option_d', $options['D'] ?? '') }}" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Correct Answer</label>
+                                                    <select name="questions[{{ $index }}][correct_answer]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                                                        <option value="">Select correct answer</option>
+                                                        <option value="A" {{ old('questions.'.$index.'.correct_answer', $question->correct_answer) == 'A' ? 'selected' : '' }}>A</option>
+                                                        <option value="B" {{ old('questions.'.$index.'.correct_answer', $question->correct_answer) == 'B' ? 'selected' : '' }}>B</option>
+                                                        <option value="C" {{ old('questions.'.$index.'.correct_answer', $question->correct_answer) == 'C' ? 'selected' : '' }}>C</option>
+                                                        <option value="D" {{ old('questions.'.$index.'.correct_answer', $question->correct_answer) == 'D' ? 'selected' : '' }}>D</option>
+                                                    </select>
+                                                </div>
+                                            @endif
+                                            
+                                            @if($question->question_type === 'practical_project')
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Project Instructions</label>
+                                                    <textarea name="questions[{{ $index }}][project_instructions]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="3" required>{{ old('questions.'.$index.'.project_instructions', $question->project_instructions) }}</textarea>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Output Format</label>
+                                                    <select name="questions[{{ $index }}][project_output_format]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                                                        <option value="">Select output format</option>
+                                                        <option value="scratch_project" {{ old('questions.'.$index.'.project_output_format', $question->project_output_format) == 'scratch_project' ? 'selected' : '' }}>🎨 Scratch Project</option>
+                                                        <option value="python_file" {{ old('questions.'.$index.'.project_output_format', $question->project_output_format) == 'python_file' ? 'selected' : '' }}>🐍 Python File</option>
+                                                        <option value="html_file" {{ old('questions.'.$index.'.project_output_format', $question->project_output_format) == 'html_file' ? 'selected' : '' }}>🌐 HTML File</option>
+                                                        <option value="javascript_file" {{ old('questions.'.$index.'.project_output_format', $question->project_output_format) == 'javascript_file' ? 'selected' : '' }}>📜 JavaScript File</option>
+                                                        <option value="mobile_app" {{ old('questions.'.$index.'.project_output_format', $question->project_output_format) == 'mobile_app' ? 'selected' : '' }}>📱 Mobile App</option>
+                                                        <option value="robotics_project" {{ old('questions.'.$index.'.project_output_format', $question->project_output_format) == 'robotics_project' ? 'selected' : '' }}>🤖 Robotics Project</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Requirements (one per line)</label>
+                                                    <textarea name="questions[{{ $index }}][project_requirements]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="3" placeholder="• Must have at least 3 functions&#10;• Should include error handling&#10;• Must be interactive">{{ old('questions.'.$index.'.project_requirements', is_array($question->project_requirements) ? implode("\n", $question->project_requirements) : '') }}</textarea>
+                                                </div>
+                                            @endif
+                                            
+                                            @if($question->question_type === 'image_question')
+                                                @if($question->image_url)
+                                                    <div class="mb-3">
+                                                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Current Image</label>
+                                                        <img src="{{ Storage::url($question->image_url) }}" alt="Current image" class="max-w-full h-32 object-contain rounded border border-slate-200 dark:border-slate-600">
+                                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ $question->image_filename }}</p>
+                                                    </div>
+                                                @endif
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Upload New Image (optional)</label>
+                                                    <input type="file" name="questions[{{ $index }}][image_file]" accept="image/*" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Image Description</label>
+                                                    <textarea name="questions[{{ $index }}][image_description]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="2">{{ old('questions.'.$index.'.image_description', $question->image_description) }}</textarea>
+                                                </div>
+                                            @endif
+                                            
+                                            @if($question->question_type === 'text_question')
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Sample Answer (for reference)</label>
+                                                    <textarea name="questions[{{ $index }}][correct_answer]" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" rows="3">{{ old('questions.'.$index.'.correct_answer', $question->correct_answer) }}</textarea>
+                                                </div>
+                                            @endif
+                                            
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Points</label>
+                                                <input name="questions[{{ $index }}][points]" type="number" value="{{ old('questions.'.$index.'.points', $question->points) }}" min="1" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                                            </div>
+                                        </div>
                                     </div>
                                 @endforeach
                             @else
