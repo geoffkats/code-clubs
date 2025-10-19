@@ -212,7 +212,7 @@
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-600">Attendance</span>
-                                <span class="font-semibold text-gray-900">{{ $attendance_percentage }}%</span>
+                                <span class="font-semibold text-gray-900">{{ number_format($attendance_percentage, 1) }}%</span>
                             </div>
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-600">Assessments</span>
