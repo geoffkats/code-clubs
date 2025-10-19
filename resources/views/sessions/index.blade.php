@@ -111,9 +111,22 @@
                                  @click="selectDate(day)">
                                 <span x-text="day.day" class="font-medium"></span>
                                 <template x-if="day.hasSession">
-                                    <div class="flex items-center justify-center mt-1">
-                                        <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
-                                        <span class="ml-1 text-xs text-purple-600 dark:text-purple-400" x-text="day.sessions.length"></span>
+                                    <div class="flex flex-col items-center justify-center mt-1 space-y-1">
+                                        <template x-for="(session, index) in day.sessions.slice(0, 2)" :key="session.id">
+                                            <div class="flex items-center space-x-1">
+                                                <div class="w-2 h-2 rounded-full" 
+                                                     :class="getSessionBadgeColor(session.club_name)"></div>
+                                                <span class="text-xs font-medium" 
+                                                      :class="getSessionBadgeTextColor(session.club_name)"
+                                                      x-text="getClubInitials(session.club_name)"></span>
+                                            </div>
+                                        </template>
+                                        <template x-if="day.sessions.length > 2">
+                                            <div class="flex items-center space-x-1">
+                                                <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                                <span class="text-xs text-gray-500" x-text="'+' + (day.sessions.length - 2)"></span>
+                                            </div>
+                                        </template>
                                     </div>
                                 </template>
                                 <template x-if="day.isToday">
@@ -125,14 +138,20 @@
                 </div>
                 
                 <!-- Calendar Legend -->
-                <div class="mt-4 flex items-center justify-center space-x-6 text-sm">
+                <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm">
                     <div class="flex items-center space-x-2">
                         <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
                         <span class="text-slate-600 dark:text-slate-400">Today</span>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
-                        <span class="text-slate-600 dark:text-slate-400">Has Sessions</span>
+                        <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span class="text-xs font-medium text-red-700">PY</span>
+                        <span class="text-slate-600 dark:text-slate-400">Club Sessions</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        <span class="text-xs text-gray-500">+2</span>
+                        <span class="text-slate-600 dark:text-slate-400">More sessions</span>
                     </div>
                 </div>
                 
@@ -155,10 +174,31 @@
                         <template x-if="selectedSessions.length > 0">
                             <div class="space-y-3">
                                 <template x-for="session in selectedSessions" :key="session.id">
-                                    <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-3">
-                                        <h4 class="font-semibold text-slate-900 dark:text-white" x-text="session.club_name"></h4>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400">Week <span x-text="session.week_number"></span></p>
-                                        <p class="text-sm text-slate-600 dark:text-slate-400" x-text="session.attendance_count + ' students attended'"></p>
+                                    <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4 border-l-4" 
+                                         :class="getSessionBadgeColor(session.club_name).replace('bg-', 'border-')">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center space-x-2">
+                                                <div class="w-3 h-3 rounded-full" :class="getSessionBadgeColor(session.club_name)"></div>
+                                                <h4 class="font-semibold text-slate-900 dark:text-white" x-text="session.club_name"></h4>
+                                            </div>
+                                            <span class="px-2 py-1 text-xs font-medium rounded-full" 
+                                                  :class="getSessionBadgeColor(session.club_name) + ' text-white'"
+                                                  x-text="getClubInitials(session.club_name)"></span>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-2 text-sm">
+                                            <div class="flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                </svg>
+                                                <span class="text-slate-600 dark:text-slate-400">Week <span x-text="session.session_week_number"></span></span>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                </svg>
+                                                <span class="text-slate-600 dark:text-slate-400" x-text="session.attendance_count + ' attended'"></span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </template>
                             </div>
@@ -185,20 +225,43 @@
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-4">
                                         <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center text-white">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <span class="text-sm font-bold">
+                                                {{ strtoupper(substr($session->club->club_name ?? 'UC', 0, 2)) }}
+                                            </span>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
+                                                    {{ $session->club->club_name ?? 'Unknown Club' }}
+                                                </h3>
+                                                <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-500 text-white">
+                                                    {{ strtoupper(substr($session->club->club_name ?? 'UC', 0, 2)) }}
+                                                </span>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                                <div class="flex items-center space-x-2">
+                                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                             </svg>
+                                                    <span class="text-slate-600 dark:text-slate-400">
+                                                        {{ \Carbon\Carbon::parse($session->session_date)->format('M d, Y') }}
+                                                    </span>
                                         </div>
-                                        <div>
-                                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
-                                                {{ $session->club->club_name ?? 'Unknown Club' }}
-                                            </h3>
-                                            <p class="text-sm text-slate-600 dark:text-slate-400">
-                                                {{ \Carbon\Carbon::parse($session->session_date)->format('M d, Y') }} • Week {{ $session->session_week_number }}
-                                            </p>
-                                            <p class="text-sm text-slate-500 dark:text-slate-500">
-                                                {{ $session->attendance_records_count ?? 0 }} students attended
-                                            </p>
+                                                <div class="flex items-center space-x-2">
+                                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    <span class="text-slate-600 dark:text-slate-400">Week {{ $session->session_week_number }}</span>
+                                        </div>
+                                    </div>
+                                            <div class="flex items-center space-x-2 mt-2">
+                                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                                </svg>
+                                                <span class="text-slate-500 dark:text-slate-500">
+                                                    {{ $session->attendance_records_count ?? 0 }} students attended
+                                            </span>
+                                            </div>
                                         </div>
                                         </div>
                                         <div class="flex items-center space-x-2">
@@ -457,6 +520,48 @@
                         setTimeout(() => {
                             this.updateCalendar();
                         }, 100);
+                    },
+                    
+                    getSessionBadgeColor(clubName) {
+                        // Generate consistent colors based on club name
+                        const colors = [
+                            'bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 
+                            'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-orange-500',
+                            'bg-teal-500', 'bg-cyan-500', 'bg-emerald-500', 'bg-amber-500'
+                        ];
+                        const hash = this.hashCode(clubName);
+                        return colors[Math.abs(hash) % colors.length];
+                    },
+                    
+                    getSessionBadgeTextColor(clubName) {
+                        // Generate consistent text colors based on club name
+                        const colors = [
+                            'text-red-700', 'text-blue-700', 'text-green-700', 'text-yellow-700', 
+                            'text-purple-700', 'text-pink-700', 'text-indigo-700', 'text-orange-700',
+                            'text-teal-700', 'text-cyan-700', 'text-emerald-700', 'text-amber-700'
+                        ];
+                        const hash = this.hashCode(clubName);
+                        return colors[Math.abs(hash) % colors.length];
+                    },
+                    
+                    getClubInitials(clubName) {
+                        // Get first 2-3 characters of club name
+                        if (!clubName) return '??';
+                        const words = clubName.split(' ');
+                        if (words.length >= 2) {
+                            return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+                        }
+                        return clubName.substring(0, 2).toUpperCase();
+                    },
+                    
+                    hashCode(str) {
+                        let hash = 0;
+                        for (let i = 0; i < str.length; i++) {
+                            const char = str.charCodeAt(i);
+                            hash = ((hash << 5) - hash) + char;
+                            hash = hash & hash; // Convert to 32bit integer
+                        }
+                        return hash;
                     }
                 }
             }
