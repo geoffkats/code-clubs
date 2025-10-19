@@ -19,21 +19,48 @@
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        .uganda-text {
+            color: #FFD700;
+        }
+        
+        .hero-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23667eea' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
 </head>
-<body class="h-full bg-gradient-to-br from-blue-50 to-indigo-100">
+<body class="h-full bg-gradient-to-br from-blue-50 to-indigo-100 hero-pattern">
     <div class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             <!-- Header -->
             <div class="text-center">
-                <div class="mx-auto h-16 w-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span class="text-white font-bold text-xl">CC</span>
+                <div class="mx-auto h-20 w-20 bg-gradient-to-r from-yellow-500 to-red-600 rounded-full flex items-center justify-center floating">
+                    <i class="fas fa-graduation-cap text-white text-2xl"></i>
                 </div>
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
-                    Student Portal
-                </h2>
-                <p class="mt-2 text-sm text-gray-600">
-                    Sign in to access your assignments and track your progress
-                </p>
+                <div class="mt-6">
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">
+                        Code Club System
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-4">
+                        <span class="uganda-text font-semibold">Student Portal</span>
+                    </p>
+                    <p class="text-sm text-gray-600">
+                        Sign in to access your assignments, track progress, and continue your coding journey
+                    </p>
+                </div>
             </div>
 
             <!-- Login Form -->
@@ -96,13 +123,12 @@
                     <!-- Submit Button -->
                     <div>
                         <button type="submit" 
-                                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+                                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-yellow-500 to-red-600 hover:from-yellow-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-150 ease-in-out transform hover:scale-105 shadow-lg">
                             <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                                <svg class="h-5 w-5 text-blue-300 group-hover:text-blue-200" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                                </svg>
+                                <i class="fas fa-sign-in-alt text-yellow-200 group-hover:text-yellow-100"></i>
                             </span>
-                            Sign in
+                            <i class="fas fa-graduation-cap mr-2"></i>
+                            Access Student Portal
                         </button>
                     </div>
 
@@ -120,9 +146,14 @@
 
             <!-- Back to Main Site -->
             <div class="text-center">
-                <a href="{{ route('home') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                    ← Back to main site
+                <a href="{{ route('home') }}" class="text-sm text-gray-600 hover:text-yellow-600 transition-colors">
+                    <i class="fas fa-arrow-left mr-1"></i>Back to main site
                 </a>
+            </div>
+            
+            <!-- Footer -->
+            <div class="text-center text-xs text-gray-500">
+                <p>© {{ date('Y') }} Code Academy Uganda. Developed by Synthilogic Enterprise.</p>
             </div>
         </div>
     </div>

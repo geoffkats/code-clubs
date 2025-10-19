@@ -88,10 +88,21 @@ Route::post('/parent-access/verify-old', [ReportController::class, 'verify_paren
 
     // Attendance grid
     Route::get('/clubs/{club_id}/attendance', [AttendanceController::class, 'show_grid'])->name('attendance.grid');
-    // Students
+    // Students (Original)
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
     Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+    
+    // Admin Student Management (with credentials)
+    Route::get('/admin/students', [App\Http\Controllers\AdminStudentController::class, 'index'])->name('admin.students.index');
+    Route::get('/admin/students/create', [App\Http\Controllers\AdminStudentController::class, 'create'])->name('admin.students.create');
+    Route::post('/admin/students', [App\Http\Controllers\AdminStudentController::class, 'store'])->name('admin.students.store');
+    Route::get('/admin/students/{student}', [App\Http\Controllers\AdminStudentController::class, 'show'])->name('admin.students.show');
+    Route::get('/admin/students/{student}/edit', [App\Http\Controllers\AdminStudentController::class, 'edit'])->name('admin.students.edit');
+    Route::put('/admin/students/{student}', [App\Http\Controllers\AdminStudentController::class, 'update'])->name('admin.students.update');
+    Route::delete('/admin/students/{student}', [App\Http\Controllers\AdminStudentController::class, 'destroy'])->name('admin.students.destroy');
+    Route::get('/admin/students/{student}/reset-password', [App\Http\Controllers\AdminStudentController::class, 'showResetPassword'])->name('admin.students.reset-password');
+    Route::post('/admin/students/{student}/reset-password', [App\Http\Controllers\AdminStudentController::class, 'resetPassword'])->name('admin.students.reset-password.post');
     
     // Assessments
     Route::get('/assessments', [AssessmentController::class, 'index'])->name('assessments.index');

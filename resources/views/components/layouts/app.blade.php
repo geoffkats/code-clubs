@@ -58,7 +58,7 @@
                             <flux:navlist.item 
                                 icon="users" 
                                 :href="route('students.index')" 
-                                :current="request()->routeIs('students.*')" 
+                                :current="request()->routeIs('students.*') && !request()->routeIs('admin.students.*')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                             >
@@ -84,6 +84,16 @@
                         </h3>
                         
                         <flux:navlist variant="outline" class="space-y-1">
+                            <flux:navlist.item 
+                                icon="user-plus" 
+                                :href="route('admin.students.index')" 
+                                :current="request()->routeIs('admin.students.*')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Student Accounts') }}
+                            </flux:navlist.item>
+
                             <flux:navlist.item 
                                 icon="chart-bar" 
                                 :href="route('attendance.index')" 

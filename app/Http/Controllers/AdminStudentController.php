@@ -1,0 +1,188 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Student;
+use App\Models\School;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+
+class AdminStudentController extends Controller
+{
+    /**
+     * Display a listing of students with management options
+     */
+    public function index()
+    {
+        $students = Student::with(['school', 'clubs'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        return view('admin.students.index', compact('students'));
+    }
+
+    /**
+     * Show the form for creating a new student with credentials
+     */
+    public function create()
+    {
+        $schools = School::all();
+        return view('admin.students.create', compact('schools'));
+    }
+
+    /**
+     * Store a newly created student with login credentials
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'student_first_name' => 'required|string|max:255',
+            'student_last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:students',
+            'password' => 'required|string|min:8',
+            'student_id_number' => 'required|string|max:50|unique:students',
+            'student_grade_level' => 'required|string|max:10',
+            'student_parent_name' => 'required|string|max:255',
+            'student_parent_email' => 'required|string|email|max:255',
+            'school_id' => 'required|exists:schools,id',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $student = Student::create([
+            'student_first_name' => $request->student_first_name,
+            'student_last_name' => $request->student_last_name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'student_id_number' => $request->student_id_number,
+            'student_grade_level' => $request->student_grade_level,
+            'student_parent_name' => $request->student_parent_name,
+            'student_parent_email' => $request->student_parent_email,
+            'school_id' => $request->school_id,
+        ]);
+
+        return redirect()->route('admin.students.index')
+            ->with('success', 'Student account created successfully! Login credentials have been set.');
+    }
+
+    /**
+     * Display the specified student
+     */
+    public function show(Student $student)
+    {
+        $student->load(['school', 'clubs', 'assessment_scores.assessment', 'reports']);
+        
+        return view('admin.students.show', compact('student'));
+    }
+
+    /**
+     * Show the form for editing student credentials
+     */
+    public function edit(Student $student)
+    {
+        $schools = School::all();
+        return view('admin.students.edit', compact('student', 'schools'));
+    }
+
+    /**
+     * Update the specified student
+     */
+    public function update(Request $request, Student $student)
+    {
+        $validator = Validator::make($request->all(), [
+            'student_first_name' => 'required|string|max:255',
+            'student_last_name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:students,email,' . $student->id,
+            'student_id_number' => 'required|string|max:50|unique:students,student_id_number,' . $student->id,
+            'student_grade_level' => 'required|string|max:10',
+            'student_parent_name' => 'required|string|max:255',
+            'student_parent_email' => 'required|string|email|max:255',
+            'school_id' => 'required|exists:schools,id',
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->only([
+            'student_first_name',
+            'student_last_name',
+            'email',
+            'student_id_number',
+            'student_grade_level',
+            'student_parent_name',
+            'student_parent_email',
+            'school_id'
+        ]);
+
+        // Only update password if provided
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $student->update($data);
+
+        return redirect()->route('admin.students.index')
+            ->with('success', 'Student account updated successfully!');
+    }
+
+    /**
+     * Show form to reset student password
+     */
+    public function showResetPassword(Student $student)
+    {
+        return view('admin.students.reset-password', compact('student'));
+    }
+
+    /**
+     * Reset student password
+     */
+    public function resetPassword(Request $request, Student $student)
+    {
+        $validator = Validator::make($request->all(), [
+            'new_password' => 'required|string|min:8',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        $student->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return redirect()->route('admin.students.show', $student)
+            ->with('success', 'Student password has been reset successfully!');
+    }
+
+    /**
+     * Remove the specified student
+     */
+    public function destroy(Student $student)
+    {
+        $student->delete();
+
+        return redirect()->route('admin.students.index')
+            ->with('success', 'Student account deleted successfully!');
+    }
+
+    /**
+     * Generate temporary password for student
+     */
+    public function generateTempPassword()
+    {
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $password = '';
+        
+        for ($i = 0; $i < 8; $i++) {
+            $password .= $characters[rand(0, strlen($characters) - 1)];
+        }
+        
+        return $password;
+    }
+}
