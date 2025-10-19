@@ -1,207 +1,308 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Child's Coding Report</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #f8fafc;
-        }
-        .container {
-            background: white;
-            margin: 20px;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-        }
-        .header p {
-            margin: 10px 0 0 0;
-            opacity: 0.9;
-            font-size: 16px;
-        }
-        .content {
-            padding: 30px;
-        }
-        .access-code-box {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border: 2px solid #0ea5e9;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            margin: 20px 0;
-        }
-        .access-code {
-            font-family: 'Courier New', monospace;
-            font-size: 24px;
-            font-weight: bold;
-            color: #0c4a6e;
-            letter-spacing: 2px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            display: inline-block;
-            border: 1px solid #0ea5e9;
-        }
-        .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            padding: 15px 30px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            margin: 20px 0;
-            transition: transform 0.2s;
-        }
-        .cta-button:hover {
-            transform: translateY(-2px);
-        }
-        .instructions {
-            background: #f8fafc;
-            border-left: 4px solid #0ea5e9;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 0 8px 8px 0;
-        }
-        .instructions h3 {
-            margin: 0 0 10px 0;
-            color: #0c4a6e;
-            font-size: 18px;
-        }
-        .instructions ol {
-            margin: 0;
-            padding-left: 20px;
-        }
-        .instructions li {
-            margin: 8px 0;
-            color: #374151;
-        }
-        .footer {
-            background: #f8fafc;
-            padding: 20px;
-            text-align: center;
-            border-top: 1px solid #e5e7eb;
-        }
-        .footer p {
-            margin: 5px 0;
-            color: #6b7280;
-            font-size: 14px;
-        }
-        .security-note {
-            background: #fef3c7;
-            border: 1px solid #f59e0b;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-        .security-note h4 {
-            margin: 0 0 10px 0;
-            color: #92400e;
-            font-size: 16px;
-        }
-        .security-note p {
-            margin: 0;
-            color: #92400e;
-            font-size: 14px;
-        }
-        .highlight {
-            background: #fef3c7;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-        @media (max-width: 600px) {
-            .container {
-                margin: 10px;
-            }
-            .header, .content {
-                padding: 20px;
-            }
-            .access-code {
-                font-size: 20px;
-                padding: 8px 16px;
-            }
-        }
-    </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="x-apple-disable-message-reformatting" />
+<title>Code Academy Uganda — Coding Progress Report</title>
+<style>
+  /* Reset / Client */
+  html,body{margin:0;padding:0;height:100%!important;width:100%!important;background:#f3f6f9;}
+  *{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;}
+  table,td{mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse!important;}
+  img{border:0;line-height:100%;outline:none;text-decoration:none;-ms-interpolation-mode:bicubic;display:block;}
+  a{color:inherit;text-decoration:none;}
+  /* Container */
+  .wrap{width:100%;padding:28px 12px;box-sizing:border-box;}
+  .container{max-width:680px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 10px 30px rgba(16,24,40,0.06);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#0f172a;}
+  /* Header */
+  .brand-bar{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:linear-gradient(90deg,#0f172a 0%,#0ea5a1 100%);color:#fff;}
+  .brand-left{display:flex;align-items:center;gap:12px;}
+  .logo{width:56px;height:56px;border-radius:8px;overflow:hidden;background:#fff;padding:6px;box-sizing:border-box;}
+  .logo img{width:100%;height:100%;object-fit:contain;display:block;}
+  .brand-name{font-size:18px;font-weight:700;letter-spacing:0.2px;}
+  .brand-sub{font-size:12px;opacity:0.9;margin-top:2px;}
+  /* Body */
+  .body{padding:26px 32px;background:linear-gradient(180deg,#ffffff 0%, #ffffff 40%, #f8fafc 100%);}
+  h1{margin:0;font-size:20px;color:#0f172a;}
+  p.lead{margin:10px 0 0 0;color:#475569;font-size:14px;line-height:1.5;}
+  
+  /* --- ENHANCED ACCESS BOX --- */
+  .access-box{
+    margin:20px 0;
+    padding:16px;
+    border-radius:12px;
+    background:linear-gradient(180deg,#ecfeff 0%, #f0f9ff 100%);
+    border:1px solid #dbeffd;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap; /* Added for smoother wrapping */
+  }
+  .access-left{display:flex;flex-direction:column;gap:6px;}
+  .access-title{font-weight:700;color:#044e54;font-size:15px;}
+  .access-sub{font-size:13px;color:#0f172a;opacity:0.85;}
+  .access-right{text-align:right;}
+  
+  /* New group for code + button */
+  .access-action-group {
+    display: flex;
+    align-items: stretch; /* Makes button and pill same height */
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .code-pill{
+    font-family: 'Courier New', monospace;
+    background:#fff;
+    padding:10px 14px;
+    border-radius:10px;
+    border:1px solid #cdeff4;
+    font-weight:700;
+    letter-spacing:2px;
+    font-size:20px;
+    color:#083344;
+    display:flex; /* Added for vertical alignment */
+    align-items:center; /* Added for vertical alignment */
+  }
+  /* New copy button style */
+  .copy-button {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #0ea5a1;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+  .copy-button:hover {
+    background: #0d8a86;
+    transform: translateY(-1px);
+  }
+  /* State after clicking 'copy' */
+  .copy-button.copied {
+    background: #059669; /* Success green */
+  }
+  .access-expiry-note {
+    font-size:12px;
+    color:#0f172a;
+    opacity:0.85;
+    margin-top:8px;
+    text-align:right;
+  }
+  /* --- END ENHANCED STYLES --- */
+
+  /* Progress cards */
+  .cards{display:flex;gap:12px;margin:12px 0 18px 0;flex-wrap:wrap;}
+  .card{flex:1;min-width:160px;background:#0f172a;color:#fff;border-radius:10px;padding:12px;box-sizing:border-box;box-shadow:0 6px 18px rgba(16,24,40,0.05);}
+  .card.alt{background:#f8fafc;color:#0f172a;border:1px solid #e6eef2;}
+  .card h3{margin:0;font-size:14px;font-weight:700;}
+  .card .value{font-size:20px;font-weight:800;margin-top:8px;}
+  .card .muted{font-size:12px;opacity:0.85;margin-top:4px;}
+  /* CTA */
+  .cta-wrap{margin:18px 0;text-align:center;}
+  .cta{display:inline-block;background:linear-gradient(90deg,#0ea5a1 0%,#0f172a 100%);color:#fff;padding:12px 24px;border-radius:28px;font-weight:700;font-size:15px;box-shadow:0 8px 24px rgba(14,165,161,0.16);transition:transform .16s ease,box-shadow .16s ease;}
+  .cta:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(14,165,161,0.18);}
+  /* Teacher feedback */
+  .feedback{margin:12px 0;padding:14px;border-radius:10px;background:#fff7ed;border:1px solid #ffedd5;color:#92400e;}
+  .feedback h4{margin:0;font-size:14px;font-weight:800;color:#92400e;}
+  .feedback p{margin:8px 0 0 0;font-size:13px;color:#7c2d12;}
+  /* Extras list */
+  .extras{margin:14px 0;padding:14px;border-radius:10px;background:#f8fbff;border:1px solid #e6f5ff;color:#083344;}
+  .extras h4{margin:0;font-weight:700;}
+  .extras ul{margin:8px 0 0 18px;padding:0;color:#083344;}
+  .extras li{margin:6px 0;font-size:13px;}
+  /* Contact */
+  .contact{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-top:12px;padding:12px;border-radius:10px;background:#f8fafc;border:1px solid #eef2f7;}
+  .contact .left{font-size:13px;color:#0f172a;}
+  .contact .right{font-size:13px;color:#0f172a;text-align:right;}
+  /* Footer */
+  .footer{padding:16px 22px;background:#0f172a;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;}
+  .footer .left{font-size:13px;}
+  .footer .right{font-size:12px;opacity:0.9;text-align:right;}
+  .small{font-size:12px;color:#6b7280;}
+  
+  /* Responsive */
+  @media (max-width:600px){
+    .brand-bar{padding:14px;}
+    .body{padding:18px;}
+    .access-box{
+      flex-direction:column;
+      align-items:flex-start; /* Aligns left-hand text to start */
+    }
+    /* Responsive styles for new access box */
+    .access-right {
+      text-align: left; /* Aligns right-hand content to start */
+      width: 100%; /* Makes it full width */
+      margin-top: 12px; /* Adds space from text above */
+    }
+    .access-action-group {
+      justify-content: flex-start; /* Aligns code+button to start */
+    }
+    .access-expiry-note {
+      text-align: left; /* Aligns expiry note to start */
+    }
+    /* End responsive styles */
+    
+    .cards{flex-direction:column;}
+    .contact{flex-direction:column;align-items:flex-start;text-align:left;}
+    .footer{padding:14px;}
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🎓 Coding Progress Report</h1>
-            <p>{{student_name}} - {{club_name}}</p>
+  <div class="wrap">
+    <div class="container" role="article" aria-label="Code Academy Uganda — Student Report">
+      <div class="brand-bar" role="banner">
+        <div class="brand-left">
+          <div class="logo" aria-hidden="true">
+            <img src="https://codeacademyug.org/assets/Code%20Academy%20logo-15%20(1)-DAGk0U_k.png" alt="Code Academy Uganda logo" />
+          </div>
+          <div>
+            <div class="brand-name">Code Academy Uganda</div>
+            <div class="brand-sub">Empowering young coders — practical & fun</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:700;font-size:13px;">Secure Report</div>
+          <div style="font-size:12px;opacity:0.9;">Monitored by Synthilogic Enterprise</div>
+        </div>
+      </div>
+
+      <div class="body">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="vertical-align:top;">
+              <h1>🎓 Coding Progress Report</h1>
+              <p class="lead">
+                Hello — here’s the latest update for <strong>{{student_name}}</strong> from the <strong>{{club_name}}</strong> program. Report date: <strong>{{current_date}}</strong>.
+              </p>
+            </td>
+          </tr>
+        </table>
+
+        <div class="access-box" role="region" aria-label="Access code">
+          <div class="access-left">
+            <div class="access-title">🔑 Secure access</div>
+            <div class="access-sub">Use the code below to open your child's full interactive report</div>
+          </div>
+          <div class="access-right">
+            <div class="access-action-group">
+              <div class="code-pill" id="access-code-text" role="textbox">{{access_code}}</div>
+              <button id="copy-btn" class="copy-button" type="button" aria-label="Copy access code">Copy</button>
+            </div>
+            <div class="access-expiry-note">Valid for: <strong>{{code_expires}}</strong></div>
+          </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="content">
-            <p><strong>Dear Parent,</strong></p>
-            
-            <p>We're excited to share {{student_name}}'s latest progress in our {{club_name}} program! Your child has been doing amazing work, and we can't wait for you to see their achievements.</p>
-
-            <!-- Access Code Box -->
-            <div class="access-code-box">
-                <h3 style="margin: 0 0 15px 0; color: #0c4a6e;">🔑 Your Access Code</h3>
-                <div class="access-code">{{access_code}}</div>
-                <p style="margin: 15px 0 0 0; color: #0c4a6e; font-size: 14px;">
-                    Use this code to securely access your child's report
-                </p>
-            </div>
-
-            <!-- Instructions -->
-            <div class="instructions">
-                <h3>📋 How to View the Report:</h3>
-                <ol>
-                    <li>Click the <strong>"View Report"</strong> button below</li>
-                    <li>Enter the access code: <span class="highlight">{{access_code}}</span></li>
-                    <li>Explore your child's progress, projects, and teacher feedback</li>
-                    <li>Interact with their Scratch coding projects directly in the report</li>
-                </ol>
-            </div>
-
-            <!-- CTA Button -->
-            <div style="text-align: center;">
-                <a href="{{report_url}}" class="cta-button">
-                    🚀 View {{student_name}}'s Report
-                </a>
-            </div>
-
-            <!-- Security Note -->
-            <div class="security-note">
-                <h4>🔒 Security & Privacy</h4>
-                <p>This access code is unique to your child's report and will expire automatically for security. Please do not share this code with others.</p>
-            </div>
-
-            <p>If you have any questions about your child's progress or need assistance accessing the report, please don't hesitate to contact us.</p>
-
-            <p>Thank you for supporting {{student_name}}'s coding journey!</p>
-
-            <p><strong>The {{club_name}} Team</strong></p>
+        <div class="cards" role="list">
+          <div class="card" role="listitem" aria-label="Projects completed">
+            <h3>📁 Projects</h3>
+            <div class="value">{{projects_completed}}</div>
+            <div class="muted">Completed this term</div>
+          </div>
+          <div class="card alt" role="listitem" aria-label="Skill score">
+            <h3 style="color:#0f172a;">⭐ Skill Score</h3>
+            <div class="value" style="color:#0f172a;">{{skill_score}}%</div>
+            <div class="muted">Overall proficiency</div>
+          </div>
+          <div class="card" role="listitem" aria-label="Attendance">
+            <h3>📅 Attendance</h3>
+            <div class="value">{{attendance_rate}}%</div>
+            <div class="muted">Participation rate</div>
+          </div>
         </div>
 
-        <!-- Footer -->
-        <div class="footer">
-            <p><strong>Code Club System</strong></p>
-            <p>Generated on {{current_date}}</p>
-            <p>This email was sent securely to protect your child's privacy.</p>
+        <div class="cta-wrap" role="button">
+          <a class="cta" href="{{report_url}}" target="_blank" rel="noopener">🚀 View Full Report</a>
+          </div>
+
+        <div class="feedback" role="region" aria-label="Teacher feedback">
+          <h4>📝 Teacher feedback</h4>
+          <p>{{teacher_feedback_snippet}}</p>
+          <p style="margin-top:8px;font-size:13px;color:#6b3a1a;"><strong>{{teacher_name}}</strong> — {{teacher_position}}</p>
         </div>
+
+        <div class="extras" role="region" aria-label="Report contents">
+          <h4>💡 What's inside the full report</h4>
+          <ul>
+            <li>Interactive previews of Scratch & block projects</li>
+            <li>Detailed progress analysis & skill benchmarks</li>
+            <li>Attendance & participation timeline</li>
+            <li>Personalized growth recommendations</li>
+            <li>Downloadable certificates and badges</li>
+          </ul>
+        </div>
+
+        <div class="contact" role="contentinfo">
+          <div class="left">
+            <div style="font-weight:700;">Need help?</div>
+            <div class="small">Contact your instructor: <strong>{{teacher_name}}</strong></div>
+            <div class="small">Email: <a href="mailto:{{contact_email}}" style="color:#0ea5a1;">{{contact_email}}</a> | Phone: <span style="color:#0ea5a1;">{{contact_phone}}</span></div>
+          </div>
+          <div class="right">
+            <div style="font-weight:700;">Code Academy Uganda</div>
+            <div class="small">{{club_website}}</div>
+            <div class="small">{{club_address}}</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer" role="contentinfo">
+        <div class="left">
+          <div style="font-weight:800;">Code Academy Uganda</div>
+          <div style="font-size:12px;opacity:0.9;margin-top:6px;">Empowering young coders — practical & fun.</div>
+        </div>
+        <div class="right">
+          <div style="font-weight:700;">Security monitored by</div>
+          <div style="font-size:12px;margin-top:4px;">Synthilogic Enterprise</div>
+          <div style="font-size:11px;opacity:0.85;margin-top:6px;">Generated on {{current_date}}</div>
+        </div>
+      </div>
     </div>
+
+    <div style="max-width:680px;margin:12px auto 0 auto;text-align:center;font-size:12px;color:#6b7280;">
+      <p style="margin:8px 12px 0 12px;">This email was sent to you because your child is enrolled at Code Academy Uganda. If you no longer wish to receive these messages, <a href="{{unsubscribe_url}}" style="color:#0ea5a1;">unsubscribe</a>.</p>
+    </div>
+  </div>
+
+  <script>
+    // Wait for the document to be fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      const copyButton = document.getElementById('copy-btn');
+      const codeElement = document.getElementById('access-code-text');
+
+      if (copyButton && codeElement) {
+        copyButton.addEventListener('click', () => {
+          // Get the text from the code pill
+          const codeToCopy = codeElement.innerText.trim();
+
+          // Use the modern asynchronous Clipboard API
+          navigator.clipboard.writeText(codeToCopy).then(() => {
+            // Success! Provide visual feedback.
+            const originalText = copyButton.innerText;
+            copyButton.innerText = 'Copied!';
+            copyButton.classList.add('copied');
+
+            // Reset the button text after 2 seconds
+            setTimeout(() => {
+              copyButton.innerText = originalText;
+              copyButton.classList.remove('copied');
+            }, 2000);
+
+          }).catch(err => {
+            // Handle errors (e.g., if permissions are denied)
+            console.error('Failed to copy text: ', err);
+            alert('Failed to copy text. Please copy manually.');
+          });
+        });
+      }
+    });
+  </script>
+
 </body>
 </html>

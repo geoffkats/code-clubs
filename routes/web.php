@@ -93,6 +93,7 @@ Route::post('/parent-access/verify-old', [ReportController::class, 'verify_paren
 // Sessions
 Route::get('/sessions', [SessionController::class, 'index'])->name('sessions.index');
 Route::post('/sessions', [SessionController::class, 'store'])->name('sessions.store');
+Route::delete('/sessions/{id}', [SessionController::class, 'destroy'])->name('sessions.destroy');
 
 // Student Dashboard (student-specific)
 Route::get('/students/{student_id}/dashboard', function(int $student_id) {

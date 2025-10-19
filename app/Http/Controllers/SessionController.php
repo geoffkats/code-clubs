@@ -28,9 +28,24 @@ class SessionController extends Controller
             'session_week_number' => ['required', 'integer', 'min:1', 'max:52'],
         ]);
 
+        $data = $request->only(['club_id', 'session_date', 'session_week_number']);
         $session = SessionSchedule::create($data);
         
         return redirect()->route('sessions.index')
             ->with('success', 'Session created successfully!');
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $session = SessionSchedule::findOrFail($id);
+            $session->delete();
+            
+            return redirect()->route('sessions.index')
+                ->with('success', 'Session deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->route('sessions.index')
+                ->with('error', 'Failed to delete session. Please try again.');
+        }
     }
 }
