@@ -215,15 +215,18 @@ class RealAIService
     private function callGeminiAPI(string $prompt, string $contentType, string $cacheKey): string
     {
         $response = Http::timeout(30)
+            ->withOptions([
+                'verify' => false, // Disable SSL verification for local development
+            ])
             ->withHeaders([
                 'Content-Type' => 'application/json',
             ])
-            ->post($this->baseUrl . '/models/gemini-pro:generateContent?key=' . $this->apiKey, [
+            ->post($this->baseUrl . '/models/gemini-2.5-flash:generateContent?key=' . $this->apiKey, [
                 'contents' => [
                     [
                         'parts' => [
                             [
-                                'text' => 'You are an experienced coding instructor writing personalized student reports. Be specific, encouraging, and professional. ' . $prompt
+                                'text' => $prompt
                             ]
                         ]
                     ]
@@ -231,19 +234,53 @@ class RealAIService
                 'generationConfig' => [
                     'maxOutputTokens' => 150,
                     'temperature' => 0.7,
+                ],
+                'safetySettings' => [
+                    [
+                        'category' => 'HARM_CATEGORY_HARASSMENT',
+                        'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                    ],
+                    [
+                        'category' => 'HARM_CATEGORY_HATE_SPEECH',
+                        'threshold' => 'BLOCK_MEDIUM_AND_ABOVE'
+                    ]
                 ]
             ]);
         
         if ($response->successful()) {
             $data = $response->json();
-            $content = $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            
+            // Log the full response for debugging
+            Log::info('Gemini API response', [
+                'content_type' => $contentType,
+                'response_data' => $data
+            ]);
+            
+            // Parse response content - Gemini API structure
+            $content = '';
+            if (isset($data['candidates'][0]['content']['parts'][0]['text'])) {
+                $content = $data['candidates'][0]['content']['parts'][0]['text'];
+            } elseif (isset($data['candidates'][0]['text'])) {
+                $content = $data['candidates'][0]['text'];
+            } elseif (isset($data['candidates'][0]['content']['text'])) {
+                $content = $data['candidates'][0]['content']['text'];
+            }
+            
+            // Check if response was truncated due to token limits
+            if (isset($data['candidates'][0]['finishReason']) && $data['candidates'][0]['finishReason'] === 'MAX_TOKENS') {
+                Log::warning('Gemini response truncated due to token limits', [
+                    'content_type' => $contentType,
+                    'content_length' => strlen($content)
+                ]);
+            }
             
             // Cache the result for 1 hour
             Cache::put($cacheKey, $content, 3600);
             
             Log::info('Gemini API call successful', [
                 'content_type' => $contentType,
-                'content_length' => strlen($content)
+                'content_length' => strlen($content),
+                'content_preview' => substr($content, 0, 100)
             ]);
             
             return trim($content);
@@ -260,6 +297,9 @@ class RealAIService
     private function callOpenAIAPI(string $prompt, string $contentType, string $cacheKey): string
     {
         $response = Http::timeout(30)
+            ->withOptions([
+                'verify' => false, // Disable SSL verification for local development
+            ])
             ->withHeaders([
                 'Authorization' => 'Bearer ' . $this->apiKey,
                 'Content-Type' => 'application/json',
