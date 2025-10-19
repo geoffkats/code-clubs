@@ -28,11 +28,30 @@ class SessionController extends Controller
             'session_week_number' => ['required', 'integer', 'min:1', 'max:52'],
         ]);
 
-        $data = $request->only(['club_id', 'session_date', 'session_week_number']);
-        $session = SessionSchedule::create($data);
-        
-        return redirect()->back()
-            ->with('success', 'Session created successfully!');
+        // Check if session already exists for this club and week
+        $existingSession = SessionSchedule::where('club_id', $request->club_id)
+            ->where('session_week_number', $request->session_week_number)
+            ->first();
+
+        if ($existingSession) {
+            $clubName = $existingSession->club->club_name ?? 'Unknown Club';
+            return redirect()->back()
+                ->with('error', "A session for {$clubName} already exists for week {$request->session_week_number}. Please choose a different week number.");
+        }
+
+        try {
+            $data = $request->only(['club_id', 'session_date', 'session_week_number']);
+            $session = SessionSchedule::create($data);
+            
+            return redirect()->back()
+                ->with('success', 'Session created successfully!');
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            return redirect()->back()
+                ->with('error', 'A session for this club and week already exists. Please choose a different week number.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Failed to create session. Please try again.');
+        }
     }
 
     public function destroy($id)
