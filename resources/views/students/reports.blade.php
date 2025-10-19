@@ -7,8 +7,8 @@
     <div class="max-w-7xl mx-auto px-4 fs:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">My Reports</h1>
-            <p class="mt-2 text-gray-600">View your progress reports and achievements</p>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-indigo-100 bg-clip-text text-transparent">My Reports</h1>
+            <p class="mt-2 text-slate-300">View your progress reports and achievements</p>
         </div>
 
         <!-- Reports List -->
@@ -71,17 +71,7 @@
                                     @endif
                                 </div>
                                 
-                                <div class="ml-6 flex flex-col space-y-2">
-                                    <a href="{{ route('reports.show', $report->id) }}" 
-                                       class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-center font-medium">
-                                        View Full Report
-                                    </a>
-                                    
-                                    <a href="{{ route('reports.pdf', $report->id) }}" 
-                                       class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-center font-medium">
-                                        Download PDF
-                                    </a>
-                                </div>
+                                <!-- Action buttons removed as requested -->
                             </div>
                         </div>
                     </div>
