@@ -140,31 +140,27 @@ class RealAIService
         $averageScore = $metrics['average_score'] ?? 0;
         $attendancePercentage = $metrics['attendance_percentage'] ?? 0;
         
-        $basePrompt = "You are an experienced coding instructor writing a personalized report for a student in a code club. ";
-        $basePrompt .= "Student: {$studentName}, Club: {$clubName}, Performance Level: {$performanceLevel}, ";
-        $basePrompt .= "Average Score: {$averageScore}%, Attendance: {$attendancePercentage}%. ";
-        
         switch ($contentType) {
             case 'favorite_concept':
-                return $basePrompt . "Generate a specific coding concept or skill that this student particularly enjoys or excels at. Be specific and technical. Keep it under 50 words.";
+                return "Student {$studentName} ({$performanceLevel} level, {$averageScore}% score). What coding concept do they excel at? One concept, 20 words max.";
                 
             case 'challenges_overcome':
-                return $basePrompt . "Describe the specific coding challenges this student has overcome this term. Be specific about programming concepts, projects, or skills they mastered. Keep it under 100 words.";
+                return "Student {$studentName} ({$performanceLevel} level). What coding challenges did they overcome? Be specific. 30 words max.";
                 
             case 'special_achievements':
-                return $basePrompt . "List 1-2 specific achievements or accomplishments this student has made in coding. Be creative but realistic. Keep it under 80 words.";
+                return "Student {$studentName} ({$performanceLevel} level). List 1 coding achievement they made. Be specific. 25 words max.";
                 
             case 'areas_for_growth':
-                return $basePrompt . "Identify 1-2 specific areas where this student can improve their coding skills. Be constructive and specific. Keep it under 80 words.";
+                return "Student {$studentName} ({$performanceLevel} level). What 1 area can they improve in coding? Be specific. 25 words max.";
                 
             case 'next_steps':
-                return $basePrompt . "Suggest 1-2 specific next steps or goals for this student's coding journey. Be encouraging and specific. Keep it under 80 words.";
+                return "Student {$studentName} ({$performanceLevel} level). What's their next coding goal? Be encouraging. 25 words max.";
                 
             case 'parent_feedback':
-                return $basePrompt . "Write a personalized message for parents about their child's progress in coding. Be encouraging, specific, and professional. Keep it under 120 words.";
+                return "Write a brief message for parents about {$studentName}'s coding progress ({$performanceLevel} level, {$averageScore}% score). Be encouraging and professional. 40 words max.";
                 
             default:
-                return $basePrompt . "Generate personalized content for this student. Keep it under 100 words.";
+                return "Generate personalized content for student {$studentName}. 30 words max.";
         }
     }
     
@@ -220,8 +216,9 @@ class RealAIService
             ])
             ->withHeaders([
                 'Content-Type' => 'application/json',
+                'x-goog-api-key' => $this->apiKey,
             ])
-            ->post($this->baseUrl . '/models/gemini-2.5-flash:generateContent?key=' . $this->apiKey, [
+            ->post($this->baseUrl . '/models/gemini-2.5-flash:generateContent', [
                 'contents' => [
                     [
                         'parts' => [
@@ -232,7 +229,7 @@ class RealAIService
                     ]
                 ],
                 'generationConfig' => [
-                    'maxOutputTokens' => 150,
+                    'maxOutputTokens' => 100,
                     'temperature' => 0.7,
                 ],
                 'safetySettings' => [
@@ -266,12 +263,13 @@ class RealAIService
                 $content = $data['candidates'][0]['content']['text'];
             }
             
-            // Check if response was truncated due to token limits
-            if (isset($data['candidates'][0]['finishReason']) && $data['candidates'][0]['finishReason'] === 'MAX_TOKENS') {
-                Log::warning('Gemini response truncated due to token limits', [
+            // If content is empty due to token limits, use fallback
+            if (empty($content)) {
+                Log::warning('Gemini response empty, using fallback', [
                     'content_type' => $contentType,
-                    'content_length' => strlen($content)
+                    'finish_reason' => $data['candidates'][0]['finishReason'] ?? 'UNKNOWN'
                 ]);
+                return $this->generateFallbackContentSingle($contentType);
             }
             
             // Cache the result for 1 hour
