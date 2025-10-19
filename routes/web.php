@@ -103,6 +103,7 @@ Route::post('/parent-access/verify-old', [ReportController::class, 'verify_paren
     Route::delete('/admin/students/{student}', [App\Http\Controllers\AdminStudentController::class, 'destroy'])->name('admin.students.destroy');
     Route::get('/admin/students/{student}/reset-password', [App\Http\Controllers\AdminStudentController::class, 'showResetPassword'])->name('admin.students.reset-password');
     Route::post('/admin/students/{student}/reset-password', [App\Http\Controllers\AdminStudentController::class, 'resetPassword'])->name('admin.students.reset-password.post');
+    Route::post('/admin/students/bulk-update-ids', [App\Http\Controllers\AdminStudentController::class, 'bulkUpdateIds'])->name('admin.students.bulk-update-ids');
     
     // Assessments
     Route::get('/assessments', [AssessmentController::class, 'index'])->name('assessments.index');

@@ -218,17 +218,45 @@ class AdminStudentController extends Controller
     }
 
     /**
+     * Bulk update students without IDs
+     */
+    public function bulkUpdateIds()
+    {
+        $studentsWithoutIds = Student::where(function($query) {
+            $query->whereNull('student_id_number')
+                  ->orWhere('student_id_number', '');
+        })->get();
+
+        $updatedCount = 0;
+        
+        foreach ($studentsWithoutIds as $student) {
+            $studentId = $this->generateStudentId($student->school_id);
+            $student->update(['student_id_number' => $studentId]);
+            $updatedCount++;
+        }
+
+        return redirect()->route('admin.students.index')
+            ->with('success', "Updated Student IDs for {$updatedCount} students!");
+    }
+
+    /**
      * Generate unique student ID based on school
      */
     private function generateStudentId($schoolId)
     {
         // Get school abbreviation (first 3 letters of school name)
         $school = \App\Models\School::find($schoolId);
-        $schoolAbbr = strtoupper(substr($school->school_name, 0, 3));
+        if (!$school) {
+            $schoolAbbr = 'STU'; // Default fallback
+        } else {
+            $schoolAbbr = strtoupper(substr($school->school_name, 0, 3));
+        }
         
         // Get the last student ID for this school
         $lastStudent = Student::where('school_id', $schoolId)
             ->where('student_id_number', 'like', $schoolAbbr . '%')
+            ->whereNotNull('student_id_number')
+            ->where('student_id_number', '!=', '')
             ->orderBy('student_id_number', 'desc')
             ->first();
         

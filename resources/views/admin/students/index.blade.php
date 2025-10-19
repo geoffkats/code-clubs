@@ -9,14 +9,32 @@
                 <h1 class="text-3xl font-bold text-gray-900">Student Account Management</h1>
                 <p class="mt-2 text-gray-600">Create and manage student accounts with login credentials</p>
             </div>
-            <a href="{{ route('admin.students.create') }}" 
-               class="bg-gradient-to-r from-yellow-500 to-red-600 text-white px-6 py-3 rounded-lg hover:from-yellow-600 hover:to-red-700 transition-all transform hover:scale-105 shadow-lg">
-                <i class="fas fa-user-plus mr-2"></i>Create Student Account
-            </a>
+            <div class="flex space-x-3">
+                @php
+                    $studentsWithoutIds = $students->where('student_id_number', null)->count() + 
+                                         $students->where('student_id_number', '')->count();
+                @endphp
+                
+                @if($studentsWithoutIds > 0)
+                    <form method="POST" action="{{ route('admin.students.bulk-update-ids') }}" class="inline">
+                        @csrf
+                        <button type="submit" 
+                                class="bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-all transform hover:scale-105 shadow-lg"
+                                onclick="return confirm('Generate Student IDs for {{ $studentsWithoutIds }} students without IDs?')">
+                            <i class="fas fa-magic mr-2"></i>Generate Missing IDs ({{ $studentsWithoutIds }})
+                        </button>
+                    </form>
+                @endif
+                
+                <a href="{{ route('admin.students.create') }}" 
+                   class="bg-gradient-to-r from-yellow-500 to-red-600 text-white px-6 py-3 rounded-lg hover:from-yellow-600 hover:to-red-700 transition-all transform hover:scale-105 shadow-lg">
+                    <i class="fas fa-user-plus mr-2"></i>Create Student Account
+                </a>
+            </div>
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <div class="bg-white rounded-xl shadow-lg p-6">
                 <div class="flex items-center">
                     <div class="p-3 bg-blue-100 rounded-lg">
@@ -49,6 +67,20 @@
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Pending Setup</p>
                         <p class="text-2xl font-bold text-gray-900">{{ $students->where('password', null)->count() }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-red-100 rounded-lg">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Missing IDs</p>
+                        <p class="text-2xl font-bold text-gray-900">
+                            {{ $students->where('student_id_number', null)->count() + $students->where('student_id_number', '')->count() }}
+                        </p>
                     </div>
                 </div>
             </div>
