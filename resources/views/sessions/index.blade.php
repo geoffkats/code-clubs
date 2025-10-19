@@ -1,6 +1,6 @@
 <x-layouts.app>
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" 
-         x-data="calendarData()">
+         x-data="calendarData()" x-init="init()">
         <!-- Header Section -->
         <div class="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/60">
             <div class="px-6 py-6">
@@ -237,32 +237,58 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+             class="fixed inset-0 bg-white/20 backdrop-blur-md flex items-center justify-center z-50"
              @click="showCreate = false">
-            <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full mx-4"
+            <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 border border-white/20 dark:border-slate-700/20 shadow-2xl"
                  @click.stop>
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Create New Session</h3>
-                <form method="POST" action="{{ route('sessions.store') }}">
+                <form method="POST" action="{{ route('sessions.store') }}" @submit="showCreate = false">
                     @csrf
                     <div class="space-y-4">
-                    <div>
+                        <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
                             <select name="club_id" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                 <option value="">Select a club</option>
-                            @foreach($clubs as $club)
-                                    <option value="{{ $club->id }}">{{ $club->club_name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
+                                @foreach($clubs as $club)
+                                    <option value="{{ $club->id }}">{{ $club->club_name }} ({{ $club->school->school_name ?? 'No School' }})</option>
+                                @endforeach
+                            </select>
+                            @error('club_id')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Session Date</label>
-                            <input type="date" name="session_date" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Week Number</label>
-                            <input type="number" name="session_week_number" min="1" max="52" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <input type="date" name="session_date" required 
+                                   min="{{ date('Y-m-d') }}"
+                                   class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            @error('session_date')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Week Number</label>
+                            <input type="number" name="session_week_number" min="1" max="52" required 
+                                   placeholder="Enter week number (1-52)"
+                                   class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            @error('session_week_number')
+                                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
+                    
+                    @if(session('success'))
+                        <div class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    
+                    @if(session('error'))
+                        <div class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    
                     <div class="mt-6 flex justify-end space-x-3">
                         <button type="button" @click="showCreate = false" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
                             Cancel
@@ -288,9 +314,18 @@
                     showSessionModal: false,
                     selectedSessions: [],
                     selectedDate: '',
-                    sessions: @js($sessions->items() ?? []),
+                    sessions: @js($sessions->map(function($session) {
+                        return [
+                            'id' => $session->id,
+                            'session_date' => $session->session_date,
+                            'session_week_number' => $session->session_week_number,
+                            'club_name' => $session->club->club_name ?? 'Unknown Club',
+                            'attendance_count' => $session->attendance_records_count ?? 0
+                        ];
+                    })),
                     
                     init() {
+                        console.log('Initializing calendar with sessions:', this.sessions);
                         this.updateCalendar();
                     },
                     
@@ -314,8 +349,13 @@
                         for (let i = 0; i < 42; i++) {
                             const dateStr = currentDate.toISOString().split('T')[0];
                             const daySessions = this.sessions.filter(session => {
-                                return new Date(session.session_date).toISOString().split('T')[0] === dateStr;
+                                const sessionDate = new Date(session.session_date).toISOString().split('T')[0];
+                                return sessionDate === dateStr;
                             });
+                            
+                            if (daySessions.length > 0) {
+                                console.log(`Found ${daySessions.length} sessions for ${dateStr}:`, daySessions);
+                            }
                             
                             this.calendarDays.push({
                                 date: dateStr,
@@ -328,6 +368,8 @@
                             
                             currentDate.setDate(currentDate.getDate() + 1);
                         }
+                        
+                        console.log('Calendar updated. Total days with sessions:', this.calendarDays.filter(day => day.hasSession).length);
                     },
                     
                     previousMonth() {
@@ -376,3 +418,4 @@
         </script>
     </div>
 </x-layouts.app>
+
