@@ -168,7 +168,7 @@
                                     @endif
                                     @if($question->project_requirements)
                                         <p class="text-sm text-gray-600 mt-1">
-                                            <span class="font-medium">Requirements:</span> {{ $question->project_requirements }}
+                                            <span class="font-medium">Requirements:</span> {{ is_array($question->project_requirements) ? implode(', ', $question->project_requirements) : $question->project_requirements }}
                                         </p>
                                     @endif
                                 @endif

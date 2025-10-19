@@ -197,6 +197,141 @@
                         </div>
                     </div>
 
+                    <!-- Student Answers -->
+                    @if($assessment->scores->count() > 0)
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Student Answers</h3>
+                        
+                        <div class="space-y-6">
+                            @foreach($assessment->scores as $score)
+                                <div class="border border-slate-200 dark:border-slate-600 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div class="flex items-center space-x-3">
+                                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
+                                                <span class="text-white font-semibold text-sm">
+                                                    {{ substr($score->student->student_first_name, 0, 1) }}{{ substr($score->student->student_last_name, 0, 1) }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-semibold text-slate-900 dark:text-white">
+                                                    {{ $score->student->student_first_name }} {{ $score->student->student_last_name }}
+                                                </h4>
+                                                <p class="text-sm text-slate-500 dark:text-slate-400">
+                                                    {{ $score->student->student_id_number }} • Grade {{ $score->student->student_grade_level }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            @php
+                                                $percentage = ($score->score_value / $score->score_max_value) * 100;
+                                                $color = $percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : 'red');
+                                            @endphp
+                                            <div class="text-2xl font-bold text-{{ $color }}-600">
+                                                {{ number_format($percentage, 1) }}%
+                                            </div>
+                                            <div class="text-sm text-slate-500 dark:text-slate-400">
+                                                {{ $score->score_value }}/{{ $score->score_max_value }} points
+                                            </div>
+                                            <div class="text-xs text-slate-400 dark:text-slate-500">
+                                                {{ $score->created_at->format('M d, Y \a\t g:i A') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Student's Answers -->
+                                    <div class="space-y-4">
+                                        @foreach($assessment->questions as $question)
+                                            <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">
+                                                <div class="flex items-start justify-between mb-2">
+                                                    <h5 class="font-medium text-slate-900 dark:text-white">
+                                                        Question {{ $loop->iteration }}: {{ $question->question_text }}
+                                                    </h5>
+                                                    <span class="text-xs text-slate-500 dark:text-slate-400">
+                                                        {{ $question->points }} points
+                                                    </span>
+                                                </div>
+                                                
+                                                @if($question->question_type === 'multiple_choice')
+                                                    <div class="space-y-2">
+                                                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                            <span class="font-medium">Student Answer:</span> 
+                                                            <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-sm">
+                                                                {{ $score->student_answers[$question->id] ?? 'No answer provided' }}
+                                                            </span>
+                                                        </p>
+                                                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                            <span class="font-medium">Correct Answer:</span> 
+                                                            <span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded text-sm">
+                                                                {{ $question->correct_answer }}
+                                                            </span>
+                                                        </p>
+                                                    </div>
+                                                @elseif($question->question_type === 'text')
+                                                    <div class="space-y-2">
+                                                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                            <span class="font-medium">Student Answer:</span>
+                                                        </p>
+                                                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-3">
+                                                            <p class="text-sm text-slate-700 dark:text-slate-300">
+                                                                {{ $score->student_answers[$question->id] ?? 'No answer provided' }}
+                                                            </p>
+                                                        </div>
+                                                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                            <span class="font-medium">Expected Answer:</span> {{ $question->correct_answer }}
+                                                        </p>
+                                                    </div>
+                                                @elseif($question->question_type === 'practical_project')
+                                                    <div class="space-y-2">
+                                                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                            <span class="font-medium">Student Submission:</span>
+                                                        </p>
+                                                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-3">
+                                                            <p class="text-sm text-slate-700 dark:text-slate-300">
+                                                                {{ $score->student_answers[$question->id] ?? 'No submission provided' }}
+                                                            </p>
+                                                        </div>
+                                                        @if($question->project_instructions)
+                                                            <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                                <span class="font-medium">Instructions:</span> {{ $question->project_instructions }}
+                                                            </p>
+                                                        @endif
+                                                        @if($question->project_requirements)
+                                                            <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                                <span class="font-medium">Requirements:</span> {{ is_array($question->project_requirements) ? implode(', ', $question->project_requirements) : $question->project_requirements }}
+                                                            </p>
+                                                        @endif
+                                                    </div>
+                                                @elseif($question->question_type === 'image_question')
+                                                    <div class="space-y-2">
+                                                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                            <span class="font-medium">Student Answer:</span>
+                                                        </p>
+                                                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-3">
+                                                            <p class="text-sm text-slate-700 dark:text-slate-300">
+                                                                {{ $score->student_answers[$question->id] ?? 'No answer provided' }}
+                                                            </p>
+                                                        </div>
+                                                        @if($question->image_url)
+                                                            <div class="mt-2">
+                                                                <img src="{{ asset('storage/' . $question->image_url) }}" 
+                                                                     alt="Question Image" 
+                                                                     class="max-w-full h-auto rounded-lg border border-slate-200 dark:border-slate-600">
+                                                            </div>
+                                                        @endif
+                                                        <p class="text-sm text-slate-600 dark:text-slate-300">
+                                                            <span class="font-medium">Expected Answer:</span> {{ $question->correct_answer }}
+                                                        </p>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Actions -->
                     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Actions</h3>
