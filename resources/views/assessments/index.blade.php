@@ -245,9 +245,36 @@
                         </svg>
                     </button>
                 </div>
-                <form method="post" action="{{ route('assessments.store') }}" class="space-y-4">
+                <form method="post" action="#" class="space-y-4" id="createAssessmentForm">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
+                            <select name="club_id" id="clubSelect" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" required>
+                                <option value="">Select a club</option>
+                                @foreach($clubs as $club)
+                                    @php
+                                        $clubType = '';
+                                        if (stripos($club->club_name, 'robot') !== false) {
+                                            $clubType = '🤖 Robotics';
+                                        } elseif (stripos($club->club_name, 'python') !== false) {
+                                            $clubType = '🐍 Python';
+                                        } elseif (stripos($club->club_name, 'web') !== false || stripos($club->club_name, 'html') !== false || stripos($club->club_name, 'css') !== false || stripos($club->club_name, 'javascript') !== false) {
+                                            $clubType = '🌐 Web Development';
+                                        } elseif (stripos($club->club_name, 'scratch') !== false) {
+                                            $clubType = '🎨 Scratch';
+                                        } elseif (stripos($club->club_name, 'java') !== false) {
+                                            $clubType = '☕ Java';
+                                        } elseif (stripos($club->club_name, 'mobile') !== false || stripos($club->club_name, 'app') !== false) {
+                                            $clubType = '📱 Mobile Development';
+                                        } else {
+                                            $clubType = '💻 Coding';
+                                        }
+                                    @endphp
+                                    <option value="{{ $club->id }}">{{ $club->club_name }} {{ $clubType }} - {{ $club->school->school_name ?? 'No School' }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Assessment Name</label>
                             <input name="assessment_name" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent" placeholder="e.g., Python Basics Quiz" required>
@@ -283,4 +310,23 @@
             </div>
         </div>
     </div>
+
+    <!-- JavaScript to handle form submission -->
+    <script>
+        document.getElementById('createAssessmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const clubId = document.getElementById('clubSelect').value;
+            if (!clubId) {
+                alert('Please select a club first.');
+                return;
+            }
+            
+            // Update form action with the selected club_id
+            this.action = `{{ route('assessments.store', ['club_id' => ':club_id']) }}`.replace(':club_id', clubId);
+            
+            // Submit the form
+            this.submit();
+        });
+    </script>
 </x-layouts.app>
