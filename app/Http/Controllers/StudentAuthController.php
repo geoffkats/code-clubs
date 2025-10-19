@@ -79,7 +79,7 @@ class StudentAuthController extends Controller
         $stats = [
             'total_clubs' => $student->clubs->count(),
             'total_assessments' => $student->assessment_scores->count(),
-            'average_unlock_score' => $student->getAverageAssessmentScore(),
+            'average_assessment_score' => $student->getAverageAssessmentScore(),
             'attendance_percentage' => $student->getAttendancePercentage(),
             'total_reports' => $student->reports->count(),
         ];
