@@ -98,22 +98,42 @@
                 
                 <!-- Calendar Grid -->
                 <div class="grid grid-cols-7 gap-2">
+                    <!-- Day Headers -->
                     <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
-                        <div class="text-center text-sm font-medium text-slate-500 dark:text-slate-400 py-2" x-text="day"></div>
+                        <div class="text-center text-sm font-semibold text-slate-600 dark:text-slate-300 py-3 bg-slate-50 dark:bg-slate-700 rounded-lg" x-text="day"></div>
                     </template>
                     
+                    <!-- Calendar Days -->
                     <template x-for="day in calendarDays" :key="day.date">
                         <div class="relative">
-                            <div class="text-center py-2 text-sm rounded-lg transition-colors cursor-pointer"
+                            <div class="text-center py-3 text-sm rounded-lg transition-all duration-200 cursor-pointer min-h-[44px] flex flex-col items-center justify-center"
                                  :class="getDayClasses(day)"
                                  @click="selectDate(day)">
-                                <span x-text="day.day"></span>
+                                <span x-text="day.day" class="font-medium"></span>
                                 <template x-if="day.hasSession">
-                                    <div class="absolute -top-1 -right-1 w-2 h-2 bg-purple-500 rounded-full"></div>
+                                    <div class="flex items-center justify-center mt-1">
+                                        <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                        <span class="ml-1 text-xs text-purple-600 dark:text-purple-400" x-text="day.sessions.length"></span>
+                                    </div>
+                                </template>
+                                <template x-if="day.isToday">
+                                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full"></div>
                                 </template>
                             </div>
                         </div>
                     </template>
+                </div>
+                
+                <!-- Calendar Legend -->
+                <div class="mt-4 flex items-center justify-center space-x-6 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span class="text-slate-600 dark:text-slate-400">Today</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span class="text-slate-600 dark:text-slate-400">Has Sessions</span>
+                    </div>
                 </div>
                 
                 <!-- Session Details Modal -->
@@ -242,22 +262,22 @@
             <div class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-lg rounded-2xl p-6 max-w-md w-full mx-4 border border-white/20 dark:border-slate-700/20 shadow-2xl"
                  @click.stop>
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4">Create New Session</h3>
-                <form method="POST" action="{{ route('sessions.store') }}" @submit="showCreate = false">
+                <form method="POST" action="{{ route('sessions.store') }}">
                     @csrf
                     <div class="space-y-4">
-                        <div>
+                    <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Club</label>
                             <select name="club_id" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
                                 <option value="">Select a club</option>
-                                @foreach($clubs as $club)
+                            @foreach($clubs as $club)
                                     <option value="{{ $club->id }}">{{ $club->club_name }} ({{ $club->school->school_name ?? 'No School' }})</option>
-                                @endforeach
-                            </select>
+                            @endforeach
+                        </select>
                             @error('club_id')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
-                        </div>
-                        <div>
+                    </div>
+                    <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Session Date</label>
                             <input type="date" name="session_date" required 
                                    min="{{ date('Y-m-d') }}"
@@ -265,9 +285,9 @@
                             @error('session_date')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                             @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Week Number</label>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Week Number</label>
                             <input type="number" name="session_week_number" min="1" max="52" required 
                                    placeholder="Enter week number (1-52)"
                                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
@@ -278,15 +298,22 @@
                     </div>
                     
                     @if(session('success'))
-                        <div class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
-                            {{ session('success') }}
+                        <div class="mt-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg cursor-pointer" @click="closeCreateModal()">
+                            <div class="flex items-center justify-between">
+                                <span>{{ session('success') }}</span>
+                                <button type="button" @click="closeCreateModal()" class="text-green-600 hover:text-green-800">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     @endif
                     
                     @if(session('error'))
                         <div class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
                             {{ session('error') }}
-                        </div>
+                    </div>
                     @endif
                     
                     <div class="mt-6 flex justify-end space-x-3">
@@ -347,10 +374,20 @@
                         const currentDate = new Date(startDate);
                         
                         for (let i = 0; i < 42; i++) {
-                            const dateStr = currentDate.toISOString().split('T')[0];
+                            // Create a proper date string in YYYY-MM-DD format
+                            const year = currentDate.getFullYear();
+                            const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+                            const day = String(currentDate.getDate()).padStart(2, '0');
+                            const dateStr = `${year}-${month}-${day}`;
+                            
                             const daySessions = this.sessions.filter(session => {
-                                const sessionDate = new Date(session.session_date).toISOString().split('T')[0];
-                                return sessionDate === dateStr;
+                                // Parse session date properly
+                                const sessionDate = new Date(session.session_date);
+                                const sessionYear = sessionDate.getFullYear();
+                                const sessionMonth = String(sessionDate.getMonth() + 1).padStart(2, '0');
+                                const sessionDay = String(sessionDate.getDate()).padStart(2, '0');
+                                const sessionDateStr = `${sessionYear}-${sessionMonth}-${sessionDay}`;
+                                return sessionDateStr === dateStr;
                             });
                             
                             if (daySessions.length > 0) {
@@ -383,14 +420,14 @@
                     },
                     
                     getDayClasses(day) {
-                        let classes = 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700';
+                        let classes = 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 border border-transparent';
                         
                         if (!day.isCurrentMonth) {
-                            classes = 'text-slate-300 dark:text-slate-600';
+                            classes = 'text-slate-300 dark:text-slate-600 opacity-50';
                         } else if (day.isToday) {
-                            classes = 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 font-semibold';
+                            classes = 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 font-semibold border-blue-200 dark:border-blue-700';
                         } else if (day.hasSession) {
-                            classes = 'text-slate-900 dark:text-white hover:bg-purple-50 dark:hover:bg-purple-900/20 font-medium';
+                            classes = 'text-slate-900 dark:text-white hover:bg-purple-50 dark:hover:bg-purple-900/20 font-medium border-purple-200 dark:border-purple-700 bg-purple-50/50 dark:bg-purple-900/10';
                         }
                         
                         return classes;
@@ -412,6 +449,14 @@
                     closeSessionModal() {
                         this.showSessionModal = false;
                         this.selectedSessions = [];
+                    },
+                    
+                    closeCreateModal() {
+                        this.showCreate = false;
+                        // Refresh calendar to show new session
+                        setTimeout(() => {
+                            this.updateCalendar();
+                        }, 100);
                     }
                 }
             }

@@ -31,7 +31,7 @@ class SessionController extends Controller
         $data = $request->only(['club_id', 'session_date', 'session_week_number']);
         $session = SessionSchedule::create($data);
         
-        return redirect()->route('sessions.index')
+        return redirect()->back()
             ->with('success', 'Session created successfully!');
     }
 
