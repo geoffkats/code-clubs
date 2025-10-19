@@ -118,12 +118,14 @@
                                             </svg>
                                         </div>
                                         <div class="flex space-x-2">
-                                            <button @click="$dispatch('edit-school', { id: {{ $school->id }}, name: '{{ addslashes($school->school_name) }}', email: '{{ addslashes($school->contact_email ?? '') }}', address: '{{ addslashes($school->address ?? '') }}' })" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg transition-colors">
+                                            <a href="{{ route('schools.edit', $school->id) }}" 
+                                               class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 rounded-lg transition-colors"
+                                               title="Edit School">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5h2m-1 0v14m-7-7h14"></path>
                                                 </svg>
-                                            </button>
-                                            <button @click="$dispatch('delete-school', { id: {{ $school->id }}, name: '{{ addslashes($school->school_name) }}' })" class="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                                            </a>
+                                            <button @click="$dispatch('delete-school', { id: {{ $school->id }}, name: '{{ addslashes($school->school_name) }}' })" class="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Delete School">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                 </svg>

@@ -21,6 +21,12 @@ class SchoolController extends Controller
 		return view('schools.create');
 	}
 
+	public function edit(int $school_id)
+	{
+		$school = School::findOrFail($school_id);
+		return view('schools.edit', compact('school'));
+	}
+
 	public function store(Request $request)
 	{
 		$data = $request->validate([
