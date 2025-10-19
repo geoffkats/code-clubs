@@ -36,7 +36,7 @@
         }
     </style>
 </head>
-<body class="h-full bg-gray-50">
+<body class="h-full bg-slate-900 dark">
     <div class="min-h-full" x-data="{ sidebarOpen: false }">
         <!-- Sidebar -->
         <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-e border-slate-200/60 dark:border-slate-700/60 shadow-2xl transform transition-transform duration-300 ease-in-out lg:translate-x-0" 
@@ -145,7 +145,7 @@
         </div>
 
         <!-- Main content -->
-        <div class="lg:ml-64">
+        <div class="lg:ml-64 bg-slate-900 min-h-screen">
             <!-- Top navigation -->
             <header class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl shadow-lg border-b border-slate-200/60 dark:border-slate-700/60">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">

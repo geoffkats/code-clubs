@@ -101,7 +101,7 @@
                                     @if($question->project_requirements)
                                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                                             <h4 class="font-medium text-yellow-900 mb-2">Requirements:</h4>
-                                            <p class="text-yellow-800 text-sm">{{ $question->project_requirements }}</p>
+                                            <p class="text-yellow-800 text-sm">{{ is_array($question->project_requirements) ? implode(', ', $question->project_requirements) : $question->project_requirements }}</p>
                                         </div>
                                     @endif
                                     

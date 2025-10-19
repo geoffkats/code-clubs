@@ -3,23 +3,23 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
     <div class="py-8 px-4 sm:px-6 lg:px-8">
         <!-- Welcome Header -->
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 dark:from-white dark:via-blue-100 dark:to-indigo-100 bg-clip-text text-transparent">
+                    <h1 class="text-3xl font-bold bg-gradient-to-r from-white via-blue-100 to-indigo-100 bg-clip-text text-transparent">
                         Welcome back, {{ Auth::guard('student')->user()->student_first_name }}! 👋
                     </h1>
-                    <p class="mt-2 text-lg text-slate-600 dark:text-slate-300">
+                    <p class="mt-2 text-lg text-slate-300">
                         Track your coding journey and achievements
                     </p>
                 </div>
                 <div class="hidden sm:block">
                     <div class="text-right">
-                        <p class="text-sm text-slate-500 dark:text-slate-400">Student ID</p>
-                        <p class="text-lg font-mono font-semibold text-slate-900 dark:text-white">
+                        <p class="text-sm text-slate-400">Student ID</p>
+                        <p class="text-lg font-mono font-semibold text-white">
                             {{ Auth::guard('student')->user()->student_id_number }}
                         </p>
                     </div>
@@ -30,66 +30,66 @@
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <!-- Total Clubs -->
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-slate-700/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+            <div class="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Enrolled Clubs</p>
-                        <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $stats['total_clubs'] }}</p>
+                        <p class="text-sm font-medium text-slate-400">Enrolled Clubs</p>
+                        <p class="text-3xl font-bold text-white">{{ $stats['total_clubs'] }}</p>
                     </div>
                     <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-users text-white text-xl"></i>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">Active memberships</span>
+                        <span class="text-sm text-slate-400">Active memberships</span>
                 </div>
             </div>
 
             <!-- Total Assessments -->
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-slate-700/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+            <div class="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Completed Assessments</p>
-                        <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ $stats['total_assessments'] }}</p>
+                        <p class="text-sm font-medium text-slate-400">Completed Assessments</p>
+                        <p class="text-3xl font-bold text-white">{{ $stats['total_assessments'] }}</p>
                     </div>
                     <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-clipboard-check text-white text-xl"></i>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">Total completed</span>
+                    <span class="text-sm text-slate-400">Total completed</span>
                 </div>
             </div>
 
             <!-- Average Score -->
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-slate-700/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+            <div class="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Average Score</p>
-                        <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['average_assessment_score'], 1) }}%</p>
+                        <p class="text-sm font-medium text-slate-400">Average Score</p>
+                        <p class="text-3xl font-bold text-white">{{ number_format($stats['average_assessment_score'], 1) }}%</p>
                     </div>
                     <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-chart-line text-white text-xl"></i>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">Overall performance</span>
+                    <span class="text-sm text-slate-400">Overall performance</span>
                 </div>
             </div>
 
             <!-- Attendance -->
-            <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-white/20 dark:border-slate-700/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
+            <div class="bg-slate-800/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-700/20 shadow-xl hover:shadow-2xl transition-all duration-300 group">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Attendance Rate</p>
-                        <p class="text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['attendance_percentage'], 1) }}%</p>
+                        <p class="text-sm font-medium text-slate-400">Attendance Rate</p>
+                        <p class="text-3xl font-bold text-white">{{ number_format($stats['attendance_percentage'], 1) }}%</p>
                     </div>
                     <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-calendar-check text-white text-xl"></i>
                     </div>
                 </div>
                 <div class="mt-4">
-                    <span class="text-sm text-slate-500 dark:text-slate-400">Session attendance</span>
+                    <span class="text-sm text-slate-400">Session attendance</span>
                 </div>
             </div>
         </div>
