@@ -19,8 +19,16 @@ class RealAIService
     
     public function __construct()
     {
-        $this->apiKey = config('services.openai.api_key', env('OPENAI_API_KEY'));
-        $this->baseUrl = config('services.openai.base_url', 'https://api.openai.com/v1');
+        // Support multiple AI providers
+        $this->apiKey = env('GEMINI_API_KEY') ?? env('OPENAI_API_KEY') ?? config('services.openai.api_key');
+        $this->baseUrl = env('GEMINI_API_KEY') ? 'https://generativelanguage.googleapis.com/v1beta' : (config('services.openai.base_url', 'https://api.openai.com/v1'));
+        
+        // Log which API we're using
+        Log::info('AI Service initialized', [
+            'provider' => env('GEMINI_API_KEY') ? 'Gemini' : 'OpenAI',
+            'has_api_key' => !empty($this->apiKey),
+            'base_url' => $this->baseUrl
+        ]);
     }
     
     /**
@@ -28,6 +36,14 @@ class RealAIService
      */
     public function generateReportContent(array $studentData, array $metrics): array
     {
+        Log::info('Starting AI content generation', [
+            'student_name' => $studentData['name'] ?? 'Unknown',
+            'performance_level' => $metrics['performance_level'] ?? 'unknown',
+            'api_key_set' => !empty($this->apiKey),
+            'gemini_available' => !empty(env('GEMINI_API_KEY')),
+            'openai_available' => !empty(env('OPENAI_API_KEY'))
+        ]);
+        
         try {
             // Generate different types of content
             $content = [
@@ -39,12 +55,19 @@ class RealAIService
                 'parent_feedback' => $this->generateParentFeedback($studentData, $metrics),
             ];
             
+            Log::info('AI content generation completed', [
+                'student_name' => $studentData['name'] ?? 'Unknown',
+                'content_types_generated' => array_keys($content),
+                'sample_content' => substr($content['favorite_concept'], 0, 50) . '...'
+            ]);
+            
             return $content;
             
         } catch (\Exception $e) {
             Log::error('Real AI service failed, falling back to templates', [
                 'error' => $e->getMessage(),
-                'student_name' => $studentData['name'] ?? 'Unknown'
+                'student_name' => $studentData['name'] ?? 'Unknown',
+                'trace' => $e->getTraceAsString()
             ]);
             
             // Fallback to template-based generation
@@ -154,57 +177,126 @@ class RealAIService
         $cacheKey = 'ai_content_' . md5($prompt);
         $cached = Cache::get($cacheKey);
         if ($cached) {
+            Log::info('Using cached AI content', ['content_type' => $contentType]);
             return $cached;
         }
         
         // If no API key, use fallback
         if (empty($this->apiKey)) {
+            Log::warning('No API key found, using fallback content', [
+                'content_type' => $contentType,
+                'gemini_key' => !empty(env('GEMINI_API_KEY')),
+                'openai_key' => !empty(env('OPENAI_API_KEY'))
+            ]);
             return $this->generateFallbackContentSingle($contentType);
         }
         
         try {
-            $response = Http::timeout(30)
-                ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Content-Type' => 'application/json',
-                ])
-                ->post($this->baseUrl . '/chat/completions', [
-                    'model' => 'gpt-3.5-turbo',
-                    'messages' => [
-                        [
-                            'role' => 'system',
-                            'content' => 'You are an experienced coding instructor writing personalized student reports. Be specific, encouraging, and professional.'
-                        ],
-                        [
-                            'role' => 'user',
-                            'content' => $prompt
-                        ]
-                    ],
-                    'max_tokens' => 150,
-                    'temperature' => 0.7,
-                ]);
+            // Determine which API to use
+            $isGemini = env('GEMINI_API_KEY') !== null;
             
-            if ($response->successful()) {
-                $data = $response->json();
-                $content = $data['choices'][0]['message']['content'] ?? '';
-                
-                // Cache the result for 1 hour
-                Cache::put($cacheKey, $content, 3600);
-                
-                return trim($content);
+            if ($isGemini) {
+                return $this->callGeminiAPI($prompt, $contentType, $cacheKey);
             } else {
-                Log::warning('AI API request failed', [
-                    'status' => $response->status(),
-                    'response' => $response->body()
-                ]);
-                
-                return $this->generateFallbackContentSingle($contentType);
+                return $this->callOpenAIAPI($prompt, $contentType, $cacheKey);
             }
             
         } catch (\Exception $e) {
             Log::error('AI API call failed', [
                 'error' => $e->getMessage(),
-                'prompt' => $prompt
+                'prompt' => $prompt,
+                'content_type' => $contentType
+            ]);
+            
+            return $this->generateFallbackContentSingle($contentType);
+        }
+    }
+    
+    private function callGeminiAPI(string $prompt, string $contentType, string $cacheKey): string
+    {
+        $response = Http::timeout(30)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+            ])
+            ->post($this->baseUrl . '/models/gemini-pro:generateContent?key=' . $this->apiKey, [
+                'contents' => [
+                    [
+                        'parts' => [
+                            [
+                                'text' => 'You are an experienced coding instructor writing personalized student reports. Be specific, encouraging, and professional. ' . $prompt
+                            ]
+                        ]
+                    ]
+                ],
+                'generationConfig' => [
+                    'maxOutputTokens' => 150,
+                    'temperature' => 0.7,
+                ]
+            ]);
+        
+        if ($response->successful()) {
+            $data = $response->json();
+            $content = $data['candidates'][0]['content']['parts'][0]['text'] ?? '';
+            
+            // Cache the result for 1 hour
+            Cache::put($cacheKey, $content, 3600);
+            
+            Log::info('Gemini API call successful', [
+                'content_type' => $contentType,
+                'content_length' => strlen($content)
+            ]);
+            
+            return trim($content);
+        } else {
+            Log::warning('Gemini API request failed', [
+                'status' => $response->status(),
+                'response' => $response->body()
+            ]);
+            
+            return $this->generateFallbackContentSingle($contentType);
+        }
+    }
+    
+    private function callOpenAIAPI(string $prompt, string $contentType, string $cacheKey): string
+    {
+        $response = Http::timeout(30)
+            ->withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiKey,
+                'Content-Type' => 'application/json',
+            ])
+            ->post($this->baseUrl . '/chat/completions', [
+                'model' => 'gpt-3.5-turbo',
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are an experienced coding instructor writing personalized student reports. Be specific, encouraging, and professional.'
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => $prompt
+                    ]
+                ],
+                'max_tokens' => 150,
+                'temperature' => 0.7,
+            ]);
+        
+        if ($response->successful()) {
+            $data = $response->json();
+            $content = $data['choices'][0]['message']['content'] ?? '';
+            
+            // Cache the result for 1 hour
+            Cache::put($cacheKey, $content, 3600);
+            
+            Log::info('OpenAI API call successful', [
+                'content_type' => $contentType,
+                'content_length' => strlen($content)
+            ]);
+            
+            return trim($content);
+        } else {
+            Log::warning('OpenAI API request failed', [
+                'status' => $response->status(),
+                'response' => $response->body()
             ]);
             
             return $this->generateFallbackContentSingle($contentType);
