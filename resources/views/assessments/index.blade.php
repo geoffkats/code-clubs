@@ -152,14 +152,15 @@
                                         <span class="px-3 py-1 text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full shadow-sm">
                                             {{ ucfirst($assessment->assessment_type) }}
                                         </span>
+                                        @php($submissionsCount = $assessment->scores->count())
+                                        <span title="{{ $submissionsCount }} submission(s)" class="px-2 py-0.5 text-xs font-semibold bg-slate-800/80 text-white rounded-full shadow-sm ml-2">
+                                            {{ $submissionsCount }}
+                                        </span>
                                         @if($assessment->due_date)
                                             <span class="px-3 py-1 text-xs font-medium bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-full shadow-sm">
                                                 {{ \Carbon\Carbon::parse($assessment->due_date)->format('M j') }}
                                             </span>
                                         @endif
-                                        <span class="px-3 py-1 text-xs font-medium bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 rounded-full shadow-sm" title="{{ ($assessment->scores->count() ?? 0) }} submissions">
-                                            {{ $assessment->scores->count() ?? 0 }} submissions
-                                        </span>
                                     </div>
                                 </div>
 

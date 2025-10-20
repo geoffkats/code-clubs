@@ -372,26 +372,37 @@
                     if (data.error) {
                         throw new Error(data.message || data.error);
                     }
-                    // Display submission text
-                    if (data.submission_text && data.submission_text !== 'null' && data.submission_text.trim() !== '') {
-                        try {
-                            // Try to parse as JSON (for structured answers)
-                            const parsed = JSON.parse(data.submission_text);
-                            if (typeof parsed === 'object') {
-                                let html = '<div class="space-y-3">';
-                                Object.keys(parsed).forEach(key => {
-                                    html += `<div><strong>Question ${key}:</strong><br><div class="ml-4 mt-1 p-2 bg-white dark:bg-slate-600 rounded border">${parsed[key]}</div></div>`;
-                                });
-                                html += '</div>';
-                                textContainer.innerHTML = html;
-                            } else {
-                                textContainer.textContent = data.submission_text;
-                            }
-                        } catch (e) {
-                            textContainer.textContent = data.submission_text;
-                        }
+                    // Render structured answers for all question types if available
+                    if (Array.isArray(data.answers) && data.answers.length > 0) {
+                        let html = '<div class="space-y-4">';
+                        data.answers.forEach((item, idx) => {
+                            const answer = (item.answer ?? '').toString();
+                            const safeAnswer = answer
+                                .replace(/&/g, '&amp;')
+                                .replace(/</g, '&lt;')
+                                .replace(/>/g, '&gt;')
+                                .replace(/\n/g, '<br>');
+                            html += `
+                                <div class="border border-slate-200 dark:border-slate-600 rounded-lg p-3">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="text-sm font-medium text-slate-900 dark:text-white">Q${idx+1}: ${item.question_text}</div>
+                                        <span class="text-xs text-slate-500 dark:text-slate-400">${item.points} pts</span>
+                                    </div>
+                                    <div class="text-sm text-slate-700 dark:text-slate-300">${safeAnswer || '<em class="text-slate-500">No answer provided</em>'}</div>
+                                </div>`;
+                        });
+                        html += '</div>';
+                        textContainer.innerHTML = html;
+                    } else if (data.submission_text && data.submission_text !== 'null' && data.submission_text.trim() !== '') {
+                        // Fallback: legacy submission_text
+                        const safe = data.submission_text
+                            .replace(/&/g, '&amp;')
+                            .replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;')
+                            .replace(/\n/g, '<br>');
+                        textContainer.innerHTML = `<div class="whitespace-pre-line">${safe}</div>`;
                     } else {
-                        textContainer.innerHTML = '<p class="text-slate-500 italic">No text submission provided</p>';
+                        textContainer.innerHTML = '<p class="text-slate-500 italic">No submission provided</p>';
                     }
                     
                     // Display file submission if exists

@@ -739,12 +739,31 @@ class AssessmentController extends Controller
 	public function getSubmission($scoreId)
 	{
 		try {
-			$score = \App\Models\AssessmentScore::findOrFail($scoreId);
-			
+			$score = \App\Models\AssessmentScore::with(['assessment.questions'])->findOrFail($scoreId);
+
+			$rawAnswers = $score->student_answers;
+			if (is_string($rawAnswers)) {
+				$rawAnswers = json_decode($rawAnswers, true);
+			}
+			$rawAnswers = is_array($rawAnswers) ? $rawAnswers : [];
+
+			$answers = [];
+			foreach ($score->assessment->questions as $question) {
+				$answer = $rawAnswers[$question->id] ?? ($rawAnswers['question_' . $question->id] ?? null);
+				$answers[] = [
+					'question_id' => $question->id,
+					'question_text' => $question->question_text,
+					'question_type' => $question->question_type,
+					'points' => $question->points,
+					'answer' => $answer,
+				];
+			}
+
 			return response()->json([
 				'submission_text' => $score->submission_text,
 				'submission_file_name' => $score->submission_file_name,
 				'submission_file_path' => $score->submission_file_path,
+				'answers' => $answers,
 			]);
 		} catch (\Exception $e) {
 			return response()->json([

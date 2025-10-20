@@ -20,6 +20,11 @@ class AssessmentScore extends Model
 		'submission_file_name',
 		'status',
 		'admin_feedback',
+		'student_answers',
+	];
+
+	protected $casts = [
+		'student_answers' => 'array',
 	];
 
 	public function assessment(): BelongsTo
