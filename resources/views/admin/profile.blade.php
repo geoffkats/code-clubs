@@ -26,7 +26,12 @@
                         <h2 class="text-2xl font-bold">{{ $user->name }}</h2>
                         <p class="text-blue-100">{{ $user->email }}</p>
                         <p class="text-blue-200 text-sm mt-1">
-                            {{ ucfirst($user->user_role ?? 'admin') }} • {{ $user->school->school_name ?? 'No School' }}
+                            {{ ucfirst($user->user_role ?? 'admin') }}
+                            @if($user->school_id && $user->school)
+                                • {{ $user->school->school_name }}
+                            @else
+                                • System Administrator
+                            @endif
                         </p>
                     </div>
                 </div>
@@ -87,10 +92,21 @@
                 <!-- School Information (Read-only) -->
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">School</label>
-                    <input type="text" 
-                           value="{{ $user->school->school_name ?? 'No School Assigned' }}"
-                           readonly
-                           class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
+                    @if($user->school_id && $user->school)
+                        <input type="text" 
+                               value="{{ $user->school->school_name }}"
+                               readonly
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-600">
+                    @else
+                        <div class="w-full px-3 py-2 border border-gray-300 rounded-md bg-blue-50 text-blue-700">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Admin Access - No School Restriction
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Role Information (Read-only) -->
