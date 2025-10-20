@@ -222,24 +222,34 @@
                                             </div>
                                         </div>
                                         <div class="text-right">
-                                            @php
-                                                $percentage = ($score->score_value / $score->score_max_value) * 100;
-                                                $color = $percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : 'red');
-                                            @endphp
-                                            <div class="text-2xl font-bold text-{{ $color }}-600">
-                                                {{ number_format($percentage, 1) }}%
-                                            </div>
-                                            <div class="text-sm text-slate-500 dark:text-slate-400">
-                                                {{ $score->score_value }}/{{ $score->score_max_value }} points
-                                            </div>
-                                            <div class="text-xs text-slate-400 dark:text-slate-500">
-                                                {{ $score->created_at->format('M d, Y \a\t g:i A') }}
-                                            </div>
                                             @if($score->status === 'submitted')
+                                                <div class="text-2xl font-bold text-blue-600 mb-1">
+                                                    Submitted
+                                                </div>
+                                                <div class="text-sm text-slate-500 dark:text-slate-400 mb-2">
+                                                    Awaiting Review
+                                                </div>
+                                                <div class="text-xs text-slate-400 dark:text-slate-500">
+                                                    {{ $score->created_at->format('M d, Y \a\t g:i A') }}
+                                                </div>
                                                 <div class="mt-2">
                                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
                                                         Awaiting Review
                                                     </span>
+                                                </div>
+                                            @else
+                                                @php
+                                                    $percentage = ($score->score_value / $score->score_max_value) * 100;
+                                                    $color = $percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : 'red');
+                                                @endphp
+                                                <div class="text-2xl font-bold text-{{ $color }}-600">
+                                                    {{ number_format($percentage, 1) }}%
+                                                </div>
+                                                <div class="text-sm text-slate-500 dark:text-slate-400">
+                                                    {{ $score->score_value }}/{{ $score->score_max_value }} points
+                                                </div>
+                                                <div class="text-xs text-slate-400 dark:text-slate-500">
+                                                    {{ $score->created_at->format('M d, Y \a\t g:i A') }}
                                                 </div>
                                             @endif
                                         </div>
@@ -263,7 +273,11 @@
                                                         <p class="text-sm text-slate-600 dark:text-slate-300">
                                                             <span class="font-medium">Student Answer:</span> 
                                                             <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded text-sm">
-                                                                {{ $score->student_answers[$question->id] ?? 'No answer provided' }}
+                                                                @php
+                                                                    $answers = is_string($score->student_answers) ? json_decode($score->student_answers, true) : $score->student_answers;
+                                                                    $answer = $answers[$question->id] ?? $answers['question_' . $question->id] ?? 'No answer provided';
+                                                                @endphp
+                                                                {{ $answer }}
                                                             </span>
                                                         </p>
                                                         <p class="text-sm text-slate-600 dark:text-slate-300">
@@ -280,7 +294,11 @@
                                                         </p>
                                                         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-3">
                                                             <p class="text-sm text-slate-700 dark:text-slate-300">
-                                                                {{ $score->student_answers[$question->id] ?? 'No answer provided' }}
+                                                                @php
+                                                                    $answers = is_string($score->student_answers) ? json_decode($score->student_answers, true) : $score->student_answers;
+                                                                    $answer = $answers[$question->id] ?? $answers['question_' . $question->id] ?? 'No answer provided';
+                                                                @endphp
+                                                                {{ $answer }}
                                                             </p>
                                                         </div>
                                                         <p class="text-sm text-slate-600 dark:text-slate-300">
@@ -294,7 +312,11 @@
                                                         </p>
                                                         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-3">
                                                             <p class="text-sm text-slate-700 dark:text-slate-300">
-                                                                {{ $score->student_answers[$question->id] ?? 'No submission provided' }}
+                                                                @php
+                                                                    $answers = is_string($score->student_answers) ? json_decode($score->student_answers, true) : $score->student_answers;
+                                                                    $answer = $answers[$question->id] ?? $answers['question_' . $question->id] ?? 'No submission provided';
+                                                                @endphp
+                                                                {{ $answer }}
                                                             </p>
                                                             @if($score->submission_file_path)
                                                                 <div class="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
