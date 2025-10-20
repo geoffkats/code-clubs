@@ -140,10 +140,11 @@
 
                 <!-- User Profile Section -->
                 <div class="mt-auto px-4 py-4 border-t border-slate-200/60 dark:border-slate-700/60">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-gradient-to-br from-slate-400 to-slate-600 rounded-lg flex items-center justify-center text-white text-sm font-medium">
-                            {{ substr(auth()->user()->name, 0, 2) }}
-                        </div>
+                    <div class="flex items-center space-x-3 mb-3">
+                        <img class="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-600" 
+                             src="{{ auth()->user()->profile_image_url }}" 
+                             alt="{{ auth()->user()->name }}"
+                             onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random'">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-slate-900 dark:text-white truncate">
                                 {{ auth()->user()->name }}
@@ -152,6 +153,17 @@
                                 {{ auth()->user()->email }}
                             </p>
                         </div>
+                    </div>
+                    
+                    <!-- Profile Link -->
+                    <div class="mb-3">
+                        <a href="{{ route('admin.profile') }}" 
+                           class="flex items-center w-full px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            Profile Settings
+                        </a>
                     </div>
                     
                     <!-- Logout Button -->

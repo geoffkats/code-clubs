@@ -26,6 +26,7 @@ class User extends Authenticatable
         'user_name',
         'user_role',
         'school_id',
+        'profile_image',
     ];
 
     /**
@@ -68,5 +69,15 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn ($word) => Str::substr($word, 0, 1))
             ->implode('');
+    }
+
+    /**
+     * Get the user's profile image URL
+     */
+    public function getProfileImageUrlAttribute(): string
+    {
+        return $this->profile_image 
+            ? asset('storage/' . $this->profile_image)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
 }

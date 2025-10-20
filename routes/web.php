@@ -113,6 +113,10 @@ Route::post('/parent-access/verify-old', [ReportController::class, 'verify_paren
     Route::post('/admin/students/{student}/reset-password', [App\Http\Controllers\AdminStudentController::class, 'resetPassword'])->name('admin.students.reset-password.post');
     Route::post('/admin/students/bulk-update-ids', [App\Http\Controllers\AdminStudentController::class, 'bulkUpdateIds'])->name('admin.students.bulk-update-ids');
     
+    // Admin Profile
+    Route::get('/admin/profile', [App\Http\Controllers\AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::put('/admin/profile', [App\Http\Controllers\AdminProfileController::class, 'update'])->name('admin.profile.update');
+    
     // Assessments
     Route::get('/assessments', [AssessmentController::class, 'index'])->name('assessments.index');
     
