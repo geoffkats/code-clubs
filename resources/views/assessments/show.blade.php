@@ -351,8 +351,9 @@
                                     @if($score->status === 'submitted' && $assessment->questions->where('question_type', 'practical_project')->count() > 0)
                                         <div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 rounded-lg">
                                             <h5 class="font-medium text-yellow-900 dark:text-yellow-300 mb-3">Grade This Submission</h5>
-                                            <form method="POST" action="{{ route('assessments.grade', $score->id) }}" class="space-y-4">
+                                            <form method="POST" action="{{ route('assessments.scores.grade', $score->id) }}" class="space-y-4">
                                                 @csrf
+                                                @method('PUT')
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <div>
                                                         <label for="score_value_{{ $score->id }}" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
