@@ -154,6 +154,9 @@
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <div class="flex items-center justify-center space-x-2">
+                                                <button onclick="openSubmissionModal({{ $score->id }}, '{{ $score->student->student_first_name }} {{ $score->student->student_last_name }}', '{{ $score->submission_text }}', '{{ $score->submission_file_name }}', '{{ $score->submission_file_path }}')" class="px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+                                                    View Submission
+                                                </button>
                                                 @if($score->status === 'submitted')
                                                     <button onclick="openGradeModal({{ $score->id }}, '{{ $score->student->student_first_name }} {{ $score->student->student_last_name }}')" class="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
                                                         Grade
@@ -236,6 +239,63 @@
             </div>
         </div>
 
+        <!-- View Submission Modal -->
+        <div id="submissionModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+            <div class="w-full max-w-4xl rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Student Submission Review</h3>
+                    <button onclick="closeSubmissionModal()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-6">
+                    <!-- Student Info -->
+                    <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4">
+                        <h4 class="font-semibold text-slate-900 dark:text-white mb-2" id="submissionStudentName">Student Name</h4>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Review the student's submission below before grading</p>
+                    </div>
+
+                    <!-- Submission Content -->
+                    <div class="space-y-4">
+                        <div>
+                            <h5 class="font-medium text-slate-900 dark:text-white mb-2">Text Submission</h5>
+                            <div id="submissionText" class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4 min-h-[100px] border border-slate-200 dark:border-slate-600">
+                                <!-- Submission text will be loaded here -->
+                            </div>
+                        </div>
+
+                        <div id="submissionFileSection" class="hidden">
+                            <h5 class="font-medium text-slate-900 dark:text-white mb-2">File Submission</h5>
+                            <div class="bg-slate-50 dark:bg-slate-700 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+                                <div class="flex items-center space-x-3">
+                                    <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <div>
+                                        <p id="submissionFileName" class="font-medium text-slate-900 dark:text-white"></p>
+                                        <p class="text-sm text-slate-600 dark:text-slate-400">Click to download</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex items-center justify-end space-x-4 pt-4 border-t border-slate-200 dark:border-slate-600">
+                        <button onclick="closeSubmissionModal()" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                            Close
+                        </button>
+                        <button onclick="openGradeFromSubmission()" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium">
+                            Grade This Submission
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Grade Assessment Modal -->
         <div id="gradeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
             <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-2xl">
@@ -263,6 +323,7 @@
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Feedback (Optional)</label>
                         <textarea name="admin_feedback" rows="3" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="Add feedback for the student..."></textarea>
                     </div>
+                    <input type="hidden" name="status" value="graded">
                     <div class="flex items-center justify-end space-x-4 pt-4">
                         <button type="button" onclick="closeGradeModal()" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                             Cancel
@@ -277,6 +338,59 @@
     </div>
 
     <script>
+        let currentScoreId = null;
+        let currentStudentName = null;
+
+        function openSubmissionModal(scoreId, studentName, submissionText, fileName, filePath) {
+            currentScoreId = scoreId;
+            currentStudentName = studentName;
+            
+            document.getElementById('submissionStudentName').textContent = studentName;
+            
+            // Display submission text
+            const textContainer = document.getElementById('submissionText');
+            if (submissionText && submissionText !== 'null' && submissionText.trim() !== '') {
+                try {
+                    // Try to parse as JSON (for structured answers)
+                    const parsed = JSON.parse(submissionText);
+                    if (typeof parsed === 'object') {
+                        let html = '<div class="space-y-3">';
+                        Object.keys(parsed).forEach(key => {
+                            html += `<div><strong>Question ${key}:</strong><br><div class="ml-4 mt-1 p-2 bg-white dark:bg-slate-600 rounded border">${parsed[key]}</div></div>`;
+                        });
+                        html += '</div>';
+                        textContainer.innerHTML = html;
+                    } else {
+                        textContainer.textContent = submissionText;
+                    }
+                } catch (e) {
+                    textContainer.textContent = submissionText;
+                }
+            } else {
+                textContainer.innerHTML = '<p class="text-slate-500 italic">No text submission provided</p>';
+            }
+            
+            // Display file submission if exists
+            const fileSection = document.getElementById('submissionFileSection');
+            if (fileName && fileName !== 'null' && fileName.trim() !== '') {
+                document.getElementById('submissionFileName').textContent = fileName;
+                fileSection.classList.remove('hidden');
+            } else {
+                fileSection.classList.add('hidden');
+            }
+            
+            document.getElementById('submissionModal').classList.remove('hidden');
+        }
+
+        function closeSubmissionModal() {
+            document.getElementById('submissionModal').classList.add('hidden');
+        }
+
+        function openGradeFromSubmission() {
+            closeSubmissionModal();
+            openGradeModal(currentScoreId, currentStudentName);
+        }
+
         function openGradeModal(scoreId, studentName) {
             document.getElementById('gradeStudentName').textContent = studentName;
             document.getElementById('gradeForm').action = `/assessments/scores/${scoreId}/grade`;
@@ -294,14 +408,19 @@
             document.getElementById('gradeModal').classList.remove('hidden');
         }
 
-        // Close modal when clicking outside
+        // Close modals when clicking outside
+        document.getElementById('submissionModal').addEventListener('click', function(e) {
+            if (e.target === this) closeSubmissionModal();
+        });
+
         document.getElementById('gradeModal').addEventListener('click', function(e) {
             if (e.target === this) closeGradeModal();
         });
 
-        // Close modal with Escape key
+        // Close modals with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
+                closeSubmissionModal();
                 closeGradeModal();
             }
         });
