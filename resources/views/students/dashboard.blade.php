@@ -118,8 +118,8 @@
                                                     <i class="fas fa-clipboard-check text-white text-sm"></i>
                                                 </div>
                                                 <div>
-                                                    <h3 class="font-semibold text-slate-900 dark:text-white">{{ $score->assessment->assessment_name }}</h3>
-                                                    <p class="text-sm text-slate-600 dark:text-slate-400">{{ $score->assessment->club->club_name }}</p>
+                                                    <h3 class="font-semibold text-slate-900 dark:text-white">{{ $score->assessment ? $score->assessment->assessment_name : 'Unknown Assessment' }}</h3>
+                                                    <p class="text-sm text-slate-600 dark:text-slate-400">{{ $score->assessment && $score->assessment->club ? $score->assessment->club->club_name : 'Unknown Club' }}</p>
                                                     <p class="text-xs text-slate-500 dark:text-slate-500">{{ $score->created_at->format('M d, Y') }}</p>
                                                 </div>
                                             </div>
@@ -168,7 +168,7 @@
                                                 <i class="fas fa-calendar text-white text-xs"></i>
                                             </div>
                                             <div class="flex-1">
-                                                <h3 class="font-semibold text-slate-900 dark:text-white">{{ $session->club->club_name }}</h3>
+                                                <h3 class="font-semibold text-slate-900 dark:text-white">{{ $session->club_name }}</h3>
                                                 <p class="text-sm text-slate-600 dark:text-slate-400">Week {{ $session->session_week_number }}</p>
                                                 <p class="text-xs text-blue-600 dark:text-blue-400 font-medium">
                                                     {{ \Carbon\Carbon::parse($session->session_date)->format('M d, Y') }}
