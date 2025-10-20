@@ -99,7 +99,7 @@
                 </div>
             </div>
 
-            <!-- Filters and Search -->
+            <!-- Filters, Search and Bulk Actions -->
             <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 mb-8">
                 <div class="flex flex-col md:flex-row gap-4">
                     <div class="flex-1">
@@ -119,6 +119,46 @@
                         </select>
 			</div>
 		</div>
+
+                <!-- Bulk Enroll Section -->
+                <div class="mt-6 border-t border-slate-200 dark:border-slate-600 pt-6">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Bulk Enroll Students to a Club</h3>
+                    <form method="POST" action="{{ route('students.bulk-enroll') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        @csrf
+                        <div>
+                            <label for="bulk_school_id" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">School</label>
+                            <select id="bulk_school_id" name="school_id" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                                <option value="">Select School</option>
+                                @foreach($schools as $school)
+                                    <option value="{{ $school->id }}">{{ $school->school_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label for="bulk_club_id" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Club</label>
+                            <select id="bulk_club_id" name="club_id" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                                <option value="">Select Club</option>
+                                @foreach($clubs as $club)
+                                    <option value="{{ $club->id }}">{{ $club->club_name }} @if($club->school)({{ $club->school->school_name }})@endif</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="md:col-span-2 flex items-end">
+                            <button type="submit" onclick="return confirm('Enroll all students from the selected school into this club?')" class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors">
+                                <svg class="w-4 h-4 mr-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                </svg>
+                                Enroll All Students
+                            </button>
+                        </div>
+                    </form>
+                    @if(session('success'))
+                        <p class="text-emerald-600 dark:text-emerald-400 text-sm mt-3">{{ session('success') }}</p>
+                    @endif
+                    @if(session('error'))
+                        <p class="text-red-600 dark:text-red-400 text-sm mt-3">{{ session('error') }}</p>
+                    @endif
+                </div>
 	</div>
 
             <!-- Students Grid -->

@@ -100,6 +100,7 @@ Route::post('/parent-access/verify-old', [ReportController::class, 'verify_paren
     Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
     Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update');
     Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::post('/students/bulk-enroll', [StudentController::class, 'bulkEnroll'])->name('students.bulk-enroll');
     
     // Admin Student Management (with credentials)
     Route::get('/admin/students', [App\Http\Controllers\AdminStudentController::class, 'index'])->name('admin.students.index');

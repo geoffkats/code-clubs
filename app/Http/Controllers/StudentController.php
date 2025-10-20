@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Club;
+use App\Models\School;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
@@ -13,7 +16,8 @@ class StudentController extends Controller
 		$students = Student::with(['clubs.school'])
 			->paginate(20);
 		$clubs = Club::with('school')->orderBy('club_name')->get();
-		return view('students.index', compact('students', 'clubs'));
+		$schools = School::orderBy('school_name')->get();
+		return view('students.index', compact('students', 'clubs', 'schools'));
 	}
 
 	public function create()
@@ -87,6 +91,48 @@ class StudentController extends Controller
 	{
 		$student->delete();
 		return redirect()->route('students.index')->with('success', 'Student deleted successfully!');
+	}
+
+	/**
+	 * Bulk enroll all students in a school into a club
+	 */
+	public function bulkEnroll(Request $request)
+	{
+		$data = Validator::make($request->all(), [
+			'school_id' => ['required', 'exists:schools,id'],
+			'club_id' => ['required', 'exists:clubs,id'],
+		])->validate();
+
+		$schoolId = (int) $data['school_id'];
+		$clubId = (int) $data['club_id'];
+
+		// Get student IDs for the school
+		$studentIds = Student::where('school_id', $schoolId)->pluck('id');
+
+		if ($studentIds->isEmpty()) {
+			return back()->with('error', 'No students found for the selected school.');
+		}
+
+		// Insert missing enrollments only
+		$now = now();
+		$rows = [];
+		foreach ($studentIds as $studentId) {
+			$rows[] = [
+				'club_id' => $clubId,
+				'student_id' => $studentId,
+				'created_at' => $now,
+				'updated_at' => $now,
+			];
+		}
+
+		// Avoid duplicates by ignoring existing pairs
+		DB::table('club_enrollments')->upsert(
+			$rows,
+			['club_id', 'student_id'],
+			['updated_at']
+		);
+
+		return back()->with('success', 'Students enrolled into the club successfully.');
 	}
 }
 
