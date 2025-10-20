@@ -74,7 +74,7 @@
                         @switch($question->question_type)
                             @case('multiple_choice')
                                 @php
-                                    $options = json_decode($question->options, true) ?? [];
+                                    $options = json_decode($question->question_options, true) ?? [];
                                 @endphp
                                 <div class="space-y-3">
                                     @foreach($options as $key => $option)
