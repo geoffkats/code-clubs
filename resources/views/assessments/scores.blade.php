@@ -275,7 +275,9 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                     </svg>
                                     <div>
-                                        <p id="submissionFileName" class="font-medium text-slate-900 dark:text-white"></p>
+                                        <a id="submissionFileLink" href="#" download class="font-medium text-slate-900 dark:text-white underline">
+                                            <span id="submissionFileName"></span>
+                                        </a>
                                         <p class="text-sm text-slate-600 dark:text-slate-400">Click to download</p>
                                     </div>
                                 </div>
@@ -394,8 +396,11 @@
                     
                     // Display file submission if exists
                     const fileSection = document.getElementById('submissionFileSection');
-                    if (data.submission_file_name && data.submission_file_name !== 'null' && data.submission_file_name.trim() !== '') {
+                    if (data.submission_file_name && data.submission_file_name !== 'null' && data.submission_file_name.trim() !== '' && data.submission_file_path && data.submission_file_path !== 'null') {
                         document.getElementById('submissionFileName').textContent = data.submission_file_name;
+                        const link = document.getElementById('submissionFileLink');
+                        link.href = `/storage/${data.submission_file_path}`;
+                        link.setAttribute('download', data.submission_file_name);
                         fileSection.classList.remove('hidden');
                     } else {
                         fileSection.classList.add('hidden');

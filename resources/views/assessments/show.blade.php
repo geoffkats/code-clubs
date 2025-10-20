@@ -293,7 +293,7 @@
                                                             <span class="font-medium">Student Answer:</span>
                                                         </p>
                                                         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-3">
-                                                            <p class="text-sm text-slate-700 dark:text-slate-300">
+                                                            <p class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line break-words">
                                                                 @php
                                                                     $answers = is_string($score->student_answers) ? json_decode($score->student_answers, true) : $score->student_answers;
                                                                     $answer = $answers[$question->id] ?? $answers['question_' . $question->id] ?? 'No answer provided';
@@ -311,7 +311,7 @@
                                                             <span class="font-medium">Student Submission:</span>
                                                         </p>
                                                         <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg p-3">
-                                                            <p class="text-sm text-slate-700 dark:text-slate-300">
+                                                            <p class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line break-words">
                                                                 @php
                                                                     $answers = is_string($score->student_answers) ? json_decode($score->student_answers, true) : $score->student_answers;
                                                                     $answer = $answers[$question->id] ?? $answers['question_' . $question->id] ?? 'No submission provided';
@@ -321,7 +321,7 @@
                                                             @if($score->submission_file_path)
                                                                 <div class="mt-3 pt-3 border-t border-slate-200 dark:border-slate-600">
                                                                     <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-2">Project File:</p>
-                                                                    <a href="{{ asset('storage/' . $score->submission_file_path) }}" 
+                                                                    <a href="{{ Storage::url($score->submission_file_path) }}" 
                                                                        download="{{ $score->submission_file_name }}"
                                                                        class="inline-flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-sm hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors">
                                                                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
