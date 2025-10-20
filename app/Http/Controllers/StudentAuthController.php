@@ -104,7 +104,6 @@ class StudentAuthController extends Controller
                 ->select([
                     'sessions_schedule.id',
                     'sessions_schedule.session_date',
-                    'sessions_schedule.session_time',
                     'sessions_schedule.session_week_number',
                     'clubs.club_name',
                     'clubs.club_level'
