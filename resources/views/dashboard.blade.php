@@ -494,7 +494,7 @@
                                             <span class="text-blue-600 dark:text-blue-400 font-bold text-sm">{{ $s->session_week_number }}</span>
                                         </div>
                                         <div>
-                                            <div class="font-semibold text-slate-900 dark:text-white">{{ $s->club->club_name }}</div>
+                                            <div class="font-semibold text-slate-900 dark:text-white">{{ $s->club->club_name ?? 'Unknown Club' }}</div>
                                             <div class="text-sm text-slate-600 dark:text-slate-400">Week {{ $s->session_week_number }}</div>
                                         </div>
                                     </div>
@@ -575,7 +575,7 @@
                                         </div>
                                         <div>
                                             <div class="font-semibold text-slate-900 dark:text-white">{{ $r->report_name }}</div>
-                                            <div class="text-sm text-slate-600 dark:text-slate-400">{{ $r->student->student_first_name }} {{ $r->student->student_last_name }} • {{ $r->club->club_name }}</div>
+                                            <div class="text-sm text-slate-600 dark:text-slate-400">{{ $r->student ? ($r->student->student_first_name . ' ' . $r->student->student_last_name) : 'Unknown Student' }} • {{ $r->club->club_name ?? 'Unknown Club' }}</div>
                                         </div>
                                     </div>
                                     <div class="text-right">
@@ -791,7 +791,7 @@
                                 </div>
                                 <div class="flex-1">
                                     <div class="font-semibold text-slate-900 dark:text-white">{{ ucfirst($a->assessment_type) }}: {{ $a->assessment_name }}</div>
-                                    <div class="text-sm text-slate-600 dark:text-slate-400">{{ $a->club->club_name }} • Week {{ $a->assessment_week_number ?? '-' }}</div>
+                                    <div class="text-sm text-slate-600 dark:text-slate-400">{{ $a->club->club_name ?? 'Unknown Club' }} • Week {{ $a->assessment_week_number ?? '-' }}</div>
                                 </div>
                                 <div class="text-sm text-slate-500 dark:text-slate-400">{{ $a->created_at->format('M j, g:i A') }}</div>
                     </div>
