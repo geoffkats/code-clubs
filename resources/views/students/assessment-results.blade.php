@@ -156,6 +156,83 @@
                                 </div>
                             @endif
                             
+                            @php
+                                $studentAnswers = is_array($existingScore->student_answers) ? $existingScore->student_answers : (json_decode($existingScore->student_answers, true) ?? []);
+                                $studentAnswer = $studentAnswers[$question->id] ?? $studentAnswers['question_' . $question->id] ?? 'No answer provided';
+                                $isCorrect = false;
+                                
+                                // Check if answer is correct
+                                if ($question->question_type === 'multiple_choice') {
+                                    $isCorrect = $studentAnswer === $question->correct_answer;
+                                } elseif ($question->question_type === 'text_question') {
+                                    // For text questions, we'll consider it correct if it's not empty and has reasonable length
+                                    $isCorrect = !empty($studentAnswer) && strlen($studentAnswer) > 10;
+                                }
+                            @endphp
+                            
+                            <!-- Student's Answer -->
+                            <div class="mb-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-sm font-medium text-gray-700">Your Answer:</h4>
+                                    <div class="flex items-center">
+                                        @if($question->question_type !== 'practical_project' && $question->question_type !== 'image_question')
+                                            @if($isCorrect)
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Correct
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Incorrect
+                                                </span>
+                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                                @if($question->question_type === 'multiple_choice')
+                                    @php
+                                        $options = is_array($question->question_options) ? $question->question_options : (json_decode($question->question_options, true) ?? []);
+                                        $selectedOption = $options[$studentAnswer] ?? $studentAnswer;
+                                    @endphp
+                                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p class="text-sm text-blue-800">
+                                            <span class="font-medium">{{ $studentAnswer }}.</span> {{ $selectedOption }}
+                                        </p>
+                                    </div>
+                                @else
+                                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p class="text-sm text-blue-800 whitespace-pre-line">{{ $studentAnswer }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <!-- Correct Answer (for auto-graded questions) -->
+                            @if($question->question_type === 'multiple_choice' || $question->question_type === 'text_question')
+                                <div class="mb-3">
+                                    <h4 class="text-sm font-medium text-gray-700 mb-2">Correct Answer:</h4>
+                                    @if($question->question_type === 'multiple_choice')
+                                        @php
+                                            $correctOption = $options[$question->correct_answer] ?? $question->correct_answer;
+                                        @endphp
+                                        <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                            <p class="text-sm text-green-800">
+                                                <span class="font-medium">{{ $question->correct_answer }}.</span> {{ $correctOption }}
+                                            </p>
+                                        </div>
+                                    @else
+                                        <div class="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                            <p class="text-sm text-green-800">{{ $question->correct_answer }}</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
+                            
                             <div class="bg-gray-50 rounded-lg p-3">
                                 <p class="text-sm text-gray-600">
                                     <span class="font-medium">Points:</span> {{ $question->points }}
