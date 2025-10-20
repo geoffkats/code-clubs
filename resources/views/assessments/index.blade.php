@@ -157,6 +157,9 @@
                                                 {{ \Carbon\Carbon::parse($assessment->due_date)->format('M j') }}
                                             </span>
                                         @endif
+                                        <span class="px-3 py-1 text-xs font-medium bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200 rounded-full shadow-sm" title="{{ ($assessment->scores->count() ?? 0) }} submissions">
+                                            {{ $assessment->scores->count() ?? 0 }} submissions
+                                        </span>
                                     </div>
                                 </div>
 
