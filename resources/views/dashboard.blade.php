@@ -484,7 +484,7 @@
                     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-xl font-bold text-slate-900 dark:text-white">Upcoming Sessions</h3>
-                            <a href="{{ route('clubs.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium">View all →</a>
+                            <a href="{{ route('admin.clubs.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium">View all →</a>
                         </div>
                         <div class="space-y-4">
                     @forelse($upcomingSessions as $s)
@@ -562,7 +562,7 @@
                     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-xl font-bold text-slate-900 dark:text-white">Recent Reports</h3>
-                            <a href="{{ route('clubs.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium">Generate →</a>
+                            <a href="{{ route('admin.clubs.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium">Generate →</a>
                         </div>
                         <div class="space-y-4">
                             @forelse($recentReports as $r)
@@ -651,7 +651,7 @@
                 <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white">Top Performing Students</h3>
-                        <a href="{{ route('students.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium">View all →</a>
+                        <a href="{{ route('admin.students.index') }}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium">View all →</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full">
@@ -759,7 +759,7 @@
                                     <button @click="selectedSchoolId = '{{ $school->id }}'; showClub = true" class="flex-1 px-3 py-2 bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors text-sm font-medium">
                                         Create Club
                                     </button>
-                                    <a href="{{ route('schools.index') }}" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm">
+                                    <a href="{{ route('admin.schools.index') }}" class="px-3 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm">
                                         View
                                     </a>
                                 </div>
@@ -820,7 +820,7 @@
                         </svg>
                     </button>
                 </div>
-                <form method="post" action="{{ route('students.store') }}" class="space-y-4">
+                <form method="post" action="{{ route('admin.students.store') }}" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Select Club</label>
@@ -898,7 +898,7 @@
                         </svg>
                     </button>
                 </div>
-                <form method="post" action="{{ route('clubs.store') }}" class="space-y-4">
+                <form method="post" action="{{ route('admin.clubs.store') }}" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">School</label>
@@ -991,7 +991,7 @@
                         </svg>
                     </button>
                 </div>
-                <form method="post" action="{{ route('schools.store') }}" class="space-y-4">
+                <form method="post" action="{{ route('admin.schools.store') }}" class="space-y-4">
                     @csrf
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">School Name</label>

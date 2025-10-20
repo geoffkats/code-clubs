@@ -40,7 +40,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
         )
         ->name('two-factor.show');
     
-    // Schools (admin)
+    // Schools (regular users)
     Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
     Route::get('/schools/create', [SchoolController::class, 'create'])->name('schools.create');
     Route::post('/schools', [SchoolController::class, 'store'])->name('schools.store');
@@ -48,7 +48,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::put('/schools/{school_id}', [SchoolController::class, 'update'])->name('schools.update');
     Route::delete('/schools/{school_id}', [SchoolController::class, 'destroy'])->name('schools.destroy');
 
-    // Clubs
+    // Clubs (regular users)
     Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
     Route::get('/clubs/create', [ClubController::class, 'create'])->name('clubs.create');
     Route::get('/clubs/{club_id}', [ClubController::class, 'show'])->name('clubs.show');
@@ -115,9 +115,6 @@ Route::post('/parent-access/verify-old', [ReportController::class, 'verify_paren
     Route::post('/admin/students/bulk-update-ids', [App\Http\Controllers\AdminStudentController::class, 'bulkUpdateIds'])->name('admin.students.bulk-update-ids');
     Route::post('/admin/students/bulk-enroll', [App\Http\Controllers\AdminStudentController::class, 'bulkEnroll'])->name('admin.students.bulk-enroll');
     
-    // Admin Profile
-    Route::get('/admin/profile', [App\Http\Controllers\AdminProfileController::class, 'index'])->name('admin.profile');
-    Route::put('/admin/profile', [App\Http\Controllers\AdminProfileController::class, 'update'])->name('admin.profile.update');
     
     // Assessments
     Route::get('/assessments', [AssessmentController::class, 'index'])->name('assessments.index');
@@ -186,12 +183,64 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
         Route::delete('/resources/{resource}', [App\Http\Controllers\ResourceController::class, 'destroy'])->name('resources.destroy');
     });
 
-    // V2.5.0 - Report Approval routes (for admins)
+    // V2.5.0 - Admin routes
     Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Main Admin Routes (moved from main middleware group)
+        Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
+        Route::get('/schools/create', [SchoolController::class, 'create'])->name('schools.create');
+        Route::post('/schools', [SchoolController::class, 'store'])->name('schools.store');
+        Route::get('/schools/{school_id}/edit', [SchoolController::class, 'edit'])->name('schools.edit');
+        Route::put('/schools/{school_id}', [SchoolController::class, 'update'])->name('schools.update');
+        Route::delete('/schools/{school_id}', [SchoolController::class, 'destroy'])->name('schools.destroy');
+
+        Route::get('/clubs', [ClubController::class, 'index'])->name('clubs.index');
+        Route::get('/clubs/create', [ClubController::class, 'create'])->name('clubs.create');
+        Route::get('/clubs/{club_id}', [ClubController::class, 'show'])->name('clubs.show');
+        Route::post('/clubs', [ClubController::class, 'store'])->name('clubs.store');
+        Route::put('/clubs/{club_id}', [ClubController::class, 'update'])->name('clubs.update');
+        Route::delete('/clubs/{club_id}', [ClubController::class, 'destroy'])->name('clubs.destroy');
+        Route::post('/clubs/{club_id}/sessions/generate', [ClubSessionsController::class, 'generate'])->name('clubs.sessions.generate');
+
+        Route::get('/students', [StudentController::class, 'index'])->name('students.index');
+        Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
+        Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+        Route::get('/students/{student}', [StudentController::class, 'show'])->name('students.show');
+        Route::get('/students/{student}/edit', [StudentController::class, 'edit'])->name('students.edit');
+        Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update');
+        Route::delete('/students/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
+        Route::post('/students/bulk-enroll', [StudentController::class, 'bulkEnroll'])->name('students.bulk-enroll');
+
+        // Report Approval routes
         Route::get('/reports', App\Livewire\ReportApprovalWorkflow::class)->name('reports.index');
         Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'adminApprove'])->name('reports.approve');
         Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
         Route::post('/reports/{reportId}/request-revision', [App\Http\Controllers\ReportApprovalController::class, 'requestRevision'])->name('reports.request-revision');
+        
+        // User Management routes
+        Route::get('/users', [App\Http\Controllers\AdminUserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [App\Http\Controllers\AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/users', [App\Http\Controllers\AdminUserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit', [App\Http\Controllers\AdminUserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [App\Http\Controllers\AdminUserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [App\Http\Controllers\AdminUserController::class, 'destroy'])->name('users.destroy');
+        
+        // Resource Management routes
+        Route::get('/resources', [App\Http\Controllers\AdminResourceController::class, 'index'])->name('resources.index');
+        Route::get('/resources/create', [App\Http\Controllers\AdminResourceController::class, 'create'])->name('resources.create');
+        Route::post('/resources', [App\Http\Controllers\AdminResourceController::class, 'store'])->name('resources.store');
+        Route::get('/resources/{resource}/edit', [App\Http\Controllers\AdminResourceController::class, 'edit'])->name('resources.edit');
+        Route::put('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'update'])->name('resources.update');
+        Route::delete('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'destroy'])->name('resources.destroy');
+        
+        // Settings routes
+        Route::get('/settings', [App\Http\Controllers\AdminSettingsController::class, 'index'])->name('settings');
+        Route::post('/settings', [App\Http\Controllers\AdminSettingsController::class, 'update'])->name('settings.update');
+        Route::get('/notifications/settings', [App\Http\Controllers\AdminNotificationSettingsController::class, 'index'])->name('notifications.settings');
+        Route::post('/notifications/settings', [App\Http\Controllers\AdminNotificationSettingsController::class, 'update'])->name('notifications.update');
+        
+        // Admin Profile routes
+        Route::get('/profile', [App\Http\Controllers\AdminProfileController::class, 'index'])->name('profile');
+        Route::put('/profile', [App\Http\Controllers\AdminProfileController::class, 'update'])->name('profile.update');
     });
 });
 

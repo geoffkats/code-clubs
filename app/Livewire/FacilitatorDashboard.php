@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\User;
 use App\Models\Report;
 use App\Models\Club;
+use App\Models\LessonNote;
 use App\Notifications\ReportAwaitingApproval;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +21,7 @@ class FacilitatorDashboard extends Component
     public $recentSessions = [];
     public $topTeachers = [];
     public $clubPerformance = [];
+    public $recentResources = [];
     
     // Filters
     public $selectedPeriod = '30';
@@ -108,6 +110,14 @@ class FacilitatorDashboard extends Component
                 $club->reports_count = Report::where('club_id', $club->id)->count();
                 return $club;
             });
+
+        // Load recent resources from managed clubs
+        $managedClubIds = $facilitator->managedClubs()->pluck('id');
+        $this->recentResources = LessonNote::with(['club', 'createdBy'])
+            ->whereIn('club_id', $managedClubIds)
+            ->latest()
+            ->limit(5)
+            ->get();
     }
 
     public function getCompletionRate($facilitator)

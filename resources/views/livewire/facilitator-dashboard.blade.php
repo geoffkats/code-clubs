@@ -296,32 +296,161 @@
         </div>
     </div>
 
+    <!-- Resource Management Section -->
+    <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900 dark:text-white">Resource Management</h2>
+                    <p class="text-slate-600 dark:text-slate-400 mt-1">Manage educational materials for your clubs</p>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="{{ route('admin.resources.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white text-sm font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Resource
+                    </a>
+                    <a href="{{ route('admin.resources.index') }}" class="inline-flex items-center px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-sm font-medium rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                        View All
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6">
+            @if($recentResources->count() > 0)
+                <div class="space-y-4">
+                    @foreach($recentResources as $resource)
+                        <div class="flex items-center space-x-4 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+                            <!-- Resource Thumbnail/Icon -->
+                            <div class="w-12 h-12 rounded-lg overflow-hidden bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-semibold text-sm shadow-lg">
+                                @if($resource->attachment_type === 'video')
+                                    <div id="video-thumbnail-{{ $resource->id }}" class="w-full h-full bg-cover bg-center flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
+                                    </div>
+                                @elseif($resource->attachment_type === 'image')
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                @elseif($resource->attachment_type === 'audio')
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+                                    </svg>
+                                @elseif($resource->attachment_type === 'code')
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                    </svg>
+                                @else
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                @endif
+                            </div>
+                            
+                            <!-- Resource Details -->
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h3 class="font-semibold text-slate-900 dark:text-white">{{ $resource->title }}</h3>
+                                        <div class="flex items-center space-x-4 mt-1">
+                                            <span class="text-sm text-slate-500 dark:text-slate-400">{{ $resource->club->club_name }}</span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                                {{ ucfirst($resource->attachment_type) }}
+                                            </span>
+                                            <span class="text-sm text-slate-500 dark:text-slate-400">
+                                                by {{ $resource->createdBy->name }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm text-slate-500 dark:text-slate-400">
+                                            {{ $resource->created_at->diffForHumans() }}
+                                        </span>
+                                        <a href="{{ route('admin.resources.edit', $resource) }}" class="inline-flex items-center px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                            </svg>
+                                            Edit
+                                        </a>
+                                    </div>
+                                </div>
+                                @if($resource->tags)
+                                    <div class="flex flex-wrap gap-1 mt-2">
+                                        @foreach(explode(',', $resource->tags) as $tag)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-600 dark:text-slate-300">
+                                                {{ trim($tag) }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-8">
+                    <div class="w-16 h-16 bg-gradient-to-br from-slate-400 to-slate-600 rounded-full flex items-center justify-center text-white mx-auto mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No Resources Found</h3>
+                    <p class="text-slate-600 dark:text-slate-400 mb-6">Get started by creating educational resources for your clubs.</p>
+                    <a href="{{ route('admin.resources.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add New Resource
+                    </a>
+                </div>
+            @endif
+        </div>
+    </div>
+
     <!-- Report Action Modal -->
     @if($showReportModal)
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" wire:click.self="closeReportModal">
-        <div class="bg-white dark:bg-slate-800 rounded-lg p-6 w-full max-w-md mx-4">
-            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                {{ $reportAction === 'reject' ? 'Reject Report' : 'Request Revision' }}
-            </h3>
-            
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Feedback
+    <div class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50" wire:click.self="closeReportModal">
+        <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 dark:border-slate-700/30 p-8 w-full max-w-md mx-4">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br {{ $reportAction === 'reject' ? 'from-red-500 to-pink-600' : 'from-yellow-500 to-orange-600' }} rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        @if($reportAction === 'reject')
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        @else
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                        @endif
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                    {{ $reportAction === 'reject' ? 'Reject Report' : 'Request Revision' }}
+                </h3>
+                <p class="text-slate-600 dark:text-slate-400">Provide feedback for the teacher</p>
+</div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                    Feedback Message
                 </label>
                 <textarea wire:model="reportFeedback" 
                           rows="4" 
-                          class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          placeholder="Provide feedback for the teacher..."></textarea>
-                @error('reportFeedback') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-</div>
+                          class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+                          placeholder="Provide detailed feedback for the teacher..."></textarea>
+                @error('reportFeedback') <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span> @enderror
+            </div>
 
-            <div class="flex justify-end space-x-3">
+            <div class="flex justify-end space-x-4">
                 <button wire:click="closeReportModal" 
-                        class="px-4 py-2 bg-slate-300 dark:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-400 dark:hover:bg-slate-500 transition-colors">
+                        class="px-6 py-3 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:bg-white/70 dark:hover:bg-slate-800/70 transition-all duration-200 border border-white/20 dark:border-slate-700/30">
                     Cancel
                 </button>
                 <button wire:click="submitReportAction" 
-                        class="px-4 py-2 {{ $reportAction === 'reject' ? 'bg-red-600 hover:bg-red-700' : 'bg-yellow-600 hover:bg-yellow-700' }} text-white rounded-lg transition-colors">
+                        class="px-6 py-3 {{ $reportAction === 'reject' ? 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700' : 'bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700' }} text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl backdrop-blur-sm">
                     {{ $reportAction === 'reject' ? 'Reject Report' : 'Request Revision' }}
                 </button>
             </div>
@@ -338,4 +467,64 @@
             {{ session('success') }}
         </div>
     @endif
+
+    <!-- Video Thumbnail Generation Script -->
+    <script>
+        // Video Thumbnail Generation
+        function generateVideoThumbnail(videoUrl, elementId) {
+            if (!videoUrl) return;
+            
+            let thumbnailUrl = '';
+            
+            // YouTube thumbnail
+            if (videoUrl.includes('youtube.com/watch?v=') || videoUrl.includes('youtu.be/')) {
+                const videoId = extractYouTubeVideoId(videoUrl);
+                if (videoId) {
+                    thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                }
+            }
+            // Vimeo thumbnail
+            else if (videoUrl.includes('vimeo.com/')) {
+                const videoId = extractVimeoVideoId(videoUrl);
+                if (videoId) {
+                    // Note: Vimeo requires API access for thumbnails, using placeholder for now
+                    thumbnailUrl = `https://vumbnail.com/${videoId}.jpg`;
+                }
+            }
+            
+            if (thumbnailUrl) {
+                const thumbnailElement = document.getElementById(elementId);
+                if (thumbnailElement) {
+                    thumbnailElement.style.backgroundImage = `url(${thumbnailUrl})`;
+                    thumbnailElement.style.backgroundSize = 'cover';
+                    thumbnailElement.style.backgroundPosition = 'center';
+                    thumbnailElement.innerHTML = ''; // Remove the play icon
+                }
+            }
+        }
+
+        function extractYouTubeVideoId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function extractVimeoVideoId(url) {
+            const regExp = /^.*(vimeo\.com\/)((channels\/[A-z]+\/)|(groups\/[A-z]+\/videos\/)|(album\/\d+\/video\/)|)([0-9]+)/;
+            const match = url.match(regExp);
+            return match ? match[6] : null;
+        }
+
+        // Initialize video thumbnails on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // This would be populated with actual video URLs from the server
+            @if(isset($recentResources))
+                @foreach($recentResources as $resource)
+                    @if($resource->attachment_type === 'video' && $resource->video_url)
+                        generateVideoThumbnail('{{ $resource->video_url }}', 'video-thumbnail-{{ $resource->id }}');
+                    @endif
+                @endforeach
+            @endif
+        });
+    </script>
 </div>

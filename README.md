@@ -137,18 +137,18 @@ resources/views/
 - Node.js & NPM
 
 ### Installation Steps
-```bash
+   ```bash
 # Clone the repository
 git clone https://github.com/geoffkats/code-clubs.git
 cd code-clubs
 
 # Install dependencies
-composer install
-npm install
+   composer install
+   npm install
 
 # Environment setup
-cp .env.example .env
-php artisan key:generate
+   cp .env.example .env
+   php artisan key:generate
 
 # Database setup
 php artisan migrate
@@ -158,8 +158,8 @@ php artisan db:seed
 php artisan storage:link
 
 # Build assets
-npm run build
-```
+   npm run build
+   ```
 
 ### Configuration
 1. Update `.env` with your database credentials

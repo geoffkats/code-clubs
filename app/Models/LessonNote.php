@@ -18,7 +18,14 @@ class LessonNote extends Model
         'mime_type',
         'attachment_type',
         'visibility',
-        'created_by'
+        'created_by',
+        'tags',
+        'link_title',
+        'video_url',
+        'external_url',
+        'code_url',
+        'code_branch',
+        'audio_url'
     ];
 
     protected $casts = [
@@ -38,6 +45,14 @@ class LessonNote extends Model
      * Get the user who created this resource
      */
     public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the user who created this resource (alias for compatibility)
+     */
+    public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
     }

@@ -48,7 +48,7 @@
                             <flux:navlist.item 
                                 icon="squares-2x2" 
                                 :href="route('clubs.index')" 
-                                :current="request()->routeIs('clubs.*')" 
+                                :current="request()->routeIs('clubs.*') && !request()->routeIs('admin.clubs.*')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                             >
@@ -68,7 +68,7 @@
                             <flux:navlist.item 
                                 icon="building-office" 
                                 :href="route('schools.index')" 
-                                :current="request()->routeIs('schools.*')" 
+                                :current="request()->routeIs('schools.*') && !request()->routeIs('admin.schools.*')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                             >
@@ -94,6 +94,28 @@
                                 {{ __('Student Accounts') }}
                             </flux:navlist.item>
 
+                            @if(auth()->user()->user_role === 'admin')
+                            <flux:navlist.item 
+                                icon="users" 
+                                :href="route('admin.users.index')" 
+                                :current="request()->routeIs('admin.users.*')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Manage Users') }}
+                            </flux:navlist.item>
+
+                            <flux:navlist.item 
+                                icon="document-text" 
+                                :href="route('admin.resources.index')" 
+                                :current="request()->routeIs('admin.resources.*')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Resources') }}
+                            </flux:navlist.item>
+                            @endif
+
                             <flux:navlist.item 
                                 icon="chart-bar" 
                                 :href="route('attendance.index')" 
@@ -117,7 +139,7 @@
                             <flux:navlist.item 
                                 icon="document-text" 
                                 :href="route('reports.index')" 
-                                :current="request()->routeIs('reports.*')" 
+                                :current="request()->routeIs('reports.*') && !request()->routeIs('admin.reports.*')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                             >
@@ -136,6 +158,36 @@
                         </flux:navlist>
                     </div>
 
+                    @if(auth()->user()->user_role === 'admin')
+                    <!-- Settings Section -->
+                    <div class="space-y-1">
+                        <h3 class="px-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-3">
+                            Settings
+                        </h3>
+                        
+                        <flux:navlist variant="outline" class="space-y-1">
+                            <flux:navlist.item 
+                                icon="cog-6-tooth" 
+                                :href="route('admin.settings')" 
+                                :current="request()->routeIs('admin.settings.*')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('System Settings') }}
+                            </flux:navlist.item>
+
+                            <flux:navlist.item 
+                                icon="bell" 
+                                :href="route('admin.notifications.settings')" 
+                                :current="request()->routeIs('admin.notifications.*')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Notifications') }}
+                            </flux:navlist.item>
+                        </flux:navlist>
+                    </div>
+                    @endif
                 </div>
 
                 <!-- User Profile Section -->

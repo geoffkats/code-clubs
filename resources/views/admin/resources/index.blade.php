@@ -231,17 +231,11 @@
 
         <script>
             function closeSuccessModal() {
-                const modal = document.getElementById('success-modal');
-                if (modal) {
-                    modal.remove(); // Remove the modal from DOM completely
-                }
+                document.getElementById('success-modal').style.display = 'none';
             }
 
             function closeErrorModal() {
-                const modal = document.getElementById('error-modal');
-                if (modal) {
-                    modal.remove(); // Remove the modal from DOM completely
-                }
+                document.getElementById('error-modal').style.display = 'none';
             }
 
             function showDeleteModal(resourceId, resourceName) {
