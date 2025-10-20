@@ -99,29 +99,53 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            <span class="text-lg font-bold text-slate-900 dark:text-white">
-                                                {{ $score->score }}/{{ $assessment->total_points ?? 0 }}
-                                            </span>
+                                            @if($score->status === 'submitted')
+                                                <span class="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                                    Pending Review
+                                                </span>
+                                            @else
+                                                <span class="text-lg font-bold text-slate-900 dark:text-white">
+                                                    {{ $score->score_value }}/{{ $assessment->total_points ?? 0 }}
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            <span class="px-3 py-1 rounded-lg text-sm font-medium
-                                                @if($score->percentage >= 90) bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300
-                                                @elseif($score->percentage >= 80) bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300
-                                                @elseif($score->percentage >= 70) bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300
-                                                @else bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300
-                                                @endif">
-                                                {{ $score->percentage }}%
-                                            </span>
+                                            @if($score->status === 'submitted')
+                                                <span class="px-3 py-1 rounded-lg text-sm font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                                                    Pending
+                                                </span>
+                                            @else
+                                                @php
+                                                    $percentage = $score->score_max_value > 0 ? ($score->score_value / $score->score_max_value) * 100 : 0;
+                                                @endphp
+                                                <span class="px-3 py-1 rounded-lg text-sm font-medium
+                                                    @if($percentage >= 90) bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300
+                                                    @elseif($percentage >= 80) bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300
+                                                    @elseif($percentage >= 70) bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300
+                                                    @else bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300
+                                                    @endif">
+                                                    {{ number_format($percentage, 1) }}%
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            <span class="text-lg font-bold text-slate-900 dark:text-white">
-                                                @if($score->percentage >= 90) A
-                                                @elseif($score->percentage >= 80) B
-                                                @elseif($score->percentage >= 70) C
-                                                @elseif($score->percentage >= 60) D
-                                                @else F
-                                                @endif
-                                            </span>
+                                            @if($score->status === 'submitted')
+                                                <span class="text-lg font-bold text-blue-600 dark:text-blue-400">
+                                                    -
+                                                </span>
+                                            @else
+                                                @php
+                                                    $percentage = $score->score_max_value > 0 ? ($score->score_value / $score->score_max_value) * 100 : 0;
+                                                @endphp
+                                                <span class="text-lg font-bold text-slate-900 dark:text-white">
+                                                    @if($percentage >= 90) A
+                                                    @elseif($percentage >= 80) B
+                                                    @elseif($percentage >= 70) C
+                                                    @elseif($percentage >= 60) D
+                                                    @else F
+                                                    @endif
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <span class="text-sm text-slate-600 dark:text-slate-400">
@@ -130,11 +154,17 @@
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <div class="flex items-center justify-center space-x-2">
-                                                <button class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                                    </svg>
-                                                </button>
+                                                @if($score->status === 'submitted')
+                                                    <button onclick="openGradeModal({{ $score->id }}, '{{ $score->student->student_first_name }} {{ $score->student->student_last_name }}')" class="px-3 py-1 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">
+                                                        Grade
+                                                    </button>
+                                                @else
+                                                    <button onclick="openEditGradeModal({{ $score->id }}, {{ $score->score_value }}, '{{ $score->student->student_first_name }} {{ $score->student->student_last_name }}')" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                        </svg>
+                                                    </button>
+                                                @endif
                                                 <button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -205,5 +235,75 @@
                 </form>
             </div>
         </div>
+
+        <!-- Grade Assessment Modal -->
+        <div id="gradeModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm hidden">
+            <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-6 shadow-2xl">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white">Grade Assessment</h3>
+                    <button onclick="closeGradeModal()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <form id="gradeForm" method="post" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Student</label>
+                        <p id="gradeStudentName" class="text-slate-900 dark:text-white font-medium"></p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Score</label>
+                        <input name="score_value" type="number" min="0" max="{{ $assessment->total_points ?? 100 }}" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="Enter score" required>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Out of {{ $assessment->total_points ?? 100 }} points</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Feedback (Optional)</label>
+                        <textarea name="admin_feedback" rows="3" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent" placeholder="Add feedback for the student..."></textarea>
+                    </div>
+                    <div class="flex items-center justify-end space-x-4 pt-4">
+                        <button type="button" onclick="closeGradeModal()" class="px-4 py-2 text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium">
+                            Grade Assessment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
+    <script>
+        function openGradeModal(scoreId, studentName) {
+            document.getElementById('gradeStudentName').textContent = studentName;
+            document.getElementById('gradeForm').action = `/assessments/scores/${scoreId}/grade`;
+            document.getElementById('gradeModal').classList.remove('hidden');
+        }
+
+        function closeGradeModal() {
+            document.getElementById('gradeModal').classList.add('hidden');
+        }
+
+        function openEditGradeModal(scoreId, currentScore, studentName) {
+            document.getElementById('gradeStudentName').textContent = studentName;
+            document.querySelector('input[name="score_value"]').value = currentScore;
+            document.getElementById('gradeForm').action = `/assessments/scores/${scoreId}/grade`;
+            document.getElementById('gradeModal').classList.remove('hidden');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('gradeModal').addEventListener('click', function(e) {
+            if (e.target === this) closeGradeModal();
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeGradeModal();
+            }
+        });
+    </script>
 </x-layouts.app>

@@ -162,18 +162,33 @@ class StudentDashboardController extends Controller
         // Determine status based on assessment type
         $status = $isProjectBased ? 'submitted' : 'graded';
 
-        // Save the score
-        AssessmentScore::create([
-            'student_id' => $student->id,
-            'assessment_id' => $assessment->id,
-            'score_value' => $totalScore,
-            'score_max_value' => $maxScore,
-            'submission_text' => $submissionText ?: json_encode($answers),
-            'submission_file_path' => $submissionFilePath,
-            'submission_file_name' => $submissionFileName,
-            'status' => $status,
-            'student_answers' => $answers,
-        ]);
+        // For project-based assessments, don't save score until admin review
+        if ($isProjectBased) {
+            AssessmentScore::create([
+                'student_id' => $student->id,
+                'assessment_id' => $assessment->id,
+                'score_value' => 0, // No score until admin review
+                'score_max_value' => $maxScore,
+                'submission_text' => $submissionText ?: json_encode($answers),
+                'submission_file_path' => $submissionFilePath,
+                'submission_file_name' => $submissionFileName,
+                'status' => $status,
+                'student_answers' => $answers,
+            ]);
+        } else {
+            // For auto-graded assessments, save the calculated score
+            AssessmentScore::create([
+                'student_id' => $student->id,
+                'assessment_id' => $assessment->id,
+                'score_value' => $totalScore,
+                'score_max_value' => $maxScore,
+                'submission_text' => $submissionText ?: json_encode($answers),
+                'submission_file_path' => $submissionFilePath,
+                'submission_file_name' => $submissionFileName,
+                'status' => $status,
+                'student_answers' => $answers,
+            ]);
+        }
 
         return redirect()->route('student.assessment.show', $assessmentId)
             ->with('success', 'Assessment submitted successfully!');

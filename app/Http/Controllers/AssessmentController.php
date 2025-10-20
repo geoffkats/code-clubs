@@ -698,6 +698,40 @@ class AssessmentController extends Controller
 
 		return redirect()->back()->with('success', 'Grade saved successfully!');
 	}
+
+	/**
+	 * Duplicate an assessment
+	 */
+	public function duplicate($assessmentId)
+	{
+		$originalAssessment = Assessment::with(['questions', 'club'])->findOrFail($assessmentId);
+		
+		// Create new assessment
+		$newAssessment = Assessment::create([
+			'club_id' => $originalAssessment->club_id,
+			'assessment_type' => $originalAssessment->assessment_type,
+			'assessment_name' => $originalAssessment->assessment_name . ' (Copy)',
+			'assessment_week_number' => $originalAssessment->assessment_week_number,
+			'total_points' => $originalAssessment->total_points,
+			'due_date' => $originalAssessment->due_date,
+			'description' => $originalAssessment->description,
+		]);
+
+		// Duplicate questions
+		foreach ($originalAssessment->questions as $question) {
+			$newAssessment->questions()->create([
+				'question_text' => $question->question_text,
+				'question_type' => $question->question_type,
+				'points' => $question->points,
+				'correct_answer' => $question->correct_answer,
+				'order' => $question->order,
+				'options' => $question->options,
+			]);
+		}
+
+		return redirect()->route('assessments.edit', $newAssessment->id)
+			->with('success', 'Assessment duplicated successfully! You can now edit the copy.');
+	}
 }
 
 

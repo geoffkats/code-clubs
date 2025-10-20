@@ -232,6 +232,14 @@
                                                 Edit
                                             </span>
                                         </a>
+                                        <a href="{{ route('assessments.duplicate', $assessment->id) }}" class="group/btn px-4 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-white text-sm font-medium rounded-xl hover:from-green-600 hover:to-teal-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                                            <span class="flex items-center">
+                                                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                                </svg>
+                                                Duplicate
+                                            </span>
+                                        </a>
                                     </div>
                                     <form method="POST" action="{{ route('assessments.destroy', $assessment->id) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this assessment?')">
                                         @csrf

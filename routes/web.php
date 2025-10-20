@@ -64,10 +64,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::get('/assessments/{assessment_id}/edit', [AssessmentController::class, 'edit'])->name('assessments.edit');
     Route::put('/assessments/{assessment_id}', [AssessmentController::class, 'update'])->name('assessments.update');
     Route::delete('/assessments/{assessment_id}', [AssessmentController::class, 'destroy'])->name('assessments.destroy');
+    Route::get('/assessments/{assessment_id}/duplicate', [AssessmentController::class, 'duplicate'])->name('assessments.duplicate');
     Route::get('/assessments/{assessment_id}/scores', [AssessmentController::class, 'scores'])->name('assessments.scores');
     Route::post('/assessments/{assessment_id}/scores', [AssessmentController::class, 'store_scores'])->name('assessments.scores.store');
+    Route::put('/assessments/scores/{score_id}/grade', [AssessmentController::class, 'grade'])->name('assessments.scores.grade');
     Route::post('/clubs/{club_id}/assessments/ai-generate', [AssessmentController::class, 'ai_generate'])->name('assessments.ai-generate');
-    Route::post('/assessments/{score_id}/grade', [AssessmentController::class, 'grade'])->name('assessments.grade');
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');

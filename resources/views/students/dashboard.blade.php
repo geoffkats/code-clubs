@@ -125,16 +125,25 @@
                                             </div>
                                         </div>
                                         <div class="text-right">
-                                            @php
-                                                $percentage = ($score->score_value / $score->score_max_value) * 100;
-                                                $color = $percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : 'red');
-                                            @endphp
-                                            <div class="text-2xl font-bold text-{{ $color }}-600 mb-1">
-                                                {{ number_format($percentage, 1) }}%
-                                            </div>
-                                            <div class="text-sm text-slate-500 dark:text-slate-400">
-                                                {{ $score->score_value }}/{{ $score->score_max_value }} points
-                                            </div>
+                                            @if($score->status === 'submitted')
+                                                <div class="text-2xl font-bold text-blue-600 mb-1">
+                                                    Submitted
+                                                </div>
+                                                <div class="text-sm text-slate-500 dark:text-slate-400">
+                                                    Awaiting Review
+                                                </div>
+                                            @else
+                                                @php
+                                                    $percentage = ($score->score_value / $score->score_max_value) * 100;
+                                                    $color = $percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : 'red');
+                                                @endphp
+                                                <div class="text-2xl font-bold text-{{ $color }}-600 mb-1">
+                                                    {{ number_format($percentage, 1) }}%
+                                                </div>
+                                                <div class="text-sm text-slate-500 dark:text-slate-400">
+                                                    {{ $score->score_value }}/{{ $score->score_max_value }} points
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 @endforeach
