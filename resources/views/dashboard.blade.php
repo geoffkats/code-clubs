@@ -575,7 +575,7 @@
                                         </div>
                                         <div>
                                             <div class="font-semibold text-slate-900 dark:text-white">{{ $r->report_name }}</div>
-                                            <div class="text-sm text-slate-600 dark:text-slate-400">{{ $r->student ? ($r->student->student_first_name . ' ' . $r->student->student_last_name) : 'Unknown Student' }} • {{ $r->club->club_name ?? 'Unknown Club' }}</div>
+                                            <div class="text-sm text-slate-600 dark:text-slate-400">{{ $r->student ? (($r->student->student_first_name ?? '') . ' ' . ($r->student->student_last_name ?? '')) : 'Unknown Student' }} • {{ $r->club->club_name ?? 'Unknown Club' }}</div>
                                         </div>
                                     </div>
                                     <div class="text-right">
