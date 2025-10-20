@@ -783,11 +783,25 @@ class AssessmentController extends Controller
 				];
 			}
 
+			// Debug: Log what we're working with
+			\Log::info('Submission Debug', [
+				'score_id' => $scoreId,
+				'raw_answers' => $rawAnswers,
+				'questions_count' => $questions->count(),
+				'processed_answers' => $answers,
+				'submission_text' => $score->submission_text,
+			]);
+
 			return response()->json([
 				'submission_text' => $score->submission_text,
 				'submission_file_name' => $score->submission_file_name,
 				'submission_file_path' => $score->submission_file_path,
 				'answers' => $answers,
+				'debug' => [
+					'raw_answers' => $rawAnswers,
+					'questions_count' => $questions->count(),
+					'is_sequential' => $isSequential,
+				],
 			]);
 		} catch (\Exception $e) {
 			return response()->json([

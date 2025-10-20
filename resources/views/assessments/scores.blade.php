@@ -372,6 +372,12 @@
                     if (data.error) {
                         throw new Error(data.message || data.error);
                     }
+                    
+                    // Debug: Log the response data
+                    console.log('Submission data received:', data);
+                    if (data.debug) {
+                        console.log('Debug info:', data.debug);
+                    }
                     // Render structured answers for all question types if available
                     if (Array.isArray(data.answers) && data.answers.length > 0) {
                         let html = '<div class="space-y-4">';
