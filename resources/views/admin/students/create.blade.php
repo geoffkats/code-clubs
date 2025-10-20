@@ -18,10 +18,10 @@
         </div>
 
         <!-- Form -->
-        <div class="bg-white rounded-xl shadow-lg">
+        <div class="bg-dark rounded-xl shadow-lg">
             <div class="p-6 border-b border-gray-200">
                 <h2 class="text-xl font-semibold text-gray-900">Student Information</h2>
-                <p class="text-gray-600 mt-1">Fill in the student's details and set their login credentials</p>
+                <p class="text-white-600 mt-1">Fill in the student's details and set their login credentials</p>
             </div>
             
             <form method="POST" action="{{ route('admin.students.store') }}" class="p-6">
@@ -63,20 +63,20 @@
                 </div>
                 
                 <!-- Login Credentials -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div class="bg-orange border border-blue-200 rounded-lg p-4 mb-6">
                     <h3 class="text-lg font-medium text-blue-900 mb-4">Login Credentials</h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
-                                Email Address *
+                                Email Address
                             </label>
                             <input type="email" 
                                    id="email" 
                                    name="email" 
                                    value="{{ old('email') }}"
                                    required
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-300 @enderror"
+                                   class="w-full px-3 py-2 bg-dark border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 @error('email') border-red-300 @enderror"
                                    placeholder="student@example.com">
                             @error('email')
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

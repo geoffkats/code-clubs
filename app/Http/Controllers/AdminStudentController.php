@@ -70,7 +70,7 @@ class AdminStudentController extends Controller
         $validator = Validator::make($request->all(), [
             'student_first_name' => 'required|string|max:255',
             'student_last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:students',
+            'email' => 'string|email|max:255|unique:students',
             'password' => 'required|string|min:8',
             'student_grade_level' => 'required|string|max:10',
             'student_parent_name' => 'required|string|max:255',
