@@ -30,6 +30,20 @@ class Report extends Model
 		'areas_for_growth',
 		'next_steps',
 		'parent_feedback',
+		'teacher_id',
+		'facilitator_id',
+		'admin_id',
+		'facilitator_feedback',
+		'admin_feedback',
+		'facilitator_approved_at',
+		'admin_approved_at',
+		'status',
+	];
+
+	protected $casts = [
+		'facilitator_approved_at' => 'datetime',
+		'admin_approved_at' => 'datetime',
+		'report_generated_at' => 'datetime',
 	];
 
 	public function club(): BelongsTo
@@ -45,6 +59,82 @@ class Report extends Model
 	public function access_code(): HasOne
 	{
 		return $this->hasOne(ReportAccessCode::class);
+	}
+
+	/**
+	 * Get the teacher who created this report
+	 */
+	public function teacher(): BelongsTo
+	{
+		return $this->belongsTo(User::class, 'teacher_id');
+	}
+
+	/**
+	 * Get the facilitator who approved this report
+	 */
+	public function facilitator(): BelongsTo
+	{
+		return $this->belongsTo(User::class, 'facilitator_id');
+	}
+
+	/**
+	 * Get the admin who approved this report
+	 */
+	public function admin(): BelongsTo
+	{
+		return $this->belongsTo(User::class, 'admin_id');
+	}
+
+	/**
+	 * Scope reports pending facilitator approval
+	 */
+	public function scopePendingFacilitatorApproval($query)
+	{
+		return $query->where('status', 'pending');
+	}
+
+	/**
+	 * Scope reports pending admin approval
+	 */
+	public function scopePendingAdminApproval($query)
+	{
+		return $query->where('status', 'facilitator_approved');
+	}
+
+	/**
+	 * Scope reports that need revision
+	 */
+	public function scopeNeedsRevision($query)
+	{
+		return $query->where('status', 'revision_requested');
+	}
+
+	/**
+	 * Get the approval timeline as an array
+	 */
+	public function getApprovalTimelineAttribute()
+	{
+		$timeline = [];
+		
+		if ($this->facilitator_approved_at) {
+			$timeline[] = [
+				'action' => 'facilitator_approved',
+				'user' => $this->facilitator,
+				'timestamp' => $this->facilitator_approved_at,
+				'feedback' => $this->facilitator_feedback,
+			];
+		}
+		
+		if ($this->admin_approved_at) {
+			$timeline[] = [
+				'action' => 'admin_approved',
+				'user' => $this->admin,
+				'timestamp' => $this->admin_approved_at,
+				'feedback' => $this->admin_feedback,
+			];
+		}
+		
+		return $timeline;
 	}
 }
 

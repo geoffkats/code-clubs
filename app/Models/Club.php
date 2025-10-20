@@ -19,6 +19,7 @@ class Club extends Model
 		'club_level',
 		'club_duration_weeks',
 		'club_start_date',
+		'facilitator_id',
 	];
 
 	public function school(): BelongsTo
@@ -44,6 +45,54 @@ class Club extends Model
 	public function attachments(): MorphMany
 	{
 		return $this->morphMany(Attachment::class, 'attachable');
+	}
+
+	/**
+	 * Get the facilitator who manages this club
+	 */
+	public function facilitator(): BelongsTo
+	{
+		return $this->belongsTo(User::class, 'facilitator_id');
+	}
+
+	/**
+	 * Get teachers assigned to this club
+	 */
+	public function teachers(): BelongsToMany
+	{
+		return $this->belongsToMany(User::class, 'club_teacher', 'club_id', 'teacher_id');
+	}
+
+	/**
+	 * Get lesson notes/resources for this club
+	 */
+	public function lessonNotes(): HasMany
+	{
+		return $this->hasMany(LessonNote::class);
+	}
+
+	/**
+	 * Get sessions for this club (new club_sessions table)
+	 */
+	public function clubSessions(): HasMany
+	{
+		return $this->hasMany(ClubSession::class);
+	}
+
+	/**
+	 * Scope clubs managed by a specific facilitator
+	 */
+	public function scopeManagedBy($query, $facilitatorId)
+	{
+		return $query->where('facilitator_id', $facilitatorId);
+	}
+
+	/**
+	 * Scope clubs for a specific school
+	 */
+	public function scopeForSchool($query, $schoolId)
+	{
+		return $query->where('school_id', $schoolId);
 	}
 }
 

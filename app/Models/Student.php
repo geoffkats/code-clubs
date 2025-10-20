@@ -117,6 +117,24 @@ class Student extends Authenticatable
 
 		return $totalSessions > 0 ? ($attendedSessions / $totalSessions) * 100 : 0;
 	}
+
+	/**
+	 * Get sessions this student attended (new club_sessions table)
+	 */
+	public function attendedSessions(): BelongsToMany
+	{
+		return $this->belongsToMany(ClubSession::class, 'session_attendance', 'student_id', 'club_session_id')
+			->withPivot(['attended_at', 'notes'])
+			->withTimestamps();
+	}
+
+	/**
+	 * Get attendance records for this student
+	 */
+	public function attendanceRecords(): HasMany
+	{
+		return $this->hasMany(SessionAttendance::class, 'student_id');
+	}
 }
 
 

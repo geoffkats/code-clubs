@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Attachment;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -10,119 +9,136 @@ use Illuminate\Support\Str;
 class FileUploadService
 {
     /**
-     * Upload a file and create an attachment record.
+     * Upload a proof file for a session
      */
-    public function uploadFile(UploadedFile $file, $attachable, string $description = null): Attachment
+    public function uploadProof(UploadedFile $file, $sessionId, $userId)
     {
-        // Generate unique filename
-        $extension = $file->getClientOriginalExtension();
-        $filename = Str::uuid() . '.' . $extension;
+        $mimeType = $file->getMimeType();
+        $proofType = str_starts_with($mimeType, 'video') ? 'video' : 'photo';
         
-        // Store file
-        $path = $file->storeAs('attachments', $filename, 'public');
+        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('session_proofs', $filename, 'proofs');
         
-        // Create attachment record
-        return Attachment::create([
-            'attachable_type' => get_class($attachable),
-            'attachable_id' => $attachable->id,
-            'file_name' => $file->getClientOriginalName(),
-            'file_path' => $path,
-            'file_type' => $extension,
+        $proof = \App\Models\SessionProof::create([
+            'session_id' => $sessionId,
+            'proof_url' => $path,
+            'mime_type' => $mimeType,
+            'proof_type' => $proofType,
             'file_size' => $file->getSize(),
-            'mime_type' => $file->getMimeType(),
-            'description' => $description,
+            'uploaded_by' => $userId,
+            'processing_status' => $proofType === 'video' ? 'pending' : 'completed',
         ]);
-    }
-
-    /**
-     * Upload multiple files.
-     */
-    public function uploadMultipleFiles(array $files, $attachable, string $description = null): array
-    {
-        $attachments = [];
         
-        foreach ($files as $file) {
-            if ($file instanceof UploadedFile) {
-                $attachments[] = $this->uploadFile($file, $attachable, $description);
-            }
-        }
-        
-        return $attachments;
-    }
-
-    /**
-     * Delete a file and its attachment record.
-     */
-    public function deleteFile(Attachment $attachment): bool
-    {
-        // Delete file from storage
-        Storage::disk('public')->delete($attachment->file_path);
-        
-        // Delete attachment record
-        return $attachment->delete();
-    }
-
-    /**
-     * Get file URL.
-     */
-    public function getFileUrl(Attachment $attachment): string
-    {
-        return Storage::disk('public')->url($attachment->file_path);
-    }
-
-    /**
-     * Validate file upload.
-     */
-    public function validateFile(UploadedFile $file, array $allowedTypes = [], int $maxSize = 10240): array
-    {
-        $errors = [];
-        
-        // Check file size (default 10MB)
-        if ($file->getSize() > $maxSize * 1024) {
-            $errors[] = "File size must be less than {$maxSize}MB.";
-        }
-        
-        // Check file type
-        if (!empty($allowedTypes) && !in_array($file->getMimeType(), $allowedTypes)) {
-            $errors[] = "File type not allowed. Allowed types: " . implode(', ', $allowedTypes);
-        }
-        
-        return $errors;
-    }
-
-    /**
-     * Get allowed file types for assessments.
-     */
-    public function getAllowedAssessmentTypes(): array
-    {
         return [
-            'image/jpeg',
-            'image/png',
-            'image/gif',
-            'image/webp',
+            'proof_id' => $proof->id,
+            'path' => $path,
+            'proof_type' => $proofType,
+            'mime_type' => $mimeType,
+        ];
+    }
+
+    /**
+     * Upload a resource file
+     */
+    public function uploadResource(UploadedFile $file)
+    {
+        $mimeType = $file->getMimeType();
+        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('resources', $filename, 'resources');
+        
+        // Determine file type based on MIME type
+        $type = 'other';
+        if (str_starts_with($mimeType, 'video')) {
+            $type = 'video';
+        } elseif (str_starts_with($mimeType, 'image')) {
+            $type = 'image';
+        } elseif (str_contains($mimeType, 'pdf')) {
+            $type = 'pdf';
+        } elseif (str_contains($mimeType, 'document') || str_contains($mimeType, 'word')) {
+            $type = 'document';
+        }
+        
+        return [
+            'path' => $path,
+            'mime_type' => $mimeType,
+            'type' => $type,
+        ];
+    }
+
+    /**
+     * Delete a proof file
+     */
+    public function deleteProof($proofPath)
+    {
+        return Storage::disk('proofs')->delete($proofPath);
+    }
+
+    /**
+     * Delete a resource file
+     */
+    public function deleteResource($resourcePath)
+    {
+        return Storage::disk('resources')->delete($resourcePath);
+    }
+
+    /**
+     * Get file size in human readable format
+     */
+    public function getHumanReadableSize($bytes)
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        
+        $bytes /= pow(1024, $pow);
+        
+        return round($bytes, 2) . ' ' . $units[$pow];
+    }
+
+    /**
+     * Validate file type for proofs
+     */
+    public function validateProofFile(UploadedFile $file)
+    {
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/jpg', 'video/mp4', 'video/mov'];
+        $maxSize = 50 * 1024 * 1024; // 50MB
+        
+        if (!in_array($file->getMimeType(), $allowedMimes)) {
+            return ['valid' => false, 'message' => 'Invalid file type. Only JPEG, PNG, MP4, and MOV files are allowed.'];
+        }
+        
+        if ($file->getSize() > $maxSize) {
+            return ['valid' => false, 'message' => 'File size too large. Maximum size is 50MB.'];
+        }
+        
+        return ['valid' => true];
+    }
+
+    /**
+     * Validate file type for resources
+     */
+    public function validateResourceFile(UploadedFile $file)
+    {
+        $allowedMimes = [
             'application/pdf',
-            'text/plain',
             'application/msword',
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        ];
-    }
-
-    /**
-     * Get allowed file types for projects.
-     */
-    public function getAllowedProjectTypes(): array
-    {
-        return [
+            'video/mp4',
             'image/jpeg',
             'image/png',
-            'image/gif',
-            'image/webp',
-            'video/mp4',
-            'video/avi',
-            'video/mov',
-            'application/pdf',
-            'text/plain',
-            'application/json', // For Scratch projects
+            'image/jpg'
         ];
+        $maxSize = 100 * 1024 * 1024; // 100MB
+        
+        if (!in_array($file->getMimeType(), $allowedMimes)) {
+            return ['valid' => false, 'message' => 'Invalid file type. Only PDF, DOC, DOCX, MP4, JPEG, and PNG files are allowed.'];
+        }
+        
+        if ($file->getSize() > $maxSize) {
+            return ['valid' => false, 'message' => 'File size too large. Maximum size is 100MB.'];
+        }
+        
+        return ['valid' => true];
     }
 }

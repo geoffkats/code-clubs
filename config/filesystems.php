@@ -60,6 +60,22 @@ return [
             'report' => false,
         ],
 
+        'proofs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/proofs'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'resources' => [
+            'driver' => 'local',
+            'root' => storage_path('app/resources'),
+            'visibility' => 'private',
+            'throw' => false,
+            'report' => false,
+        ],
+
     ],
 
     /*
