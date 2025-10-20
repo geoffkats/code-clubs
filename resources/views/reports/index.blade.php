@@ -223,9 +223,9 @@
                             <div class="flex items-center justify-between mb-4">
                                 <div>
                                         <div class="flex items-center mb-1">
-                                            <h3 class="text-xl font-bold text-white student-name">{{ $report->student->student_first_name }} {{ $report->student->student_last_name }}</h3>
+                                            <h3 class="text-xl font-bold text-white student-name">{{ $report->student ? ($report->student->student_first_name . ' ' . $report->student->student_last_name) : 'Unknown Student' }}</h3>
                                             <div class="ml-3 bg-white/20 backdrop-blur-sm rounded-lg px-2 py-1">
-                                                <span class="text-xs font-bold text-white">{{ $report->student_initials ?? strtoupper(substr($report->student->student_first_name, 0, 1) . substr($report->student->student_last_name, 0, 1)) }}</span>
+                                                <span class="text-xs font-bold text-white">{{ $report->student_initials ?? ($report->student ? strtoupper(substr($report->student->student_first_name, 0, 1) . substr($report->student->student_last_name, 0, 1)) : '??') }}</span>
                                             </div>
                                         </div>
                                         <div class="flex items-center text-blue-200">
@@ -233,7 +233,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                                             </svg>
                                             <span class="text-sm font-medium club-name">{{ $report->club->club_name }}</span>
-                                            @if($report->student->student_grade_level)
+                                            @if($report->student && $report->student->student_grade_level)
                                                 <span class="text-xs text-blue-300 ml-2">• {{ $report->student->student_grade_level }}</span>
                                             @endif
                                         </div>
@@ -305,7 +305,7 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                                         </svg>
                                     </a>
-                                    <button onclick="showEmailModal({{ $report->id }}, '{{ $report->student->student_parent_email }}')" 
+                                    <button onclick="showEmailModal({{ $report->id }}, '{{ $report->student->student_parent_email ?? '' }}')" 
                                             class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200 shadow-md hover:shadow-lg flex items-center justify-center">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
@@ -315,7 +315,7 @@
                                         @csrf
                                         <button type="submit" 
                                                 class="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200 text-center shadow-md hover:shadow-lg flex items-center justify-center"
-                                                onclick="return confirm('Generate AI content for {{ $report->student->student_first_name }} {{ $report->student->student_last_name }}?')"
+                                                onclick="return confirm('Generate AI content for {{ $report->student ? ($report->student->student_first_name . ' ' . $report->student->student_last_name) : 'Unknown Student' }}?')"
                                                 title="🤖 Generate AI content for this student">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
