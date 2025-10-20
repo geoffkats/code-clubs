@@ -7,7 +7,7 @@
                     <div>
                         <h1 class="text-3xl font-bold text-slate-900 dark:text-white">{{ $assessment->assessment_name }}</h1>
                         <p class="text-slate-600 dark:text-slate-400 mt-2">
-                            {{ $assessment->club->club_name }} - {{ $assessment->club->school->school_name ?? 'No School' }}
+                            {{ $assessment->club?->club_name ?? 'No Club' }} - {{ $assessment->club?->school?->school_name ?? 'No School' }}
                         </p>
                     </div>
                     <div class="flex items-center space-x-3">
@@ -238,18 +238,18 @@
                                                     </span>
                                                 </div>
                                             @else
-                                                @php
-                                                    $percentage = ($score->score_value / $score->score_max_value) * 100;
-                                                    $color = $percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : 'red');
-                                                @endphp
-                                                <div class="text-2xl font-bold text-{{ $color }}-600">
-                                                    {{ number_format($percentage, 1) }}%
-                                                </div>
-                                                <div class="text-sm text-slate-500 dark:text-slate-400">
-                                                    {{ $score->score_value }}/{{ $score->score_max_value }} points
-                                                </div>
-                                                <div class="text-xs text-slate-400 dark:text-slate-500">
-                                                    {{ $score->created_at->format('M d, Y \a\t g:i A') }}
+                                            @php
+                                                $percentage = ($score->score_value / $score->score_max_value) * 100;
+                                                $color = $percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : 'red');
+                                            @endphp
+                                            <div class="text-2xl font-bold text-{{ $color }}-600">
+                                                {{ number_format($percentage, 1) }}%
+                                            </div>
+                                            <div class="text-sm text-slate-500 dark:text-slate-400">
+                                                {{ $score->score_value }}/{{ $score->score_max_value }} points
+                                            </div>
+                                            <div class="text-xs text-slate-400 dark:text-slate-500">
+                                                {{ $score->created_at->format('M d, Y \a\t g:i A') }}
                                                 </div>
                                             @endif
                                         </div>
