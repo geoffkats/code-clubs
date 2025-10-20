@@ -352,9 +352,24 @@
             textContainer.innerHTML = '<p class="text-slate-500 italic">Loading submission...</p>';
             
             // Fetch submission data via AJAX
-            fetch(`/assessments/scores/${scoreIdParam}/submission`)
-                .then(response => response.json())
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            fetch(`/assessments/scores/${scoreIdParam}/submission`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
+                    if (data.error) {
+                        throw new Error(data.message || data.error);
+                    }
                     // Display submission text
                     if (data.submission_text && data.submission_text !== 'null' && data.submission_text.trim() !== '') {
                         try {

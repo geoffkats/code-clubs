@@ -738,13 +738,20 @@ class AssessmentController extends Controller
 	 */
 	public function getSubmission($scoreId)
 	{
-		$score = \App\Models\AssessmentScore::findOrFail($scoreId);
-		
-		return response()->json([
-			'submission_text' => $score->submission_text,
-			'submission_file_name' => $score->submission_file_name,
-			'submission_file_path' => $score->submission_file_path,
-		]);
+		try {
+			$score = \App\Models\AssessmentScore::findOrFail($scoreId);
+			
+			return response()->json([
+				'submission_text' => $score->submission_text,
+				'submission_file_name' => $score->submission_file_name,
+				'submission_file_path' => $score->submission_file_path,
+			]);
+		} catch (\Exception $e) {
+			return response()->json([
+				'error' => 'Failed to load submission data',
+				'message' => $e->getMessage()
+			], 500);
+		}
 	}
 }
 
