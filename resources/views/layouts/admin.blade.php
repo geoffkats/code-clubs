@@ -148,10 +148,11 @@
 
                 <!-- User Profile Section -->
                 <div class="mt-auto p-4 border-t border-slate-200/60 dark:border-slate-700/60">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-bold text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
-                        </div>
+                    <div class="flex items-center space-x-3 mb-3">
+                        <img class="w-8 h-8 rounded-lg object-cover border border-slate-200 dark:border-slate-600" 
+                             src="{{ auth()->user()->profile_image_url }}" 
+                             alt="{{ auth()->user()->name }}"
+                             onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}&background=random'">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-medium text-slate-900 dark:text-slate-100 truncate">
                                 {{ auth()->user()->name }}
@@ -160,6 +161,32 @@
                                 {{ auth()->user()->email }}
                             </p>
                         </div>
+                    </div>
+                    
+                    <!-- Profile Link -->
+                    <div class="mb-3">
+                        <a href="{{ route('admin.profile') }}" 
+                           class="flex items-center w-full px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+                            <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            Profile Settings
+                        </a>
+                    </div>
+                    
+                    <!-- Logout Button -->
+                    <div class="mt-3">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" 
+                                    class="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                    onclick="return confirm('Are you sure you want to logout?')">
+                                <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                </svg>
+                                Logout
+                            </button>
+                        </form>
                     </div>
                 </div>
             </flux:sidebar>
