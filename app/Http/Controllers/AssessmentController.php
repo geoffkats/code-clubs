@@ -748,8 +748,32 @@ class AssessmentController extends Controller
 			$rawAnswers = is_array($rawAnswers) ? $rawAnswers : [];
 
 			$answers = [];
-			foreach ($score->assessment->questions as $question) {
-				$answer = $rawAnswers[$question->id] ?? ($rawAnswers['question_' . $question->id] ?? null);
+			$questions = $score->assessment->questions->values();
+			// Detect if rawAnswers is a sequential list (e.g., ["ans1","ans2",...])
+			$isSequential = array_keys($rawAnswers) === range(0, count($rawAnswers) - 1);
+			foreach ($questions as $idx => $question) {
+				$answer = null;
+				// 1) Try by DB id
+				if (array_key_exists($question->id, $rawAnswers)) {
+					$answer = $rawAnswers[$question->id];
+				}
+				// 2) Try by 'question_{id}'
+				elseif (array_key_exists('question_' . $question->id, $rawAnswers)) {
+					$answer = $rawAnswers['question_' . $question->id];
+				}
+				// 3) Try by question order (if present)
+				elseif (!empty($question->order)) {
+					if (array_key_exists($question->order, $rawAnswers)) {
+						$answer = $rawAnswers[$question->order];
+					} elseif (array_key_exists('question_' . $question->order, $rawAnswers)) {
+						$answer = $rawAnswers['question_' . $question->order];
+					}
+				}
+				// 4) If answers are a simple list, use positional index
+				if ($answer === null && $isSequential && array_key_exists($idx, $rawAnswers)) {
+					$answer = $rawAnswers[$idx];
+				}
+
 				$answers[] = [
 					'question_id' => $question->id,
 					'question_text' => $question->question_text,
