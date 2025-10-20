@@ -68,6 +68,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::get('/assessments/{assessment_id}/scores', [AssessmentController::class, 'scores'])->name('assessments.scores');
     Route::post('/assessments/{assessment_id}/scores', [AssessmentController::class, 'store_scores'])->name('assessments.scores.store');
     Route::put('/assessments/scores/{score_id}/grade', [AssessmentController::class, 'grade'])->name('assessments.scores.grade');
+    Route::get('/assessments/scores/{score_id}/submission', [AssessmentController::class, 'getSubmission'])->name('assessments.scores.submission');
     Route::post('/clubs/{club_id}/assessments/ai-generate', [AssessmentController::class, 'ai_generate'])->name('assessments.ai-generate');
 
     // Reports

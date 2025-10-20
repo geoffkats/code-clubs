@@ -732,6 +732,20 @@ class AssessmentController extends Controller
 		return redirect()->route('assessments.edit', $newAssessment->id)
 			->with('success', 'Assessment duplicated successfully! You can now edit the copy.');
 	}
+
+	/**
+	 * Get submission data for AJAX request
+	 */
+	public function getSubmission($scoreId)
+	{
+		$score = \App\Models\AssessmentScore::findOrFail($scoreId);
+		
+		return response()->json([
+			'submission_text' => $score->submission_text,
+			'submission_file_name' => $score->submission_file_name,
+			'submission_file_path' => $score->submission_file_path,
+		]);
+	}
 }
 
 

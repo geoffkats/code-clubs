@@ -154,7 +154,7 @@
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <div class="flex items-center justify-center space-x-2">
-                                                <button onclick="openSubmissionModal({{ $score->id }}, '{{ $score->student->student_first_name }} {{ $score->student->student_last_name }}', '{{ $score->submission_text }}', '{{ $score->submission_file_name }}', '{{ $score->submission_file_path }}')" class="px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
+                                                <button onclick="openSubmissionModal({{ $score->id }}, '{{ addslashes($score->student->student_first_name . ' ' . $score->student->student_last_name) }}', {{ $score->id }})" class="px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors">
                                                     View Submission
                                                 </button>
                                                 @if($score->status === 'submitted')
@@ -341,43 +341,55 @@
         let currentScoreId = null;
         let currentStudentName = null;
 
-        function openSubmissionModal(scoreId, studentName, submissionText, fileName, filePath) {
+        function openSubmissionModal(scoreId, studentName, scoreIdParam) {
             currentScoreId = scoreId;
             currentStudentName = studentName;
             
             document.getElementById('submissionStudentName').textContent = studentName;
             
-            // Display submission text
+            // Show loading state
             const textContainer = document.getElementById('submissionText');
-            if (submissionText && submissionText !== 'null' && submissionText.trim() !== '') {
-                try {
-                    // Try to parse as JSON (for structured answers)
-                    const parsed = JSON.parse(submissionText);
-                    if (typeof parsed === 'object') {
-                        let html = '<div class="space-y-3">';
-                        Object.keys(parsed).forEach(key => {
-                            html += `<div><strong>Question ${key}:</strong><br><div class="ml-4 mt-1 p-2 bg-white dark:bg-slate-600 rounded border">${parsed[key]}</div></div>`;
-                        });
-                        html += '</div>';
-                        textContainer.innerHTML = html;
-                    } else {
-                        textContainer.textContent = submissionText;
-                    }
-                } catch (e) {
-                    textContainer.textContent = submissionText;
-                }
-            } else {
-                textContainer.innerHTML = '<p class="text-slate-500 italic">No text submission provided</p>';
-            }
+            textContainer.innerHTML = '<p class="text-slate-500 italic">Loading submission...</p>';
             
-            // Display file submission if exists
-            const fileSection = document.getElementById('submissionFileSection');
-            if (fileName && fileName !== 'null' && fileName.trim() !== '') {
-                document.getElementById('submissionFileName').textContent = fileName;
-                fileSection.classList.remove('hidden');
-            } else {
-                fileSection.classList.add('hidden');
-            }
+            // Fetch submission data via AJAX
+            fetch(`/assessments/scores/${scoreIdParam}/submission`)
+                .then(response => response.json())
+                .then(data => {
+                    // Display submission text
+                    if (data.submission_text && data.submission_text !== 'null' && data.submission_text.trim() !== '') {
+                        try {
+                            // Try to parse as JSON (for structured answers)
+                            const parsed = JSON.parse(data.submission_text);
+                            if (typeof parsed === 'object') {
+                                let html = '<div class="space-y-3">';
+                                Object.keys(parsed).forEach(key => {
+                                    html += `<div><strong>Question ${key}:</strong><br><div class="ml-4 mt-1 p-2 bg-white dark:bg-slate-600 rounded border">${parsed[key]}</div></div>`;
+                                });
+                                html += '</div>';
+                                textContainer.innerHTML = html;
+                            } else {
+                                textContainer.textContent = data.submission_text;
+                            }
+                        } catch (e) {
+                            textContainer.textContent = data.submission_text;
+                        }
+                    } else {
+                        textContainer.innerHTML = '<p class="text-slate-500 italic">No text submission provided</p>';
+                    }
+                    
+                    // Display file submission if exists
+                    const fileSection = document.getElementById('submissionFileSection');
+                    if (data.submission_file_name && data.submission_file_name !== 'null' && data.submission_file_name.trim() !== '') {
+                        document.getElementById('submissionFileName').textContent = data.submission_file_name;
+                        fileSection.classList.remove('hidden');
+                    } else {
+                        fileSection.classList.add('hidden');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching submission:', error);
+                    textContainer.innerHTML = '<p class="text-red-500 italic">Error loading submission data</p>';
+                });
             
             document.getElementById('submissionModal').classList.remove('hidden');
         }
