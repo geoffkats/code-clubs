@@ -300,6 +300,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           Route::post('/proofs/bulk-approve', [App\Http\Controllers\AdminProofController::class, 'bulkApprove'])->name('proofs.bulk-approve');
           Route::post('/proofs/bulk-reject', [App\Http\Controllers\AdminProofController::class, 'bulkReject'])->name('proofs.bulk-reject');
           Route::post('/proofs/bulk-archive', [App\Http\Controllers\AdminProofController::class, 'bulkArchive'])->name('proofs.bulk-archive');
+          Route::post('/proofs/bulk-unarchive', [App\Http\Controllers\AdminProofController::class, 'bulkUnarchive'])->name('proofs.bulk-unarchive');
           Route::post('/proofs/bulk-delete', [App\Http\Controllers\AdminProofController::class, 'bulkDelete'])->name('proofs.bulk-delete');
           Route::post('/proofs/bulk-export', [App\Http\Controllers\AdminProofController::class, 'bulkExport'])->name('proofs.bulk-export');
           Route::get('/proofs/{proof}/download', [App\Http\Controllers\AdminProofController::class, 'download'])->name('proofs.download');
