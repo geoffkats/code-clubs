@@ -209,6 +209,6 @@ class ReportApprovalWorkflow extends Component
         
         return view('livewire.report-approval-workflow', [
             'reports' => $reports
-        ])->layout('layouts.admin');
+        ]);
     }
 }
