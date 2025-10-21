@@ -124,7 +124,11 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
             })
             ->get();
         
-        return view('admin.reports.index', compact('reports', 'clubs'));
+        // Add missing variables that the reports index view expects
+        $clubId = request()->get('club_id');
+        $search = request()->get('search');
+        
+        return view('admin.reports.index', compact('reports', 'clubs', 'clubId', 'search'));
     })->name('user.reports.approval');
 
 // Parent access routes (no authentication required)
@@ -205,7 +209,11 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
                   })
                   ->get();
               
-              return view('admin.reports.index', compact('reports', 'clubs'));
+              // Add missing variables that the reports index view expects
+              $clubId = request()->get('club_id');
+              $search = request()->get('search');
+              
+              return view('admin.reports.index', compact('reports', 'clubs', 'clubId', 'search'));
           })->name('facilitator.reports.approval');
           Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'facilitatorApprove'])->name('reports.approve');
           Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
@@ -298,7 +306,11 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
                 ->whereHas('students')
                 ->get();
             
-            return view('admin.reports.index', compact('reports', 'clubs'));
+            // Add missing variables that the reports index view expects
+            $clubId = request()->get('club_id');
+            $search = request()->get('search');
+            
+            return view('admin.reports.index', compact('reports', 'clubs', 'clubId', 'search'));
         })->name('admin.reports.approval');
         Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'adminApprove'])->name('reports.approve');
         Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
