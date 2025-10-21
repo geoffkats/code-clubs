@@ -280,13 +280,13 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           
           // Session Feedback routes
           Route::get('/feedback', [App\Http\Controllers\SessionFeedbackController::class, 'index'])->name('feedback.index');
+          Route::get('/feedback/analytics', [App\Http\Controllers\SessionFeedbackController::class, 'analytics'])->name('feedback.analytics');
+          Route::get('/feedback/export', [App\Http\Controllers\SessionFeedbackController::class, 'export'])->name('feedback.export');
+          Route::post('/feedback/export', [App\Http\Controllers\SessionFeedbackController::class, 'export'])->name('feedback.export.post');
           Route::get('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'show'])->name('feedback.show');
           Route::get('/feedback/{sessionFeedback}/edit', [App\Http\Controllers\SessionFeedbackController::class, 'edit'])->name('feedback.edit');
           Route::put('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'update'])->name('feedback.update');
           Route::delete('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'destroy'])->name('feedback.destroy');
-          Route::get('/feedback/analytics', [App\Http\Controllers\SessionFeedbackController::class, 'analytics'])->name('feedback.analytics');
-          Route::get('/feedback/export', [App\Http\Controllers\SessionFeedbackController::class, 'export'])->name('feedback.export');
-          Route::post('/feedback/export', [App\Http\Controllers\SessionFeedbackController::class, 'export'])->name('feedback.export.post');
           
           // Teacher Proofs routes
           Route::get('/proofs', [App\Http\Controllers\AdminProofController::class, 'index'])->name('proofs.index');
