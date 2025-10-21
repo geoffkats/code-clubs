@@ -253,11 +253,11 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                                    {{ substr($performance['club']->club_name, 0, 2) }}
+                                                    {{ $performance['club'] ? substr($performance['club']->club_name, 0, 2) : 'N/A' }}
                                                 </div>
                                                 <div class="ml-3">
                                                     <div class="text-sm font-medium text-slate-900 dark:text-white">
-                                                        {{ $performance['club']->club_name }}
+                                                        {{ $performance['club']->club_name ?? 'Unknown Club' }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -306,7 +306,7 @@
             // Create export form with current filters
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '{{ route("admin.feedback.export") }}';
+            form.action = '{{ route("admin.feedback.export.post") }}';
             
             // Add CSRF token
             const csrfToken = document.createElement('input');
@@ -360,7 +360,7 @@
             // Create export form for PDF
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '{{ route("admin.feedback.export") }}';
+            form.action = '{{ route("admin.feedback.export.post") }}';
             
             // Add CSRF token
             const csrfToken = document.createElement('input');
