@@ -163,11 +163,31 @@
                                 {{ __('All Reports') }}
                             </flux:navlist.item>
 
-                            @if(Route::has('reports.approval'))
+                            @if(auth()->user()->user_role === 'admin' && Route::has('admin.reports.approval'))
                             <flux:navlist.item 
                                 icon="check-circle" 
-                                :href="route('reports.approval')" 
-                                :current="request()->routeIs('reports.approval')" 
+                                :href="route('admin.reports.approval')" 
+                                :current="request()->routeIs('admin.reports.approval')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Report Approval') }}
+                            </flux:navlist.item>
+                            @elseif(auth()->user()->user_role === 'facilitator' && Route::has('facilitator.reports.approval'))
+                            <flux:navlist.item 
+                                icon="check-circle" 
+                                :href="route('facilitator.reports.approval')" 
+                                :current="request()->routeIs('facilitator.reports.approval')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Report Approval') }}
+                            </flux:navlist.item>
+                            @elseif(Route::has('user.reports.approval'))
+                            <flux:navlist.item 
+                                icon="check-circle" 
+                                :href="route('user.reports.approval')" 
+                                :current="request()->routeIs('user.reports.approval')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                             >

@@ -125,7 +125,7 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
             ->get();
         
         return view('admin.reports.index', compact('reports', 'clubs'));
-    })->name('reports.approval');
+    })->name('user.reports.approval');
 
 // Parent access routes (no authentication required)
 Route::get('/parent-welcome', [ParentReportController::class, 'welcome'])->name('parent.welcome');
@@ -206,7 +206,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
                   ->get();
               
               return view('admin.reports.index', compact('reports', 'clubs'));
-          })->name('reports.approval');
+          })->name('facilitator.reports.approval');
           Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'facilitatorApprove'])->name('reports.approve');
           Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
           Route::post('/reports/{reportId}/request-revision', [App\Http\Controllers\ReportApprovalController::class, 'requestRevision'])->name('reports.request-revision');
@@ -299,7 +299,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
                 ->get();
             
             return view('admin.reports.index', compact('reports', 'clubs'));
-        })->name('reports.approval');
+        })->name('admin.reports.approval');
         Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'adminApprove'])->name('reports.approve');
         Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
         Route::post('/reports/{reportId}/request-revision', [App\Http\Controllers\ReportApprovalController::class, 'requestRevision'])->name('reports.request-revision');
