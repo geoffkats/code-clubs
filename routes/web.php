@@ -18,9 +18,27 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::get('/dashboard', function () {
+    $user = auth()->user();
+    
+    // Redirect admin users to admin dashboard
+    if ($user->user_role === 'admin' || $user->user_role === 'super_admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    
+    // Redirect facilitator users to facilitator dashboard
+    if ($user->user_role === 'facilitator') {
+        return redirect()->route('facilitator.dashboard');
+    }
+    
+    // Redirect teacher users to teacher dashboard
+    if ($user->user_role === 'teacher') {
+        return redirect()->route('teacher.dashboard');
+    }
+    
+    // Regular users see the standard dashboard
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -196,9 +214,14 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
         Route::delete('/resources/{resource}', [App\Http\Controllers\ResourceController::class, 'destroy'])->name('resources.destroy');
     });
 
-    // V2.5.0 - Admin routes
-    Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        // Main Admin Routes (moved from main middleware group)
+      // V2.5.0 - Admin routes
+      Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+          // Admin Dashboard
+          Route::get('/dashboard', function () {
+              return view('dashboard')->layout('layouts.admin');
+          })->name('dashboard');
+          
+          // Main Admin Routes (moved from main middleware group)
         Route::get('/schools', [SchoolController::class, 'index'])->name('schools.index');
         Route::get('/schools/create', [SchoolController::class, 'create'])->name('schools.create');
         Route::post('/schools', [SchoolController::class, 'store'])->name('schools.store');

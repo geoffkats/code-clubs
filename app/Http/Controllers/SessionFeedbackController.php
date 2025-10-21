@@ -9,9 +9,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class SessionFeedbackController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of session feedbacks
      */
