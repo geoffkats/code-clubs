@@ -111,8 +111,8 @@ class SessionFeedbackController extends Controller
                 'submitted_at' => now(),
             ]);
 
-            // Send notification to teacher (we'll implement this later)
-            // $teacher->notify(new SessionFeedbackReceived($feedback));
+            // Send notification to teacher
+            $teacher->notify(new \App\Notifications\SessionFeedbackReceived($feedback));
 
             return redirect()->route('session-feedback.show', $feedback)
                 ->with('success', 'Session feedback submitted successfully!');
