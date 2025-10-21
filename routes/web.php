@@ -101,6 +101,31 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->name('reports.send');
     Route::post('/reports/{report_id}/regenerate-access-code', [ReportController::class, 'regenerate_access_code'])->name('reports.regenerate-access-code');
     Route::post('/reports/{report_id}/generate-ai-single', [ReportController::class, 'generate_ai_single'])->name('reports.generate-ai-single');
+    
+    // Report Approval route for regular users (if they have access)
+    Route::get('/reports/approval', function () {
+        // Check if user has admin or facilitator role
+        if (!in_array(auth()->user()->user_role, ['admin', 'facilitator'])) {
+            abort(403, 'Access denied. Only administrators and facilitators can access report approval.');
+        }
+        
+        // Get reports data for the original reports functionality
+        $reports = \App\Models\Report::with(['student', 'club', 'access_code'])
+            ->orderBy('report_generated_at', 'desc')
+            ->paginate(10);
+        
+        // Get clubs for report generation (filtered by user's school if not admin)
+        $clubs = \App\Models\Club::with(['school'])
+            ->whereHas('students')
+            ->when(auth()->user()->user_role !== 'admin', function($query) {
+                $query->whereHas('school', function($q) {
+                    $q->where('id', auth()->user()->school_id);
+                });
+            })
+            ->get();
+        
+        return view('admin.reports.index', compact('reports', 'clubs'));
+    })->name('reports.approval');
 
 // Parent access routes (no authentication required)
 Route::get('/parent-welcome', [ParentReportController::class, 'welcome'])->name('parent.welcome');
