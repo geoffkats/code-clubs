@@ -162,6 +162,26 @@
                             >
                                 {{ __('All Reports') }}
                             </flux:navlist.item>
+
+                            <flux:navlist.item 
+                                icon="star" 
+                                :href="route('admin.feedback.index')" 
+                                :current="request()->routeIs('admin.feedback.*')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Session Feedback') }}
+                            </flux:navlist.item>
+
+                            <flux:navlist.item 
+                                icon="chart-bar-square" 
+                                :href="route('admin.feedback.analytics')" 
+                                :current="request()->routeIs('admin.feedback.analytics')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Feedback Analytics') }}
+                            </flux:navlist.item>
                         </flux:navlist>
                     </div>
 
