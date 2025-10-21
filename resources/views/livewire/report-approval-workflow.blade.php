@@ -94,7 +94,7 @@
                             <div class="text-sm text-slate-900 dark:text-white">{{ $report->club->club_name ?? 'N/A' }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-slate-900 dark:text-white">{{ $report->teacher->name ?? 'N/A' }}</div>
+                            <div class="text-sm text-slate-900 dark:text-white">N/A</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $this->getStatusBadgeClass($report->status) }}">

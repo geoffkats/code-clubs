@@ -37,7 +37,7 @@ class ReportApprovalWorkflow extends Component
 
     public function getReportsQuery()
     {
-        $query = Report::with(['teacher', 'club', 'student', 'facilitator', 'admin']);
+        $query = Report::with(['club', 'student', 'facilitator', 'admin']);
 
         if ($this->userRole === 'facilitator') {
             $query->where('facilitator_id', auth()->id());
@@ -99,8 +99,8 @@ class ReportApprovalWorkflow extends Component
                 $admin->notify(new ReportAwaitingApproval($report, 'admin'));
             }
 
-            // Notify teacher
-            $report->teacher->notify(new ReportApproved($report, 'facilitator'));
+            // Notify teacher (if teacher relationship exists)
+            // $report->teacher->notify(new ReportApproved($report, 'facilitator'));
         } elseif ($this->userRole === 'admin') {
             $report->update([
                 'status' => 'completed',
@@ -108,8 +108,8 @@ class ReportApprovalWorkflow extends Component
                 'admin_approved_at' => now(),
             ]);
 
-            // Notify teacher
-            $report->teacher->notify(new ReportApproved($report, 'admin'));
+            // Notify teacher (if teacher relationship exists)
+            // $report->teacher->notify(new ReportApproved($report, 'admin'));
         }
 
         $this->dispatch('reportApproved', $reportId);
@@ -151,12 +151,12 @@ class ReportApprovalWorkflow extends Component
             ]);
         }
 
-        // Notify teacher
-        if ($status === 'rejected') {
-            $this->selectedReport->teacher->notify(new ReportRejected($this->selectedReport, $this->userRole));
-        } else {
-            $this->selectedReport->teacher->notify(new ReportRevisionRequested($this->selectedReport, $this->userRole));
-        }
+        // Notify teacher (if teacher relationship exists)
+        // if ($status === 'rejected') {
+        //     $this->selectedReport->teacher->notify(new ReportRejected($this->selectedReport, $this->userRole));
+        // } else {
+        //     $this->selectedReport->teacher->notify(new ReportRevisionRequested($this->selectedReport, $this->userRole));
+        // }
 
         $this->closeReportModal();
         

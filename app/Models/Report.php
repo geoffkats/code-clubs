@@ -63,10 +63,11 @@ class Report extends Model
 
 	/**
 	 * Get the teacher who created this report
+	 * Note: teacher_id column doesn't exist, so this returns null for now
 	 */
 	public function teacher(): BelongsTo
 	{
-		return $this->belongsTo(User::class, 'teacher_id');
+		return $this->belongsTo(User::class, 'facilitator_id')->where('user_role', 'teacher');
 	}
 
 	/**
