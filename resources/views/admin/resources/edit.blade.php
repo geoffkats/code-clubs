@@ -8,7 +8,7 @@
             <div class="px-6 py-6">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
-                        <a href="{{ route('admin.resources.index') }}" class="group p-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200">
+                        <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.resources.index') : route('admin.resources.index') }}" class="group p-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200">
                             <svg class="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                             </svg>
@@ -78,7 +78,7 @@
                     </div>
 
                     <div class="p-8">
-                        <form method="POST" action="{{ route('admin.resources.update', $resource) }}" enctype="multipart/form-data" class="space-y-8">
+                        <form method="POST" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.resources.update', $resource) : route('admin.resources.update', $resource) }}" enctype="multipart/form-data" class="space-y-8">
                             @csrf
                             @method('PUT')
                             
@@ -313,7 +313,7 @@
 
                             <!-- Action Buttons -->
                             <div class="flex justify-end space-x-4 pt-6 border-t border-slate-200 dark:border-slate-700">
-                                <a href="{{ route('admin.resources.index') }}" 
+                                <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.resources.index') : route('admin.resources.index') }}" 
                                    class="px-6 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200 shadow-sm hover:shadow-md">
                                     Cancel
                                 </a>

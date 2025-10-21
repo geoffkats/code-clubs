@@ -21,7 +21,7 @@
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <a href="{{ route('admin.resources.create') }}" class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                        <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.resources.create') : route('admin.resources.create') }}" class="group relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                             <div class="flex items-center space-x-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -159,7 +159,7 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <div class="flex items-center space-x-2">
-                                                <a href="{{ route('admin.resources.edit', $resource) }}" 
+                                                <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.resources.edit', $resource) : route('admin.resources.edit', $resource) }}" 
                                                    class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white text-sm font-medium rounded-lg transition-all duration-200 hover:shadow-lg">
                                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -193,7 +193,7 @@
                         </div>
                         <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">No Resources Found</h3>
                         <p class="text-slate-600 dark:text-slate-400 mb-6">Get started by creating your first educational resource.</p>
-                        <a href="{{ route('admin.resources.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg">
+                        <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.resources.create') : route('admin.resources.create') }}" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
@@ -243,7 +243,9 @@
 
             function showDeleteModal(resourceId, resourceName) {
                 document.getElementById('delete-resource-name').textContent = resourceName;
-                document.getElementById('delete-form').action = `/admin/resources/${resourceId}`;
+                const isFacilitator = {{ request()->routeIs('facilitator.*') ? 'true' : 'false' }};
+                const baseUrl = isFacilitator ? '/facilitator/resources' : '/admin/resources';
+                document.getElementById('delete-form').action = `${baseUrl}/${resourceId}`;
                 document.getElementById('delete-modal').classList.remove('hidden');
             }
 

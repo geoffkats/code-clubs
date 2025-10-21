@@ -57,7 +57,10 @@ class AdminProofController extends Controller
             'rejected' => SessionProof::rejected()->count(),
         ];
 
-        return view('admin.proofs.index', compact('proofs', 'clubs', 'teachers', 'stats'));
+        // Use facilitator layout if accessed via facilitator route
+        $layout = request()->routeIs('facilitator.*') ? 'layouts.facilitator' : 'layouts.admin';
+        
+        return view('admin.proofs.index', compact('proofs', 'clubs', 'teachers', 'stats'))->layout($layout);
     }
 
     /**
@@ -67,7 +70,10 @@ class AdminProofController extends Controller
     {
         $proof->load(['session.club', 'uploader', 'reviewer']);
         
-        return view('admin.proofs.show', compact('proof'));
+        // Use facilitator layout if accessed via facilitator route
+        $layout = request()->routeIs('facilitator.*') ? 'layouts.facilitator' : 'layouts.admin';
+        
+        return view('admin.proofs.show', compact('proof'))->layout($layout);
     }
 
     /**
@@ -87,7 +93,8 @@ class AdminProofController extends Controller
             'rejection_reason' => null,
         ]);
 
-        return redirect()->route('admin.proofs.index')
+        $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.proofs.index' : 'admin.proofs.index';
+        return redirect()->route($redirectRoute)
             ->with('success', 'Proof approved successfully!');
     }
 
@@ -109,7 +116,8 @@ class AdminProofController extends Controller
             'reviewed_at' => now(),
         ]);
 
-        return redirect()->route('admin.proofs.index')
+        $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.proofs.index' : 'admin.proofs.index';
+        return redirect()->route($redirectRoute)
             ->with('success', 'Proof rejected successfully!');
     }
 
@@ -123,7 +131,8 @@ class AdminProofController extends Controller
             'reviewed_by' => Auth::id(),
         ]);
 
-        return redirect()->route('admin.proofs.index')
+        $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.proofs.index' : 'admin.proofs.index';
+        return redirect()->route($redirectRoute)
             ->with('success', 'Proof marked as under review!');
     }
 
@@ -147,7 +156,8 @@ class AdminProofController extends Controller
                 'rejection_reason' => null,
             ]);
 
-        return redirect()->route('admin.proofs.index')
+        $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.proofs.index' : 'admin.proofs.index';
+        return redirect()->route($redirectRoute)
             ->with('success', count($validated['proof_ids']) . ' proofs approved successfully!');
     }
 
@@ -206,7 +216,8 @@ class AdminProofController extends Controller
 
         $proof->delete();
 
-        return redirect()->route('admin.proofs.index')
+        $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.proofs.index' : 'admin.proofs.index';
+        return redirect()->route($redirectRoute)
             ->with('success', 'Proof deleted successfully!');
     }
 
@@ -443,5 +454,94 @@ class AdminProofController extends Controller
         }
 
         return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Show the form for creating a new proof
+     */
+    public function create()
+    {
+        $clubs = Club::orderBy('club_name')->get();
+        $sessions = \App\Models\SessionSchedule::with('club')->orderBy('created_at', 'desc')->get();
+        
+        // Use facilitator layout if accessed via facilitator route
+        $layout = request()->routeIs('facilitator.*') ? 'layouts.facilitator' : 'layouts.admin';
+        
+        return view('admin.proofs.create', compact('clubs', 'sessions'))->layout($layout);
+    }
+
+    /**
+     * Store a newly created proof
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'session_id' => 'required|exists:session_schedules,id',
+            'proof_url' => 'required|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:10240',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        if ($request->hasFile('proof_url')) {
+            $file = $request->file('proof_url');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('proofs', $fileName, 'public');
+            $validated['proof_url'] = $filePath;
+        }
+
+        $proof = SessionProof::create([
+            'session_id' => $validated['session_id'],
+            'proof_url' => $validated['proof_url'],
+            'description' => $validated['description'],
+            'uploaded_by' => Auth::id(),
+            'status' => 'pending',
+        ]);
+
+        $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.proofs.index' : 'admin.proofs.index';
+        return redirect()->route($redirectRoute)
+            ->with('success', 'Proof uploaded successfully!');
+    }
+
+    /**
+     * Show the form for editing a proof
+     */
+    public function edit(SessionProof $proof)
+    {
+        $clubs = Club::orderBy('club_name')->get();
+        $sessions = \App\Models\SessionSchedule::with('club')->orderBy('created_at', 'desc')->get();
+        
+        // Use facilitator layout if accessed via facilitator route
+        $layout = request()->routeIs('facilitator.*') ? 'layouts.facilitator' : 'layouts.admin';
+        
+        return view('admin.proofs.edit', compact('proof', 'clubs', 'sessions'))->layout($layout);
+    }
+
+    /**
+     * Update a proof
+     */
+    public function update(Request $request, SessionProof $proof)
+    {
+        $validated = $request->validate([
+            'session_id' => 'required|exists:session_schedules,id',
+            'proof_url' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:10240',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        if ($request->hasFile('proof_url')) {
+            // Delete old file
+            if ($proof->proof_url && Storage::disk('public')->exists($proof->proof_url)) {
+                Storage::disk('public')->delete($proof->proof_url);
+            }
+            
+            $file = $request->file('proof_url');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('proofs', $fileName, 'public');
+            $validated['proof_url'] = $filePath;
+        }
+
+        $proof->update($validated);
+
+        $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.proofs.index' : 'admin.proofs.index';
+        return redirect()->route($redirectRoute)
+            ->with('success', 'Proof updated successfully!');
     }
 }

@@ -16,6 +16,7 @@
                         </p>
                     </div>
                     <div class="flex space-x-3">
+                        @if(!request()->routeIs('facilitator.*'))
                         <a href="{{ route('admin.proofs.archived') }}" 
                            class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                             📦 Archived Proofs
@@ -23,6 +24,11 @@
                         <a href="{{ route('admin.proofs.analytics') }}" 
                            class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                             📊 Analytics
+                        </a>
+                        @endif
+                        <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.create') : route('admin.proofs.create') }}" 
+                           class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                            📤 Upload Proof
                         </a>
                     </div>
                 </div>
@@ -89,7 +95,7 @@
 
             <!-- Filters Section -->
             <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-slate-200 dark:border-slate-700 mb-6">
-                <form method="GET" action="{{ route('admin.proofs.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <form method="GET" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : route('admin.proofs.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Status</label>
                         <select name="status" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
@@ -281,7 +287,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-1">
-                                            <a href="{{ route('admin.proofs.show', $proof) }}" 
+                                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.show', $proof) : route('admin.proofs.show', $proof) }}" 
                                                class="p-2 text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-200"
                                                title="View Details">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -312,7 +318,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8l6 6 6-6"></path>
                                                 </svg>
                                             </button>
-                                            <a href="{{ route('admin.proofs.download', $proof) }}" 
+                                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : route('admin.proofs.download', $proof) }}" 
                                                class="p-2 text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors duration-200"
                                                title="Download Proof">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -407,7 +413,7 @@
                 </div>
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Bulk Approve Proofs</h3>
                 <p class="text-slate-600 dark:text-slate-400 mb-6">Are you sure you want to approve the selected proofs?</p>
-                <form id="bulk-approve-form" method="POST" action="{{ route('admin.proofs.bulk-approve') }}">
+                <form id="bulk-approve-form" method="POST" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.bulk-approve') : route('admin.proofs.bulk-approve') }}">
                     @csrf
                     <div id="bulk-approve-proofs"></div>
                     <div class="flex space-x-3">
@@ -434,7 +440,7 @@
                 </div>
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Bulk Reject Proofs</h3>
                 <p class="text-slate-600 dark:text-slate-400 mb-6">Are you sure you want to reject the selected proofs?</p>
-                <form id="bulk-reject-form" method="POST" action="{{ route('admin.proofs.bulk-reject') }}">
+                <form id="bulk-reject-form" method="POST" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.bulk-reject') : route('admin.proofs.bulk-reject') }}">
                     @csrf
                     <div id="bulk-reject-proofs"></div>
                     <div class="mb-4">

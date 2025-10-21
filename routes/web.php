@@ -40,6 +40,28 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Facilitator-specific resource routes (bypass admin routes)
+Route::middleware(['auth', 'role:facilitator'])->prefix('facilitator')->name('facilitator.')->group(function () {
+    Route::get('/resources', [App\Http\Controllers\AdminResourceController::class, 'index'])->name('resources.index');
+    Route::get('/resources/create', [App\Http\Controllers\AdminResourceController::class, 'create'])->name('resources.create');
+    Route::post('/resources', [App\Http\Controllers\AdminResourceController::class, 'store'])->name('resources.store');
+    Route::get('/resources/{resource}/edit', [App\Http\Controllers\AdminResourceController::class, 'edit'])->name('resources.edit');
+    Route::put('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'update'])->name('resources.update');
+    Route::delete('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'destroy'])->name('resources.destroy');
+    
+    // Facilitator-specific proofs routes
+    Route::get('/proofs', [App\Http\Controllers\AdminProofController::class, 'index'])->name('proofs.index');
+    Route::get('/proofs/create', [App\Http\Controllers\AdminProofController::class, 'create'])->name('proofs.create');
+    Route::post('/proofs', [App\Http\Controllers\AdminProofController::class, 'store'])->name('proofs.store');
+    Route::get('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'show'])->name('proofs.show');
+    Route::get('/proofs/{proof}/edit', [App\Http\Controllers\AdminProofController::class, 'edit'])->name('proofs.edit');
+    Route::put('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'update'])->name('proofs.update');
+    Route::delete('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'destroy'])->name('proofs.destroy');
+    Route::post('/proofs/{proof}/approve', [App\Http\Controllers\AdminProofController::class, 'approve'])->name('proofs.approve');
+    Route::post('/proofs/{proof}/reject', [App\Http\Controllers\AdminProofController::class, 'reject'])->name('proofs.reject');
+    Route::get('/proofs/{proof}/download', [App\Http\Controllers\AdminProofController::class, 'download'])->name('proofs.download');
+});
+
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class])->group(function () {
     Route::redirect('settings', 'settings/profile');
 
@@ -123,14 +145,14 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
         return view('admin.reports.index', compact('reports', 'clubs', 'clubId', 'search'));
     })->name('user.reports.approval');
     
-    Route::get('/reports/{report_id}', [ReportController::class, 'show'])->name('reports.show');
-    Route::get('/reports/{report_id}/edit', [ReportController::class, 'edit'])->name('reports.edit');
-    Route::put('/reports/{report_id}', [ReportController::class, 'update'])->name('reports.update');
-    Route::delete('/reports/{report_id}', [ReportController::class, 'destroy'])->name('reports.destroy');
-    Route::get('/reports/{report_id}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
-    Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->name('reports.send');
-    Route::post('/reports/{report_id}/regenerate-access-code', [ReportController::class, 'regenerate_access_code'])->name('reports.regenerate-access-code');
-    Route::post('/reports/{report_id}/generate-ai-single', [ReportController::class, 'generate_ai_single'])->name('reports.generate-ai-single');
+    Route::get('/reports/{report_id}', [ReportController::class, 'show'])->where('report_id', '[0-9]+')->name('reports.show');
+    Route::get('/reports/{report_id}/edit', [ReportController::class, 'edit'])->where('report_id', '[0-9]+')->name('reports.edit');
+    Route::put('/reports/{report_id}', [ReportController::class, 'update'])->where('report_id', '[0-9]+')->name('reports.update');
+    Route::delete('/reports/{report_id}', [ReportController::class, 'destroy'])->where('report_id', '[0-9]+')->name('reports.destroy');
+    Route::get('/reports/{report_id}/pdf', [ReportController::class, 'pdf'])->where('report_id', '[0-9]+')->name('reports.pdf');
+    Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->where('report_id', '[0-9]+')->name('reports.send');
+    Route::post('/reports/{report_id}/regenerate-access-code', [ReportController::class, 'regenerate_access_code'])->where('report_id', '[0-9]+')->name('reports.regenerate-access-code');
+    Route::post('/reports/{report_id}/generate-ai-single', [ReportController::class, 'generate_ai_single'])->where('report_id', '[0-9]+')->name('reports.generate-ai-single');
     
 
 // Parent access routes (no authentication required)
@@ -216,7 +238,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
               $search = request()->get('search');
               
               return view('admin.reports.index', compact('reports', 'clubs', 'clubId', 'search'));
-          })->name('facilitator.reports.approval');
+          })->name('reports.approval');
           Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'facilitatorApprove'])->name('reports.approve');
           Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
           Route::post('/reports/{reportId}/request-revision', [App\Http\Controllers\ReportApprovalController::class, 'requestRevision'])->name('reports.request-revision');
@@ -252,20 +274,20 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           Route::get('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'show'])->name('feedback.show');
       });
 
-    // V2.5.0 - Resource routes
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/clubs/{clubId}/resources', [App\Http\Controllers\ResourceController::class, 'index'])->name('resources.index');
-        Route::get('/clubs/{clubId}/resources/create', [App\Http\Controllers\ResourceController::class, 'create'])->name('resources.create');
-        Route::post('/resources', [App\Http\Controllers\ResourceController::class, 'store'])->name('resources.store');
-        Route::get('/resources/{resource}', [App\Http\Controllers\ResourceController::class, 'show'])->name('resources.show');
-        Route::get('/resources/{resource}/download', [App\Http\Controllers\ResourceController::class, 'download'])->name('resources.download');
-        Route::get('/resources/{resource}/edit', [App\Http\Controllers\ResourceController::class, 'edit'])->name('resources.edit');
-        Route::put('/resources/{resource}', [App\Http\Controllers\ResourceController::class, 'update'])->name('resources.update');
-        Route::delete('/resources/{resource}', [App\Http\Controllers\ResourceController::class, 'destroy'])->name('resources.destroy');
-    });
+    // V2.5.0 - Resource routes (moved to facilitator routes to avoid conflicts)
+    // Route::middleware(['auth'])->group(function () {
+    //     Route::get('/clubs/{clubId}/resources', [App\Http\Controllers\ResourceController::class, 'index'])->name('resources.index');
+    //     Route::get('/clubs/{clubId}/resources/create', [App\Http\Controllers\ResourceController::class, 'create'])->name('resources.create');
+    //     Route::post('/resources', [App\Http\Controllers\ResourceController::class, 'store'])->name('resources.store');
+    //     Route::get('/resources/{resource}', [App\Http\Controllers\ResourceController::class, 'show'])->name('resources.show');
+    //     Route::get('/resources/{resource}/download', [App\Http\Controllers\ResourceController::class, 'download'])->name('resources.download');
+    //     Route::get('/resources/{resource}/edit', [App\Http\Controllers\ResourceController::class, 'edit'])->name('resources.edit');
+    //     Route::put('/resources/{resource}', [App\Http\Controllers\ResourceController::class, 'update'])->name('resources.update');
+    //     Route::delete('/resources/{resource}', [App\Http\Controllers\ResourceController::class, 'destroy'])->name('resources.destroy');
+    // });
 
       // V2.5.0 - Admin routes
-      Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+      Route::middleware(['auth', 'role:admin,facilitator'])->prefix('admin')->name('admin.')->group(function () {
           // Admin Dashboard
           Route::get('/dashboard', function () {
               return view('dashboard')->layout('layouts.admin');
@@ -327,12 +349,12 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
         Route::delete('/users/{user}', [App\Http\Controllers\AdminUserController::class, 'destroy'])->name('users.destroy');
         
         // Resource Management routes
-        Route::get('/resources', [App\Http\Controllers\AdminResourceController::class, 'index'])->name('resources.index');
-        Route::get('/resources/create', [App\Http\Controllers\AdminResourceController::class, 'create'])->name('resources.create');
-        Route::post('/resources', [App\Http\Controllers\AdminResourceController::class, 'store'])->name('resources.store');
-        Route::get('/resources/{resource}/edit', [App\Http\Controllers\AdminResourceController::class, 'edit'])->name('resources.edit');
-        Route::put('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'update'])->name('resources.update');
-        Route::delete('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'destroy'])->name('resources.destroy');
+        Route::get('/resources', [App\Http\Controllers\AdminResourceController::class, 'index'])->name('admin.resources.index');
+        Route::get('/resources/create', [App\Http\Controllers\AdminResourceController::class, 'create'])->name('admin.resources.create');
+        Route::post('/resources', [App\Http\Controllers\AdminResourceController::class, 'store'])->name('admin.resources.store');
+        Route::get('/resources/{resource}/edit', [App\Http\Controllers\AdminResourceController::class, 'edit'])->name('admin.resources.edit');
+        Route::put('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'update'])->name('admin.resources.update');
+        Route::delete('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'destroy'])->name('admin.resources.destroy');
         
         // Settings routes
         Route::get('/settings', [App\Http\Controllers\AdminSettingsController::class, 'index'])->name('settings');
@@ -356,8 +378,13 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           
           // Teacher Proofs routes
           Route::get('/proofs', [App\Http\Controllers\AdminProofController::class, 'index'])->name('proofs.index');
+          Route::get('/proofs/create', [App\Http\Controllers\AdminProofController::class, 'create'])->name('proofs.create');
+          Route::post('/proofs', [App\Http\Controllers\AdminProofController::class, 'store'])->name('proofs.store');
           Route::get('/proofs/archived', [App\Http\Controllers\AdminProofController::class, 'archived'])->name('proofs.archived');
           Route::get('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'show'])->name('proofs.show');
+          Route::get('/proofs/{proof}/edit', [App\Http\Controllers\AdminProofController::class, 'edit'])->name('proofs.edit');
+          Route::put('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'update'])->name('proofs.update');
+          Route::delete('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'destroy'])->name('proofs.destroy');
           Route::post('/proofs/{proof}/approve', [App\Http\Controllers\AdminProofController::class, 'approve'])->name('proofs.approve');
           Route::post('/proofs/{proof}/reject', [App\Http\Controllers\AdminProofController::class, 'reject'])->name('proofs.reject');
           Route::post('/proofs/{proof}/mark-under-review', [App\Http\Controllers\AdminProofController::class, 'markUnderReview'])->name('proofs.mark-under-review');
@@ -372,6 +399,14 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           Route::get('/proofs/{proof}/download', [App\Http\Controllers\AdminProofController::class, 'download'])->name('proofs.download');
           Route::delete('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'destroy'])->name('proofs.destroy');
           Route::get('/proofs-analytics', [App\Http\Controllers\AdminProofController::class, 'analytics'])->name('proofs.analytics');
+          
+          // Facilitator Resource Management routes
+          Route::get('/resources', [App\Http\Controllers\AdminResourceController::class, 'index'])->name('resources.index');
+          Route::get('/resources/create', [App\Http\Controllers\AdminResourceController::class, 'create'])->name('resources.create');
+          Route::post('/resources', [App\Http\Controllers\AdminResourceController::class, 'store'])->name('resources.store');
+          Route::get('/resources/{resource}/edit', [App\Http\Controllers\AdminResourceController::class, 'edit'])->name('resources.edit');
+          Route::put('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'update'])->name('resources.update');
+          Route::delete('/resources/{resource}', [App\Http\Controllers\AdminResourceController::class, 'destroy'])->name('resources.destroy');
       });
 });
 

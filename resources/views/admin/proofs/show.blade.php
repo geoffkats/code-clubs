@@ -9,7 +9,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <div class="flex items-center mb-4">
-                            <a href="{{ route('admin.proofs.index') }}" 
+                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : route('admin.proofs.index') }}" 
                                class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mr-4">
                                 ← Back to Proofs
                             </a>
@@ -73,7 +73,7 @@
                         @endif
 
                         <div class="mt-4 flex justify-center">
-                            <a href="{{ route('admin.proofs.download', $proof) }}" 
+                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : route('admin.proofs.download', $proof) }}" 
                                class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                                 📥 Download Proof
                             </a>
@@ -241,7 +241,7 @@
                 </div>
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Approve Proof</h3>
                 <p class="text-slate-600 dark:text-slate-400 mb-6">Are you sure you want to approve this proof?</p>
-                <form method="POST" action="{{ route('admin.proofs.approve', $proof) }}">
+                <form method="POST" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.approve', $proof) : route('admin.proofs.approve', $proof) }}">
                     @csrf
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Comments (Optional)</label>
@@ -271,7 +271,7 @@
                 </div>
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Reject Proof</h3>
                 <p class="text-slate-600 dark:text-slate-400 mb-6">Please provide a reason for rejecting this proof.</p>
-                <form method="POST" action="{{ route('admin.proofs.reject', $proof) }}">
+                <form method="POST" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.reject', $proof) : route('admin.proofs.reject', $proof) }}">
                     @csrf
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Rejection Reason *</label>

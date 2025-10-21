@@ -16,13 +16,20 @@ class AdminResourceController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
         
-        return view('admin.resources.index', compact('resources'));
+        // Use facilitator layout if accessed via facilitator route
+        $layout = request()->routeIs('facilitator.*') ? 'layouts.facilitator' : 'layouts.admin';
+        
+        return view('admin.resources.index', compact('resources'))->layout($layout);
     }
 
     public function create()
     {
         $clubs = Club::orderBy('club_name')->get();
-        return view('admin.resources.create', compact('clubs'));
+        
+        // Use facilitator layout if accessed via facilitator route
+        $layout = request()->routeIs('facilitator.*') ? 'layouts.facilitator' : 'layouts.admin';
+        
+        return view('admin.resources.create', compact('clubs'))->layout($layout);
     }
 
     public function store(Request $request)
@@ -110,7 +117,8 @@ class AdminResourceController extends Controller
                 'created_by' => Auth::id(),
             ]);
 
-            return redirect()->route('admin.resources.index')
+            $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.resources.index' : 'admin.resources.index';
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Resource created successfully!');
 
         } catch (\Exception $e) {
@@ -123,7 +131,11 @@ class AdminResourceController extends Controller
     public function edit(LessonNote $resource)
     {
         $clubs = Club::orderBy('club_name')->get();
-        return view('admin.resources.edit', compact('resource', 'clubs'));
+        
+        // Use facilitator layout if accessed via facilitator route
+        $layout = request()->routeIs('facilitator.*') ? 'layouts.facilitator' : 'layouts.admin';
+        
+        return view('admin.resources.edit', compact('resource', 'clubs'))->layout($layout);
     }
 
     public function update(Request $request, LessonNote $resource)
@@ -217,7 +229,8 @@ class AdminResourceController extends Controller
                 'audio_url' => $validated['audio_url'] ?? null,
             ]);
 
-            return redirect()->route('admin.resources.index')
+            $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.resources.index' : 'admin.resources.index';
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Resource updated successfully!');
 
         } catch (\Exception $e) {
@@ -234,7 +247,8 @@ class AdminResourceController extends Controller
         }
         $resource->delete();
 
-        return redirect()->route('admin.resources.index')
+        $redirectRoute = request()->routeIs('facilitator.*') ? 'facilitator.resources.index' : 'admin.resources.index';
+        return redirect()->route($redirectRoute)
             ->with('success', 'Resource deleted successfully!');
     }
 }
