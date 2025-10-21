@@ -16,12 +16,12 @@
                         </a>
                         <div>
                             <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Session Feedback</h1>
-                            <p class="text-slate-600 dark:text-slate-400 mt-1">{{ $sessionFeedback->session->title }}</p>
+                            <p class="text-slate-600 dark:text-slate-400 mt-1">{{ $sessionFeedback->session->title ?? 'Unknown Session' }}</p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-4">
                         <div class="text-right">
-                            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ $sessionFeedback->club->club_name }}</p>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ $sessionFeedback->club->club_name ?? 'Unknown Club' }}</p>
                             <p class="text-sm text-slate-600 dark:text-slate-400">{{ $sessionFeedback->created_at->format('M d, Y') }}</p>
                         </div>
                         <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
@@ -43,19 +43,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Teacher</label>
-                            <p class="text-slate-900 dark:text-white font-medium">{{ $sessionFeedback->teacher->name }}</p>
+                            <p class="text-slate-900 dark:text-white font-medium">{{ $sessionFeedback->teacher->name ?? 'Unknown Teacher' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Facilitator</label>
-                            <p class="text-slate-900 dark:text-white font-medium">{{ $sessionFeedback->facilitator->name }}</p>
+                            <p class="text-slate-900 dark:text-white font-medium">{{ $sessionFeedback->facilitator->name ?? 'Unknown Facilitator' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Session Date</label>
-                            <p class="text-slate-900 dark:text-white">{{ $sessionFeedback->session->session_date->format('M d, Y') }}</p>
+                            <p class="text-slate-900 dark:text-white">{{ $sessionFeedback->session->session_date ? $sessionFeedback->session->session_date->format('M d, Y') : 'Unknown Date' }}</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Session Time</label>
-                            <p class="text-slate-900 dark:text-white">{{ $sessionFeedback->session->start_time }}</p>
+                            <p class="text-slate-900 dark:text-white">{{ $sessionFeedback->session->start_time ?? 'Unknown Time' }}</p>
                         </div>
                     </div>
                 </div>
@@ -180,11 +180,11 @@
                 </div>
 
                 <!-- Suggestions -->
-                @if($sessionFeedback->suggestions && count($sessionFeedback->suggestions) > 0)
+                @if($sessionFeedback->suggestions && count(json_decode($sessionFeedback->suggestions, true) ?: []) > 0)
                     <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
                         <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Improvement Suggestions</h3>
                         <ul class="space-y-3">
-                            @foreach($sessionFeedback->suggestions as $suggestion)
+                            @foreach(json_decode($sessionFeedback->suggestions, true) ?: [] as $suggestion)
                                 <li class="flex items-start space-x-3">
                                     <div class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
                                     <p class="text-slate-700 dark:text-slate-300">{{ $suggestion }}</p>
