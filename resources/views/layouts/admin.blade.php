@@ -94,7 +94,6 @@
                                 {{ __('Student Accounts') }}
                             </flux:navlist.item>
 
-                            {{-- TODO: Add these when controllers are created
                             <flux:navlist.item 
                                 icon="users" 
                                 :href="route('admin.users.index')" 
@@ -114,7 +113,6 @@
                             >
                                 {{ __('Resources') }}
                             </flux:navlist.item>
-                            --}}
 
                             <flux:navlist.item 
                                 icon="chart-bar" 
@@ -174,7 +172,6 @@
                         </h3>
                         
                         <flux:navlist variant="outline" class="space-y-1">
-                            {{-- TODO: Uncomment when controllers are created
                             <flux:navlist.item 
                                 icon="cog-6-tooth" 
                                 :href="route('admin.settings')" 
@@ -194,7 +191,6 @@
                             >
                                 {{ __('Notifications') }}
                             </flux:navlist.item>
-                            --}}
                             <flux:navlist.item 
                                 icon="user-circle" 
                                 :href="route('admin.profile')" 
