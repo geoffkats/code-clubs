@@ -1,6 +1,6 @@
-<div class="relative" x-data="{ open: @entangle('showDropdown') }">
+<div class="relative" x-data="{ open: false }">
     <!-- Notification Bell Button -->
-    <button @click="toggleDropdown()" 
+    <button @click="open = !open" 
             class="relative p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4 12a8 8 0 018-8V3a1 1 0 011.414-1.414l2 2A1 1 0 0115 5v2a8 8 0 11-8 8h-3z"></path>
@@ -17,13 +17,14 @@
     <!-- Dropdown Panel -->
     <div x-show="open" 
          @click.away="open = false"
-         x-transition:enter="transition ease-out duration-100"
-         x-transition:enter-start="transform opacity-0 scale-95"
-         x-transition:enter-end="transform opacity-100 scale-100"
-         x-transition:leave="transition ease-in duration-75"
-         x-transition:leave-start="transform opacity-100 scale-100"
-         x-transition:leave-end="transform opacity-0 scale-95"
-         class="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-50">
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="transform opacity-0 scale-95 translate-y-2"
+         x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="transform opacity-100 scale-100 translate-y-0"
+         x-transition:leave-end="transform opacity-0 scale-95 translate-y-2"
+         class="absolute right-0 mt-2 w-80 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-xl shadow-2xl border border-slate-200/50 dark:border-slate-700/50 z-[9999]"
+         style="display: none;">
         
         <!-- Header -->
         <div class="p-4 border-b border-slate-200 dark:border-slate-700">

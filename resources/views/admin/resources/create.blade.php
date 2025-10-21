@@ -451,22 +451,32 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // Modal functions
-        function closeSuccessModal() {
-            const modal = document.getElementById('success-modal');
-            if (modal) {
-                modal.style.display = 'none';
-                modal.remove(); // Remove the modal from DOM completely
-            }
+    // Modal functions
+    function closeSuccessModal() {
+        const modal = document.getElementById('success-modal');
+        if (modal) {
+            modal.style.opacity = '0';
+            modal.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+            }, 200);
         }
+    }
 
-        function closeErrorModal() {
-            const modal = document.getElementById('error-modal');
-            if (modal) {
-                modal.style.display = 'none';
-                modal.remove(); // Remove the modal from DOM completely
-            }
+    function closeErrorModal() {
+        const modal = document.getElementById('error-modal');
+        if (modal) {
+            modal.style.opacity = '0';
+            modal.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                if (modal.parentNode) {
+                    modal.parentNode.removeChild(modal);
+                }
+            }, 200);
         }
+    }
 
         // Auto-close success/error modals after 5 seconds
         document.addEventListener('DOMContentLoaded', function() {

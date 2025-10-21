@@ -45,7 +45,7 @@ class SessionFeedback extends Model
      */
     public function session()
     {
-        return $this->belongsTo(Session::class);
+        return $this->belongsTo(ClubSession::class, 'session_id');
     }
 
     /**

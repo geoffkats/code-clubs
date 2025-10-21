@@ -182,6 +182,26 @@
                             >
                                 {{ __('Feedback Analytics') }}
                             </flux:navlist.item>
+
+                            <flux:navlist.item 
+                                icon="camera" 
+                                :href="route('admin.proofs.index')" 
+                                :current="request()->routeIs('admin.proofs.index')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Teacher Proofs') }}
+                            </flux:navlist.item>
+
+                            <flux:navlist.item 
+                                icon="archive-box" 
+                                :href="route('admin.proofs.archived')" 
+                                :current="request()->routeIs('admin.proofs.archived')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Archived Proofs') }}
+                            </flux:navlist.item>
                         </flux:navlist>
                     </div>
 
