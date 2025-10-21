@@ -141,35 +141,48 @@ Route::post('/attendance/bulk/{club_id}', [AttendanceController::class, 'bulk_up
 Route::post('/attendance/update/{club_id}', [AttendanceController::class, 'update_attendance'])->name('attendance.update_attendance');
 Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getClubData'])->name('api.clubs.sessions');
 
-    // V2.5.0 - Facilitator routes
-    Route::middleware(['auth', 'role:facilitator'])->prefix('facilitator')->name('facilitator.')->group(function () {
-        Route::get('/dashboard', App\Livewire\FacilitatorDashboard::class)->name('dashboard');
-        Route::get('/teachers', [App\Http\Controllers\FacilitatorController::class, 'teachers'])->name('teachers');
-        Route::get('/teachers/{teacher}', [App\Http\Controllers\FacilitatorController::class, 'showTeacher'])->name('teachers.show');
-        Route::get('/clubs', [App\Http\Controllers\FacilitatorController::class, 'clubs'])->name('clubs');
-        Route::get('/clubs/{club}', [App\Http\Controllers\FacilitatorController::class, 'showClub'])->name('clubs.show');
-        Route::get('/reports', App\Livewire\ReportApprovalWorkflow::class)->name('reports.index');
-        Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'facilitatorApprove'])->name('reports.approve');
-        Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
-        Route::post('/reports/{reportId}/request-revision', [App\Http\Controllers\ReportApprovalController::class, 'requestRevision'])->name('reports.request-revision');
-    });
+      // V2.5.0 - Facilitator routes
+      Route::middleware(['auth', 'role:facilitator'])->prefix('facilitator')->name('facilitator.')->group(function () {
+          Route::get('/dashboard', App\Livewire\FacilitatorDashboard::class)->name('dashboard');
+          Route::get('/teachers', [App\Http\Controllers\FacilitatorController::class, 'teachers'])->name('teachers');
+          Route::get('/teachers/{teacher}', [App\Http\Controllers\FacilitatorController::class, 'showTeacher'])->name('teachers.show');
+          Route::get('/clubs', [App\Http\Controllers\FacilitatorController::class, 'clubs'])->name('clubs');
+          Route::get('/clubs/{club}', [App\Http\Controllers\FacilitatorController::class, 'showClub'])->name('clubs.show');
+          Route::get('/reports', App\Livewire\ReportApprovalWorkflow::class)->name('reports.index');
+          Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'facilitatorApprove'])->name('reports.approve');
+          Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
+          Route::post('/reports/{reportId}/request-revision', [App\Http\Controllers\ReportApprovalController::class, 'requestRevision'])->name('reports.request-revision');
+          
+          // Session Feedback routes
+          Route::get('/feedback', [App\Http\Controllers\SessionFeedbackController::class, 'index'])->name('feedback.index');
+          Route::get('/sessions/{session}/feedback/create', [App\Http\Controllers\SessionFeedbackController::class, 'create'])->name('feedback.create');
+          Route::post('/sessions/{session}/feedback', [App\Http\Controllers\SessionFeedbackController::class, 'store'])->name('feedback.store');
+          Route::get('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'show'])->name('feedback.show');
+          Route::get('/feedback/{sessionFeedback}/edit', [App\Http\Controllers\SessionFeedbackController::class, 'edit'])->name('feedback.edit');
+          Route::put('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'update'])->name('feedback.update');
+          Route::delete('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'destroy'])->name('feedback.destroy');
+      });
 
-    // V2.5.0 - Teacher routes
-    Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')->group(function () {
-        Route::get('/dashboard', App\Livewire\TeacherDashboard::class)->name('dashboard');
-        Route::get('/clubs', [App\Http\Controllers\TeacherController::class, 'clubs'])->name('clubs');
-        Route::get('/sessions', [App\Http\Controllers\TeacherController::class, 'sessions'])->name('sessions');
-        Route::get('/sessions/create', [App\Http\Controllers\TeacherController::class, 'createSession'])->name('sessions.create');
-        Route::post('/sessions', [App\Http\Controllers\TeacherController::class, 'storeSession'])->name('sessions.store');
-        Route::get('/sessions/{session}', [App\Http\Controllers\TeacherController::class, 'showSession'])->name('sessions.show');
-        Route::post('/sessions/{session}/proof', [App\Http\Controllers\TeacherController::class, 'uploadProof'])->name('sessions.proof');
-        Route::get('/sessions/{session}/attendance', [App\Http\Controllers\TeacherController::class, 'sessionAttendance'])->name('sessions.attendance');
-        Route::post('/sessions/{session}/attendance', [App\Http\Controllers\TeacherController::class, 'updateAttendance'])->name('sessions.attendance.update');
-        Route::get('/reports', [App\Http\Controllers\TeacherController::class, 'reports'])->name('reports');
-        Route::get('/reports/create', [App\Http\Controllers\TeacherController::class, 'createReport'])->name('reports.create');
-        Route::post('/reports', [App\Http\Controllers\TeacherController::class, 'storeReport'])->name('reports.store');
-        Route::get('/reports/{report}', [App\Http\Controllers\TeacherController::class, 'showReport'])->name('reports.show');
-    });
+      // V2.5.0 - Teacher routes
+      Route::middleware(['auth', 'role:teacher'])->prefix('teacher')->name('teacher.')->group(function () {
+          Route::get('/dashboard', App\Livewire\TeacherDashboard::class)->name('dashboard');
+          Route::get('/clubs', [App\Http\Controllers\TeacherController::class, 'clubs'])->name('clubs');
+          Route::get('/sessions', [App\Http\Controllers\TeacherController::class, 'sessions'])->name('sessions');
+          Route::get('/sessions/create', [App\Http\Controllers\TeacherController::class, 'createSession'])->name('sessions.create');
+          Route::post('/sessions', [App\Http\Controllers\TeacherController::class, 'storeSession'])->name('sessions.store');
+          Route::get('/sessions/{session}', [App\Http\Controllers\TeacherController::class, 'showSession'])->name('sessions.show');
+          Route::post('/sessions/{session}/proof', [App\Http\Controllers\TeacherController::class, 'uploadProof'])->name('sessions.proof');
+          Route::get('/sessions/{session}/attendance', [App\Http\Controllers\TeacherController::class, 'sessionAttendance'])->name('sessions.attendance');
+          Route::post('/sessions/{session}/attendance', [App\Http\Controllers\TeacherController::class, 'updateAttendance'])->name('sessions.attendance.update');
+          Route::get('/reports', [App\Http\Controllers\TeacherController::class, 'reports'])->name('reports');
+          Route::get('/reports/create', [App\Http\Controllers\TeacherController::class, 'createReport'])->name('reports.create');
+          Route::post('/reports', [App\Http\Controllers\TeacherController::class, 'storeReport'])->name('reports.store');
+          Route::get('/reports/{report}', [App\Http\Controllers\TeacherController::class, 'showReport'])->name('reports.show');
+          
+          // Session Feedback routes
+          Route::get('/feedback', [App\Http\Controllers\SessionFeedbackController::class, 'index'])->name('feedback.index');
+          Route::get('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'show'])->name('feedback.show');
+      });
 
     // V2.5.0 - Resource routes
     Route::middleware(['auth'])->group(function () {
@@ -238,10 +251,15 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
         Route::get('/notifications/settings', [App\Http\Controllers\AdminNotificationSettingsController::class, 'index'])->name('notifications.settings');
         Route::post('/notifications/settings', [App\Http\Controllers\AdminNotificationSettingsController::class, 'update'])->name('notifications.update');
         
-        // Admin Profile routes
-        Route::get('/profile', [App\Http\Controllers\AdminProfileController::class, 'index'])->name('profile');
-        Route::put('/profile', [App\Http\Controllers\AdminProfileController::class, 'update'])->name('profile.update');
-    });
+          // Admin Profile routes
+          Route::get('/profile', [App\Http\Controllers\AdminProfileController::class, 'index'])->name('profile');
+          Route::put('/profile', [App\Http\Controllers\AdminProfileController::class, 'update'])->name('profile.update');
+          
+          // Session Feedback routes
+          Route::get('/feedback', [App\Http\Controllers\SessionFeedbackController::class, 'index'])->name('feedback.index');
+          Route::get('/feedback/analytics', [App\Http\Controllers\SessionFeedbackController::class, 'analytics'])->name('feedback.analytics');
+          Route::get('/feedback/export', [App\Http\Controllers\SessionFeedbackController::class, 'export'])->name('feedback.export');
+      });
 });
 
 require __DIR__.'/auth.php';

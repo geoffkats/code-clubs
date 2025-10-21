@@ -453,6 +453,7 @@
             const modal = document.getElementById('success-modal');
             if (modal) {
                 modal.style.display = 'none';
+                modal.remove(); // Remove the modal from DOM completely
             }
         }
 
@@ -460,16 +461,25 @@
             const modal = document.getElementById('error-modal');
             if (modal) {
                 modal.style.display = 'none';
+                modal.remove(); // Remove the modal from DOM completely
             }
         }
 
         // Auto-close success/error modals after 5 seconds
-        setTimeout(() => {
-            const successModal = document.getElementById('success-modal');
-            const errorModal = document.getElementById('error-modal');
-            if (successModal) successModal.style.display = 'none';
-            if (errorModal) errorModal.style.display = 'none';
-        }, 5000);
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const successModal = document.getElementById('success-modal');
+                const errorModal = document.getElementById('error-modal');
+                if (successModal) {
+                    successModal.style.display = 'none';
+                    successModal.remove();
+                }
+                if (errorModal) {
+                    errorModal.style.display = 'none';
+                    errorModal.remove();
+                }
+            }, 5000);
+        });
 
         // Form validation
         document.querySelector('form').addEventListener('submit', function(e) {

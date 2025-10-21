@@ -476,6 +476,7 @@
             const modal = document.getElementById('success-modal');
             if (modal) {
                 modal.style.display = 'none';
+                modal.remove(); // Remove the modal from DOM completely
             }
         }
 
@@ -483,6 +484,7 @@
             const modal = document.getElementById('error-modal');
             if (modal) {
                 modal.style.display = 'none';
+                modal.remove(); // Remove the modal from DOM completely
             }
         }
 
@@ -491,8 +493,14 @@
             setTimeout(() => {
                 const successModal = document.getElementById('success-modal');
                 const errorModal = document.getElementById('error-modal');
-                if (successModal) successModal.style.display = 'none';
-                if (errorModal) errorModal.style.display = 'none';
+                if (successModal) {
+                    successModal.style.display = 'none';
+                    successModal.remove();
+                }
+                if (errorModal) {
+                    errorModal.style.display = 'none';
+                    errorModal.remove();
+                }
             }, 5000);
         });
     </script>
