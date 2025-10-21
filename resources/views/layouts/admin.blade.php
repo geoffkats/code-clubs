@@ -153,15 +153,37 @@
                         </h3>
                         
                         <flux:navlist variant="outline" class="space-y-1">
+                            @if(auth()->user()->user_role === 'admin' && Route::has('admin.reports.approval'))
                             <flux:navlist.item 
                                 icon="document-text" 
-                                :href="route('reports.index')" 
-                                :current="request()->routeIs('reports.*') && !request()->routeIs('reports.approval')" 
+                                :href="route('admin.reports.approval')" 
+                                :current="request()->routeIs('admin.reports.approval')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                             >
                                 {{ __('All Reports') }}
                             </flux:navlist.item>
+                            @elseif(auth()->user()->user_role === 'facilitator' && Route::has('facilitator.reports.approval'))
+                            <flux:navlist.item 
+                                icon="document-text" 
+                                :href="route('facilitator.reports.approval')" 
+                                :current="request()->routeIs('facilitator.reports.approval')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('All Reports') }}
+                            </flux:navlist.item>
+                            @elseif(Route::has('user.reports.approval'))
+                            <flux:navlist.item 
+                                icon="document-text" 
+                                :href="route('user.reports.approval')" 
+                                :current="request()->routeIs('user.reports.approval')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('All Reports') }}
+                            </flux:navlist.item>
+                            @endif
 
                             @if(auth()->user()->user_role === 'admin' && Route::has('admin.reports.approval'))
                             <flux:navlist.item 

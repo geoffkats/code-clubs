@@ -93,16 +93,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('/clubs/{club_id}/reports/generate', [ReportController::class, 'create'])->name('reports.create');
     Route::post('/clubs/{club_id}/reports/generate', [ReportController::class, 'generate_for_club'])->name('reports.generate');
-    Route::get('/reports/{report_id}', [ReportController::class, 'show'])->name('reports.show');
-    Route::get('/reports/{report_id}/edit', [ReportController::class, 'edit'])->name('reports.edit');
-    Route::put('/reports/{report_id}', [ReportController::class, 'update'])->name('reports.update');
-    Route::delete('/reports/{report_id}', [ReportController::class, 'destroy'])->name('reports.destroy');
-    Route::get('/reports/{report_id}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
-    Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->name('reports.send');
-    Route::post('/reports/{report_id}/regenerate-access-code', [ReportController::class, 'regenerate_access_code'])->name('reports.regenerate-access-code');
-    Route::post('/reports/{report_id}/generate-ai-single', [ReportController::class, 'generate_ai_single'])->name('reports.generate-ai-single');
     
-    // Report Approval route for regular users (if they have access)
+    // Report Approval route for regular users (must come before parameterized routes)
     Route::get('/reports/approval', function () {
         // Check if user has admin or facilitator role
         if (!in_array(auth()->user()->user_role, ['admin', 'facilitator'])) {
@@ -130,6 +122,16 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class
         
         return view('admin.reports.index', compact('reports', 'clubs', 'clubId', 'search'));
     })->name('user.reports.approval');
+    
+    Route::get('/reports/{report_id}', [ReportController::class, 'show'])->name('reports.show');
+    Route::get('/reports/{report_id}/edit', [ReportController::class, 'edit'])->name('reports.edit');
+    Route::put('/reports/{report_id}', [ReportController::class, 'update'])->name('reports.update');
+    Route::delete('/reports/{report_id}', [ReportController::class, 'destroy'])->name('reports.destroy');
+    Route::get('/reports/{report_id}/pdf', [ReportController::class, 'pdf'])->name('reports.pdf');
+    Route::post('/reports/{report_id}/send', [ReportController::class, 'send_to_parent'])->name('reports.send');
+    Route::post('/reports/{report_id}/regenerate-access-code', [ReportController::class, 'regenerate_access_code'])->name('reports.regenerate-access-code');
+    Route::post('/reports/{report_id}/generate-ai-single', [ReportController::class, 'generate_ai_single'])->name('reports.generate-ai-single');
+    
 
 // Parent access routes (no authentication required)
 Route::get('/parent-welcome', [ParentReportController::class, 'welcome'])->name('parent.welcome');
