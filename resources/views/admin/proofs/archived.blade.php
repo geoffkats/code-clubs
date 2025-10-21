@@ -345,6 +345,49 @@
             }
         }
 
+        function showConfirmModal(title, message, confirmText, onConfirm, type = 'warning') {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-[9999]';
+            modal.innerHTML = `
+                <div class="bg-white/95 dark:bg-slate-800/95 backdrop-blur-md rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl border border-slate-200/50 dark:border-slate-700/50">
+                    <div class="text-center">
+                        <div class="w-16 h-16 ${type === 'danger' ? 'bg-gradient-to-br from-red-500 to-red-600' : 'bg-gradient-to-br from-yellow-500 to-orange-500'} rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                ${type === 'danger' ? 
+                                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>' :
+                                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>'
+                                }
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">${title}</h3>
+                        <p class="text-slate-600 dark:text-slate-400 mb-6">${message}</p>
+                        <div class="flex space-x-3">
+                            <button onclick="closeConfirmModal()" class="bg-slate-500/80 hover:bg-slate-600/80 backdrop-blur-sm text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                                Cancel
+                            </button>
+                            <button onclick="executeConfirmAction()" class="${type === 'danger' ? 'bg-gradient-to-r from-red-500/80 to-red-600/80 hover:from-red-600/80 hover:to-red-700/80' : 'bg-gradient-to-r from-yellow-500/80 to-orange-500/80 hover:from-yellow-600/80 hover:to-orange-600/80'} backdrop-blur-sm text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
+                                ${confirmText}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            window.executeConfirmAction = onConfirm;
+            window.closeConfirmModal = () => {
+                modal.style.opacity = '0';
+                modal.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    if (document.body.contains(modal)) {
+                        document.body.removeChild(modal);
+                    }
+                    delete window.executeConfirmAction;
+                    delete window.closeConfirmModal;
+                }, 200);
+            };
+        }
+
         function toggleSelectAll() {
             const selectAll = document.getElementById('selectAll');
             const checkboxes = document.querySelectorAll('.proof-checkbox');
@@ -355,20 +398,26 @@
         }
 
         function unarchiveProof(proofId) {
-            if (confirm('Are you sure you want to unarchive this proof?')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/admin/proofs/${proofId}/unarchive`;
-                
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
+            showConfirmModal(
+                'Unarchive Proof',
+                'Are you sure you want to unarchive this proof? It will be moved back to the active proofs list.',
+                'Unarchive',
+                () => {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/admin/proofs/${proofId}/unarchive`;
+                    
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
 
-                document.body.appendChild(form);
-                form.submit();
-            }
+                    document.body.appendChild(form);
+                    form.submit();
+                },
+                'warning'
+            );
         }
 
         // Bulk action functions
@@ -407,28 +456,34 @@
             const selectedIds = getSelectedProofIds();
             if (selectedIds.length === 0) return;
             
-            if (confirm(`Are you sure you want to unarchive ${selectedIds.length} selected proof(s)?`)) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route("admin.proofs.bulk-unarchive") }}';
-                
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
+            showConfirmModal(
+                'Bulk Unarchive Proofs',
+                `Are you sure you want to unarchive ${selectedIds.length} selected proof(s)? They will be moved back to the active proofs list.`,
+                'Unarchive All',
+                () => {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '{{ route("admin.proofs.bulk-unarchive") }}';
+                    
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
 
-                selectedIds.forEach(id => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'proof_ids[]';
-                    input.value = id;
-                    form.appendChild(input);
-                });
+                    selectedIds.forEach(id => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'proof_ids[]';
+                        input.value = id;
+                        form.appendChild(input);
+                    });
 
-                document.body.appendChild(form);
-                form.submit();
-            }
+                    document.body.appendChild(form);
+                    form.submit();
+                },
+                'warning'
+            );
         }
 
         function bulkDelete() {

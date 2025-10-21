@@ -33,6 +33,15 @@
             \App\Models\Report::whereHas('club', fn($q) => $q->where('school_id', $schoolId))->count() : 
             \App\Models\Report::count();
             
+        // V2.5.0 Features - New metrics
+        $sessionProofsCount = \App\Models\SessionProof::count();
+        $pendingProofsCount = \App\Models\SessionProof::where('status', 'pending')->count();
+        $approvedProofsCount = \App\Models\SessionProof::where('status', 'approved')->count();
+        $sessionFeedbacksCount = \App\Models\SessionFeedback::count();
+        $lessonNotesCount = \App\Models\LessonNote::count();
+        $facilitatorsCount = \App\Models\User::where('user_role', 'facilitator')->count();
+        $teachersCount = \App\Models\User::where('user_role', 'teacher')->count();
+            
         // If no data found for this school, show all data (fallback for demo purposes)
         if ($studentsCount == 0 && $clubsCount == 0) {
             $studentsCount = \App\Models\Student::count();
@@ -361,6 +370,128 @@
                                     </svg>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- V2.5.0 Features Overview -->
+                <div class="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-xl border border-purple-200 dark:border-slate-600 p-6 mb-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">🚀 V2.5.0 New Features</h3>
+                            <p class="text-slate-600 dark:text-slate-400">Enhanced system capabilities and management tools</p>
+                        </div>
+                        <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-xl font-semibold">
+                            Latest Update
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Session Proofs -->
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-purple-200 dark:border-slate-600 hover:shadow-lg transition-all duration-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Session Proofs</p>
+                                    <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $sessionProofsCount }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ $pendingProofsCount }} pending</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Session Feedback -->
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-purple-200 dark:border-slate-600 hover:shadow-lg transition-all duration-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Session Feedback</p>
+                                    <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $sessionFeedbacksCount }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">Reviews & ratings</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lesson Resources -->
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-purple-200 dark:border-slate-600 hover:shadow-lg transition-all duration-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Lesson Resources</p>
+                                    <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $lessonNotesCount }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">Materials & files</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- User Management -->
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-purple-200 dark:border-slate-600 hover:shadow-lg transition-all duration-200">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Team Members</p>
+                                    <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $facilitatorsCount + $teachersCount }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-500">{{ $facilitatorsCount }} facilitators, {{ $teachersCount }} teachers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Access Actions -->
+                    <div class="mt-6 pt-6 border-t border-purple-200 dark:border-slate-600">
+                        <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Quick Access</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <a href="{{ route('admin.proofs.index') }}" class="flex items-center space-x-3 p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all duration-200 group">
+                                <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-slate-900 dark:text-white">Review Proofs</p>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400">Manage teacher submissions</p>
+                                </div>
+                            </a>
+
+                            <a href="{{ route('admin.feedback.analytics') }}" class="flex items-center space-x-3 p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all duration-200 group">
+                                <div class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-slate-900 dark:text-white">Feedback Analytics</p>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400">View performance insights</p>
+                                </div>
+                            </a>
+
+                            <a href="{{ route('admin.resources.index') }}" class="flex items-center space-x-3 p-3 bg-white/60 dark:bg-slate-800/60 rounded-lg hover:bg-white/80 dark:hover:bg-slate-800/80 transition-all duration-200 group">
+                                <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-slate-900 dark:text-white">Manage Resources</p>
+                                    <p class="text-sm text-slate-600 dark:text-slate-400">Upload & organize materials</p>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
