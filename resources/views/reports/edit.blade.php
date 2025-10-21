@@ -1,4 +1,7 @@
-<x-layouts.app :title="__('Edit Report')">
+@extends('layouts.admin')
+@section('title', 'Edit Report')
+
+@section('content')
     <div class="max-w-4xl mx-auto px-4 py-8">
         <!-- Enterprise Header -->
         <div class="bg-gradient-to-r from-slate-800 via-amber-900 to-orange-900 rounded-3xl shadow-2xl p-8 text-white mb-8 border border-slate-700">
@@ -318,4 +321,4 @@
             @endif
         </div>
     </div>
-</x-layouts.app>
+@endsection

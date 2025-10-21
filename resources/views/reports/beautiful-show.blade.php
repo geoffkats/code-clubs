@@ -1,4 +1,7 @@
-<x-layouts.app :title="$report->report_name">
+@extends('layouts.admin')
+@section('title', $report->report_name)
+
+@section('content')
     <div class="max-w-7xl mx-auto px-4 py-8">
         <!-- Header -->
         <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg p-8 text-white mb-8">
@@ -902,4 +905,4 @@
             container.appendChild(iframe);
         }
     </script>
-</x-layouts.app>
+@endsection

@@ -1,4 +1,7 @@
-<x-layouts.app>
+@extends('layouts.admin')
+@section('title', 'Generate Reports')
+
+@section('content')
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" 
          x-data="{ 
              reportType: 'progress',
@@ -193,4 +196,4 @@
             </div>
         </div>
     </div>
-</x-layouts.app>
+@endsection

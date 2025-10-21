@@ -1,4 +1,7 @@
-<x-layouts.app>
+@extends('layouts.admin')
+@section('title', 'System Settings')
+
+@section('content')
     <div class="p-6">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-slate-900 dark:text-white">System Settings</h1>
@@ -40,4 +43,4 @@
             </div>
         </div>
     </div>
-</x-layouts.app>
+@endsection

@@ -9,6 +9,8 @@ class SessionFeedback extends Model
 {
     use HasFactory;
 
+    protected $table = 'session_feedbacks';
+
     protected $fillable = [
         'session_id',
         'facilitator_id',

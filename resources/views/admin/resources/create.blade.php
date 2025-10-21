@@ -1,4 +1,7 @@
-<x-layouts.app>
+@extends('layouts.admin')
+@section('title', 'Create Resource')
+
+@section('content')
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <!-- Header Section -->
         <div class="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/60">
@@ -531,4 +534,4 @@
             }
         });
     </script>
-</x-layouts.app>
+@endsection

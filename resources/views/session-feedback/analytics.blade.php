@@ -1,4 +1,7 @@
-<x-layouts.app>
+@extends('layouts.admin')
+@section('title', 'Feedback Analytics')
+
+@section('content')
     <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <!-- Header -->
         <div class="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700">
@@ -407,4 +410,4 @@
             document.body.removeChild(form);
         }
     </script>
-</x-layouts.app>
+@endsection

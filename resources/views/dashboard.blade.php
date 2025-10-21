@@ -1,4 +1,7 @@
-<x-layouts.app :title="__('Dashboard')">
+@extends('layouts.admin')
+@section('title', __('Dashboard'))
+
+@section('content')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @php
         $user = auth()->user();
@@ -1131,4 +1134,4 @@
             }
         });
     </script>
-</x-layouts.app>
+@endsection
