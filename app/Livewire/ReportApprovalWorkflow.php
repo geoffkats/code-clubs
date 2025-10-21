@@ -17,7 +17,6 @@ class ReportApprovalWorkflow extends Component
     use WithPagination;
 
     public $userRole;
-    public $reports = [];
     public $selectedReport = null;
     public $showReportModal = false;
     public $reportFeedback = '';
@@ -34,10 +33,9 @@ class ReportApprovalWorkflow extends Component
     public function mount()
     {
         $this->userRole = auth()->user()->user_role;
-        $this->loadReports();
     }
 
-    public function loadReports()
+    public function getReportsQuery()
     {
         $query = Report::with(['teacher', 'club', 'student', 'facilitator', 'admin']);
 
@@ -62,24 +60,24 @@ class ReportApprovalWorkflow extends Component
             });
         }
 
-        $this->reports = $query->latest()->paginate(10);
+        return $query->latest();
     }
 
     public function filterByStatus($status)
     {
         $this->filterStatus = $status;
-        $this->loadReports();
+        $this->resetPage();
     }
 
     public function searchReports()
     {
-        $this->loadReports();
+        $this->resetPage();
     }
 
     public function clearSearch()
     {
         $this->searchTerm = '';
-        $this->loadReports();
+        $this->resetPage();
     }
 
     public function approveReport($reportId)
@@ -114,7 +112,6 @@ class ReportApprovalWorkflow extends Component
             $report->teacher->notify(new ReportApproved($report, 'admin'));
         }
 
-        $this->loadReports();
         $this->dispatch('reportApproved', $reportId);
         
         session()->flash('success', 'Report approved successfully!');
@@ -162,7 +159,6 @@ class ReportApprovalWorkflow extends Component
         }
 
         $this->closeReportModal();
-        $this->loadReports();
         
         session()->flash('success', 'Report action completed successfully!');
     }
@@ -209,7 +205,10 @@ class ReportApprovalWorkflow extends Component
 
     public function render()
     {
-        return view('livewire.report-approval-workflow')
-            ->layout('layouts.admin');
+        $reports = $this->getReportsQuery()->paginate(10);
+        
+        return view('livewire.report-approval-workflow', [
+            'reports' => $reports
+        ])->layout('layouts.admin');
     }
 }
