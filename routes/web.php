@@ -282,6 +282,25 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           Route::get('/feedback', [App\Http\Controllers\SessionFeedbackController::class, 'index'])->name('feedback.index');
           Route::get('/feedback/analytics', [App\Http\Controllers\SessionFeedbackController::class, 'analytics'])->name('feedback.analytics');
           Route::get('/feedback/export', [App\Http\Controllers\SessionFeedbackController::class, 'export'])->name('feedback.export');
+          Route::post('/feedback/export', [App\Http\Controllers\SessionFeedbackController::class, 'export'])->name('feedback.export.post');
+          
+          // Teacher Proofs routes
+          Route::get('/proofs', [App\Http\Controllers\AdminProofController::class, 'index'])->name('proofs.index');
+          Route::get('/proofs/archived', [App\Http\Controllers\AdminProofController::class, 'archived'])->name('proofs.archived');
+          Route::get('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'show'])->name('proofs.show');
+          Route::post('/proofs/{proof}/approve', [App\Http\Controllers\AdminProofController::class, 'approve'])->name('proofs.approve');
+          Route::post('/proofs/{proof}/reject', [App\Http\Controllers\AdminProofController::class, 'reject'])->name('proofs.reject');
+          Route::post('/proofs/{proof}/mark-under-review', [App\Http\Controllers\AdminProofController::class, 'markUnderReview'])->name('proofs.mark-under-review');
+          Route::post('/proofs/{proof}/archive', [App\Http\Controllers\AdminProofController::class, 'archive'])->name('proofs.archive');
+          Route::post('/proofs/{proof}/unarchive', [App\Http\Controllers\AdminProofController::class, 'unarchive'])->name('proofs.unarchive');
+          Route::post('/proofs/bulk-approve', [App\Http\Controllers\AdminProofController::class, 'bulkApprove'])->name('proofs.bulk-approve');
+          Route::post('/proofs/bulk-reject', [App\Http\Controllers\AdminProofController::class, 'bulkReject'])->name('proofs.bulk-reject');
+          Route::post('/proofs/bulk-archive', [App\Http\Controllers\AdminProofController::class, 'bulkArchive'])->name('proofs.bulk-archive');
+          Route::post('/proofs/bulk-delete', [App\Http\Controllers\AdminProofController::class, 'bulkDelete'])->name('proofs.bulk-delete');
+          Route::post('/proofs/bulk-export', [App\Http\Controllers\AdminProofController::class, 'bulkExport'])->name('proofs.bulk-export');
+          Route::get('/proofs/{proof}/download', [App\Http\Controllers\AdminProofController::class, 'download'])->name('proofs.download');
+          Route::delete('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'destroy'])->name('proofs.destroy');
+          Route::get('/proofs-analytics', [App\Http\Controllers\AdminProofController::class, 'analytics'])->name('proofs.analytics');
       });
 });
 

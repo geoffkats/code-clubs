@@ -105,7 +105,7 @@
                                                         {{ $feedback->session->title }}
                                                     </div>
                                                     <div class="text-sm text-slate-500 dark:text-slate-400">
-                                                        {{ $feedback->club->club_name }}
+                                                        {{ $feedback->club->club_name ?? 'Unknown Club' }}
                                                     </div>
                                                 </div>
                                             </td>
