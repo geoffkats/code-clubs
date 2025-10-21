@@ -261,8 +261,186 @@ class SessionFeedbackController extends Controller
     {
         $this->authorize('export', SessionFeedback::class);
 
-        // Implementation for exporting feedback data
-        // This will be implemented in a separate todo
-        return response()->json(['message' => 'Export functionality will be implemented']);
+        $format = $request->input('format', 'excel');
+        
+        // Apply same filters as analytics
+        $query = SessionFeedback::with(['session', 'facilitator', 'teacher', 'club']);
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->filled('club_id')) {
+            $query->byClub($request->club_id);
+        }
+
+        $feedbacks = $query->get();
+
+        if ($format === 'pdf') {
+            return $this->exportToPDF($feedbacks, $request);
+        } else {
+            return $this->exportToExcel($feedbacks, $request);
+        }
+    }
+
+    /**
+     * Export to Excel format
+     */
+    private function exportToExcel($feedbacks, $request)
+    {
+        $filename = 'session_feedback_' . date('Y-m-d_H-i-s') . '.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function() use ($feedbacks) {
+            $file = fopen('php://output', 'w');
+            
+            // Add CSV headers
+            fputcsv($file, [
+                'Session Title',
+                'Club Name',
+                'Teacher Name',
+                'Facilitator Name',
+                'Session Date',
+                'Content Delivery Rating',
+                'Student Engagement Rating',
+                'Session Management Rating',
+                'Preparation Rating',
+                'Overall Rating',
+                'Feedback Type',
+                'Status',
+                'Feedback Content',
+                'Suggestions',
+                'Created At',
+                'Submitted At'
+            ]);
+
+            // Add data rows
+            foreach ($feedbacks as $feedback) {
+                fputcsv($file, [
+                    $feedback->session->title ?? 'N/A',
+                    $feedback->club->club_name ?? 'N/A',
+                    $feedback->teacher->name ?? 'N/A',
+                    $feedback->facilitator->name ?? 'N/A',
+                    $feedback->session->session_date ? $feedback->session->session_date->format('Y-m-d') : 'N/A',
+                    $feedback->content_delivery_rating,
+                    $feedback->student_engagement_rating,
+                    $feedback->session_management_rating,
+                    $feedback->preparation_rating,
+                    $feedback->overall_rating,
+                    ucfirst($feedback->feedback_type),
+                    ucfirst($feedback->status),
+                    $feedback->content,
+                    $feedback->suggestions ? implode('; ', $feedback->suggestions) : 'N/A',
+                    $feedback->created_at->format('Y-m-d H:i:s'),
+                    $feedback->submitted_at ? $feedback->submitted_at->format('Y-m-d H:i:s') : 'N/A'
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export to PDF format
+     */
+    private function exportToPDF($feedbacks, $request)
+    {
+        $filename = 'session_feedback_' . date('Y-m-d_H-i-s') . '.pdf';
+        
+        // Create HTML content for PDF
+        $html = $this->generatePDFContent($feedbacks, $request);
+        
+        $headers = [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        // For now, return a simple text response
+        // In production, you would use a PDF library like DomPDF or TCPDF
+        return response($html, 200, [
+            'Content-Type' => 'text/html',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '.html"',
+        ]);
+    }
+
+    /**
+     * Generate PDF content
+     */
+    private function generatePDFContent($feedbacks, $request)
+    {
+        $dateRange = '';
+        if ($request->filled('date_from') || $request->filled('date_to')) {
+            $dateRange = 'Period: ';
+            if ($request->filled('date_from')) $dateRange .= $request->date_from;
+            $dateRange .= ' to ';
+            if ($request->filled('date_to')) $dateRange .= $request->date_to;
+        }
+
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Session Feedback Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 20px; }
+                h1 { color: #333; text-align: center; }
+                h2 { color: #666; border-bottom: 2px solid #ddd; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                th { background-color: #f2f2f2; }
+                .summary { background-color: #f9f9f9; padding: 15px; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <h1>Session Feedback Report</h1>
+            <div class="summary">
+                <p><strong>Generated:</strong> ' . now()->format('Y-m-d H:i:s') . '</p>
+                <p><strong>Total Feedback:</strong> ' . $feedbacks->count() . '</p>
+                <p><strong>Average Rating:</strong> ' . number_format($feedbacks->avg('overall_rating'), 1) . '/5</p>
+                ' . ($dateRange ? '<p><strong>' . $dateRange . '</strong></p>' : '') . '
+            </div>
+            
+            <h2>Feedback Details</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Session</th>
+                        <th>Teacher</th>
+                        <th>Overall Rating</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+        foreach ($feedbacks as $feedback) {
+            $html .= '<tr>
+                <td>' . ($feedback->session->title ?? 'N/A') . '</td>
+                <td>' . ($feedback->teacher->name ?? 'N/A') . '</td>
+                <td>' . $feedback->overall_rating . '/5</td>
+                <td>' . ucfirst($feedback->feedback_type) . '</td>
+                <td>' . ucfirst($feedback->status) . '</td>
+                <td>' . $feedback->created_at->format('Y-m-d') . '</td>
+            </tr>';
+        }
+
+        $html .= '
+                </tbody>
+            </table>
+        </body>
+        </html>';
+
+        return $html;
     }
 }

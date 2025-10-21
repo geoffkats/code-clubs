@@ -13,10 +13,16 @@
                            class="px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
                             View All Feedback
                         </a>
-                        <button onclick="exportAnalytics()" 
-                                class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
-                            Export Data
-                        </button>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="exportAnalytics()" 
+                                    class="px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
+                                Export Excel
+                            </button>
+                            <button onclick="exportPDF()" 
+                                    class="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
+                                Export PDF
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -294,8 +300,111 @@
 
     <script>
         function exportAnalytics() {
-            // Implementation for exporting analytics data
-            alert('Export functionality will be implemented in the next phase');
+            // Create export form with current filters
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("admin.feedback.export") }}';
+            
+            // Add CSRF token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            // Add current filter values
+            const dateFrom = document.querySelector('input[name="date_from"]')?.value;
+            const dateTo = document.querySelector('input[name="date_to"]')?.value;
+            const clubId = document.querySelector('select[name="club_id"]')?.value;
+            
+            if (dateFrom) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'date_from';
+                input.value = dateFrom;
+                form.appendChild(input);
+            }
+            
+            if (dateTo) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'date_to';
+                input.value = dateTo;
+                form.appendChild(input);
+            }
+            
+            if (clubId) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'club_id';
+                input.value = clubId;
+                form.appendChild(input);
+            }
+            
+            // Add export format
+            const formatInput = document.createElement('input');
+            formatInput.type = 'hidden';
+            formatInput.name = 'format';
+            formatInput.value = 'excel';
+            form.appendChild(formatInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        }
+        
+        function exportPDF() {
+            // Create export form for PDF
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("admin.feedback.export") }}';
+            
+            // Add CSRF token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            // Add current filter values
+            const dateFrom = document.querySelector('input[name="date_from"]')?.value;
+            const dateTo = document.querySelector('input[name="date_to"]')?.value;
+            const clubId = document.querySelector('select[name="club_id"]')?.value;
+            
+            if (dateFrom) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'date_from';
+                input.value = dateFrom;
+                form.appendChild(input);
+            }
+            
+            if (dateTo) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'date_to';
+                input.value = dateTo;
+                form.appendChild(input);
+            }
+            
+            if (clubId) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'club_id';
+                input.value = clubId;
+                form.appendChild(input);
+            }
+            
+            // Add export format
+            const formatInput = document.createElement('input');
+            formatInput.type = 'hidden';
+            formatInput.name = 'format';
+            formatInput.value = 'pdf';
+            form.appendChild(formatInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
         }
     </script>
 </x-layouts.app>
