@@ -48,18 +48,18 @@
                             <label class="text-sm font-semibold text-slate-300">Search:</label>
                         </div>
                         <form method="GET" action="{{ route('reports.index') }}" class="flex items-center space-x-2">
-                            <input type="hidden" name="club_id" value="{{ $clubId }}">
+                            <input type="hidden" name="club_id" value="{{ $clubId ?? '' }}">
                             <input type="text" 
                                    name="search" 
-                                   value="{{ $search }}"
+                                   value="{{ $search ?? '' }}"
                                    placeholder="Search by student name, club, or report..."
                                    class="px-4 py-3 border-2 border-slate-600 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 bg-slate-700 dark:bg-slate-700 shadow-sm font-medium text-slate-200 dark:text-slate-200 min-w-[300px] placeholder-slate-400">
                             <button type="submit" 
                                     class="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
                                 Search
                             </button>
-                            @if($search)
-                                <a href="{{ route('reports.index', ['club_id' => $clubId]) }}" 
+                            @if($search ?? false)
+                                <a href="{{ route('reports.index', ['club_id' => $clubId ?? '']) }}" 
                                    class="bg-slate-600 hover:bg-slate-700 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-200">
                                     Clear
                                 </a>
@@ -452,10 +452,10 @@
                             <span class="text-sm text-slate-600">Per page:</span>
                             <select onchange="changePerPage(this.value)" 
                                     class="px-3 py-1 border border-slate-300 rounded-lg text-sm">
-                                <option value="6" {{ $perPage == 6 ? 'selected' : '' }}>6</option>
-                                <option value="12" {{ $perPage == 12 ? 'selected' : '' }}>12</option>
-                                <option value="24" {{ $perPage == 24 ? 'selected' : '' }}>24</option>
-                                <option value="48" {{ $perPage == 48 ? 'selected' : '' }}>48</option>
+                                <option value="6" {{ ($perPage ?? 10) == 6 ? 'selected' : '' }}>6</option>
+                                <option value="12" {{ ($perPage ?? 10) == 12 ? 'selected' : '' }}>12</option>
+                                <option value="24" {{ ($perPage ?? 10) == 24 ? 'selected' : '' }}>24</option>
+                                <option value="48" {{ ($perPage ?? 10) == 48 ? 'selected' : '' }}>48</option>
                             </select>
                         </div>
                     </div>
