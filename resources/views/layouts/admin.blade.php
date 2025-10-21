@@ -163,6 +163,7 @@
                                 {{ __('All Reports') }}
                             </flux:navlist.item>
 
+                            @if(Route::has('reports.approval'))
                             <flux:navlist.item 
                                 icon="check-circle" 
                                 :href="route('reports.approval')" 
@@ -172,6 +173,7 @@
                             >
                                 {{ __('Report Approval') }}
                             </flux:navlist.item>
+                            @endif
 
                             <flux:navlist.item 
                                 icon="star" 
