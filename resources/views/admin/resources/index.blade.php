@@ -142,7 +142,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-slate-900 dark:text-white">{{ $resource->club->club_name }}</div>
+                                            <div class="text-slate-900 dark:text-white">{{ $resource->club->club_name ?? 'Unknown Club' }}</div>
                                         </td>
                                         <td class="px-6 py-4">
                                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-green-500 to-emerald-600 text-white">
