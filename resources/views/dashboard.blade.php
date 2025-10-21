@@ -374,12 +374,12 @@
                     </div>
                 </div>
 
-                <!-- V2.5.0 Features Overview -->
+                <!-- System Overview -->
                 <div class="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-xl border border-purple-200 dark:border-slate-600 p-6 mb-6">
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">🚀 V2.5.0 New Features</h3>
-                            <p class="text-slate-600 dark:text-slate-400">Enhanced system capabilities and management tools</p>
+                            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">System Overview</h3>
+                            <p class="text-slate-600 dark:text-slate-400">Comprehensive management and analytics dashboard</p>
                         </div>
                         <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-xl font-semibold">
                             Latest Update
