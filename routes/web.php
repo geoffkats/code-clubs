@@ -166,7 +166,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           Route::get('/teachers/{teacher}', [App\Http\Controllers\FacilitatorController::class, 'showTeacher'])->name('teachers.show');
           Route::get('/clubs', [App\Http\Controllers\FacilitatorController::class, 'clubs'])->name('clubs');
           Route::get('/clubs/{club}', [App\Http\Controllers\FacilitatorController::class, 'showClub'])->name('clubs.show');
-          Route::get('/reports', function () {
+          Route::get('/reports/approval', function () {
               // Get reports data for the original reports functionality
               $reports = \App\Models\Report::with(['student', 'club', 'access_code'])
                   ->orderBy('report_generated_at', 'desc')
@@ -181,7 +181,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
                   ->get();
               
               return view('admin.reports.index', compact('reports', 'clubs'));
-          })->name('reports.index');
+          })->name('reports.approval');
           Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'facilitatorApprove'])->name('reports.approve');
           Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
           Route::post('/reports/{reportId}/request-revision', [App\Http\Controllers\ReportApprovalController::class, 'requestRevision'])->name('reports.request-revision');
@@ -262,7 +262,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
         Route::post('/students/bulk-enroll', [StudentController::class, 'bulkEnroll'])->name('students.bulk-enroll');
 
         // Report Approval routes
-        Route::get('/reports', function () {
+        Route::get('/reports/approval', function () {
             // Get reports data for the original reports functionality
             $reports = \App\Models\Report::with(['student', 'club', 'access_code'])
                 ->orderBy('report_generated_at', 'desc')
@@ -274,7 +274,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
                 ->get();
             
             return view('admin.reports.index', compact('reports', 'clubs'));
-        })->name('reports.index');
+        })->name('reports.approval');
         Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'adminApprove'])->name('reports.approve');
         Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
         Route::post('/reports/{reportId}/request-revision', [App\Http\Controllers\ReportApprovalController::class, 'requestRevision'])->name('reports.request-revision');

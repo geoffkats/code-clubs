@@ -155,12 +155,22 @@
                         <flux:navlist variant="outline" class="space-y-1">
                             <flux:navlist.item 
                                 icon="document-text" 
-                                :href="route('admin.reports.index')" 
-                                :current="request()->routeIs('admin.reports.*')" 
+                                :href="route('reports.index')" 
+                                :current="request()->routeIs('reports.*') && !request()->routeIs('reports.approval')" 
                                 wire:navigate
                                 class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
                             >
                                 {{ __('All Reports') }}
+                            </flux:navlist.item>
+
+                            <flux:navlist.item 
+                                icon="check-circle" 
+                                :href="route('reports.approval')" 
+                                :current="request()->routeIs('reports.approval')" 
+                                wire:navigate
+                                class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                            >
+                                {{ __('Report Approval') }}
                             </flux:navlist.item>
 
                             <flux:navlist.item 
