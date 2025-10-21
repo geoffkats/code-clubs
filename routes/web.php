@@ -167,7 +167,20 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           Route::get('/clubs', [App\Http\Controllers\FacilitatorController::class, 'clubs'])->name('clubs');
           Route::get('/clubs/{club}', [App\Http\Controllers\FacilitatorController::class, 'showClub'])->name('clubs.show');
           Route::get('/reports', function () {
-              return view('admin.reports.index');
+              // Get reports data for the original reports functionality
+              $reports = \App\Models\Report::with(['student', 'club', 'access_code'])
+                  ->orderBy('report_generated_at', 'desc')
+                  ->paginate(10);
+              
+              // Get clubs for report generation (filtered by facilitator's school)
+              $clubs = \App\Models\Club::with(['school'])
+                  ->whereHas('students')
+                  ->whereHas('school', function($query) {
+                      $query->where('id', auth()->user()->school_id);
+                  })
+                  ->get();
+              
+              return view('admin.reports.index', compact('reports', 'clubs'));
           })->name('reports.index');
           Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'facilitatorApprove'])->name('reports.approve');
           Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
@@ -250,7 +263,17 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
 
         // Report Approval routes
         Route::get('/reports', function () {
-            return view('admin.reports.index');
+            // Get reports data for the original reports functionality
+            $reports = \App\Models\Report::with(['student', 'club', 'access_code'])
+                ->orderBy('report_generated_at', 'desc')
+                ->paginate(10);
+            
+            // Get clubs for report generation
+            $clubs = \App\Models\Club::with(['school'])
+                ->whereHas('students')
+                ->get();
+            
+            return view('admin.reports.index', compact('reports', 'clubs'));
         })->name('reports.index');
         Route::post('/reports/{reportId}/approve', [App\Http\Controllers\ReportApprovalController::class, 'adminApprove'])->name('reports.approve');
         Route::post('/reports/{reportId}/reject', [App\Http\Controllers\ReportApprovalController::class, 'reject'])->name('reports.reject');
