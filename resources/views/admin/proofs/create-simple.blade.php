@@ -7,8 +7,8 @@
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Edit Proof</h1>
-                    <p class="mt-2 text-slate-600 dark:text-slate-400">Update proof information and file</p>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Upload Proof</h1>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">Upload a file as proof for a session</p>
                 </div>
                 <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : (request()->routeIs('teacher.*') ? route('teacher.proofs.index') : route('admin.proofs.index')) }}" 
                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
@@ -20,12 +20,11 @@
             </div>
         </div>
 
-        <!-- Edit Form -->
+        <!-- Upload Form -->
         <div class="bg-white dark:bg-slate-800 shadow rounded-lg">
             <div class="p-8">
-                <form id="proofEditForm" method="POST" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.update', $proof) : (request()->routeIs('teacher.*') ? route('teacher.proofs.update', $proof) : route('admin.proofs.update', $proof)) }}" enctype="multipart/form-data" class="space-y-8">
+                <form id="proofUploadForm" method="POST" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.store') : (request()->routeIs('teacher.*') ? route('teacher.proofs.store') : route('admin.proofs.store')) }}" enctype="multipart/form-data" class="space-y-8">
                     @csrf
-                    @method('PUT')
                     
                     <!-- Session Selection -->
                     <div>
@@ -35,7 +34,7 @@
                         <select name="session_id" id="session_id" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white">
                             <option value="">Choose a session...</option>
                             @foreach($sessions as $session)
-                                <option value="{{ $session->id }}" {{ $proof->session_id == $session->id ? 'selected' : '' }}>
+                                <option value="{{ $session->id }}">
                                     {{ $session->club->club_name ?? 'Unknown Club' }} - 
                                     {{ $session->session_date ? \Carbon\Carbon::parse($session->session_date)->format('M d, Y') : 'No Date' }}
                                 </option>
@@ -46,28 +45,10 @@
                         @enderror
                     </div>
 
-                    <!-- Current File Display -->
-                    @if($proof->proof_url)
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            Current File
-                        </label>
-                        <div class="flex items-center space-x-4 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
-                            <div class="text-2xl">{{ $proof->proof_type === 'video' ? '🎥' : '🖼️' }}</div>
-                            <div class="flex-1">
-                                <div class="text-sm font-medium text-slate-900 dark:text-white">{{ basename($proof->proof_url) }}</div>
-                                <div class="text-xs text-slate-500 dark:text-slate-400">{{ $proof->file_size ? formatBytes($proof->file_size) : 'Unknown size' }}</div>
-                            </div>
-                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : (request()->routeIs('teacher.*') ? route('teacher.proofs.download', $proof) : route('admin.proofs.download', $proof)) }}" 
-                               class="text-emerald-600 hover:text-emerald-500 text-sm font-medium">Download</a>
-                        </div>
-                    </div>
-                    @endif
-
                     <!-- File Upload -->
                     <div>
                         <label for="proof_url" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            {{ $proof->proof_url ? 'Replace File (Optional)' : 'Upload Proof File' }} <span class="text-red-500">{{ $proof->proof_url ? '' : '*' }}</span>
+                            Upload Proof File <span class="text-red-500">*</span>
                         </label>
                         <div id="file-upload-area" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors duration-200">
                             <div class="space-y-1 text-center">
@@ -76,8 +57,8 @@
                                 </svg>
                                 <div class="flex text-sm text-slate-600 dark:text-slate-400">
                                     <label for="proof_url" class="relative cursor-pointer bg-white dark:bg-slate-800 rounded-md font-medium text-emerald-600 hover:text-emerald-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500">
-                                        <span>{{ $proof->proof_url ? 'Replace file' : 'Upload a file' }}</span>
-                                        <input id="proof_url" name="proof_url" type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.mp4,.mov,.avi,.webm" {{ $proof->proof_url ? '' : 'required' }}>
+                                        <span>Upload a file</span>
+                                        <input id="proof_url" name="proof_url" type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.mp4,.mov,.avi,.webm" required>
                                     </label>
                                     <p class="pl-1">or drag and drop</p>
                                 </div>
@@ -96,23 +77,19 @@
                         <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Description (Optional)
                         </label>
-                        <textarea name="description" id="description" rows="4" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white" placeholder="Add a description for this proof...">{{ old('description', $proof->description) }}</textarea>
+                        <textarea name="description" id="description" rows="4" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white" placeholder="Add a description for this proof..."></textarea>
                         @error('description')
                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <!-- Submit Button -->
-                    <div class="flex justify-end space-x-4">
-                        <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : (request()->routeIs('teacher.*') ? route('teacher.proofs.index') : route('admin.proofs.index')) }}" 
-                           class="inline-flex items-center px-6 py-3 border border-slate-300 dark:border-slate-600 text-base font-medium rounded-md text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
-                            Cancel
-                        </a>
+                    <div class="flex justify-end">
                         <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                             </svg>
-                            Update Proof
+                            Upload Proof
                         </button>
                     </div>
                 </form>

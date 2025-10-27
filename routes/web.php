@@ -52,14 +52,24 @@ Route::middleware(['auth', 'role:facilitator'])->prefix('facilitator')->name('fa
     // Facilitator-specific proofs routes
     Route::get('/proofs', [App\Http\Controllers\AdminProofController::class, 'index'])->name('proofs.index');
     Route::get('/proofs/create', [App\Http\Controllers\AdminProofController::class, 'create'])->name('proofs.create');
-    Route::post('/proofs', [App\Http\Controllers\AdminProofController::class, 'store'])->name('proofs.store');
+    Route::post('/proofs', [App\Http\Controllers\AdminProofController::class, 'store'])->middleware('large.uploads')->name('proofs.store');
     Route::get('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'show'])->name('proofs.show');
     Route::get('/proofs/{proof}/edit', [App\Http\Controllers\AdminProofController::class, 'edit'])->name('proofs.edit');
     Route::put('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'update'])->name('proofs.update');
-    Route::delete('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'destroy'])->name('proofs.destroy');
+    // Facilitators cannot delete proofs (malpractice prevention)
+    // Route::delete('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'destroy'])->name('proofs.destroy');
     Route::post('/proofs/{proof}/approve', [App\Http\Controllers\AdminProofController::class, 'approve'])->name('proofs.approve');
     Route::post('/proofs/{proof}/reject', [App\Http\Controllers\AdminProofController::class, 'reject'])->name('proofs.reject');
     Route::get('/proofs/{proof}/download', [App\Http\Controllers\AdminProofController::class, 'download'])->name('proofs.download');
+    
+    // Facilitator bulk action routes for proofs
+    Route::post('/proofs/bulk-approve', [App\Http\Controllers\AdminProofController::class, 'bulkApprove'])->name('proofs.bulk-approve');
+    Route::post('/proofs/bulk-reject', [App\Http\Controllers\AdminProofController::class, 'bulkReject'])->name('proofs.bulk-reject');
+    Route::post('/proofs/bulk-archive', [App\Http\Controllers\AdminProofController::class, 'bulkArchive'])->name('proofs.bulk-archive');
+    Route::post('/proofs/bulk-unarchive', [App\Http\Controllers\AdminProofController::class, 'bulkUnarchive'])->name('proofs.bulk-unarchive');
+    // Facilitators cannot bulk delete proofs (malpractice prevention)
+    // Route::post('/proofs/bulk-delete', [App\Http\Controllers\AdminProofController::class, 'bulkDelete'])->name('proofs.bulk-delete');
+    Route::post('/proofs/bulk-export', [App\Http\Controllers\AdminProofController::class, 'bulkExport'])->name('proofs.bulk-export');
 });
 
 Route::middleware(['auth', \App\Http\Middleware\EnsureUserBelongsToSchool::class])->group(function () {
@@ -272,6 +282,13 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           // Session Feedback routes
           Route::get('/feedback', [App\Http\Controllers\SessionFeedbackController::class, 'index'])->name('feedback.index');
           Route::get('/feedback/{sessionFeedback}', [App\Http\Controllers\SessionFeedbackController::class, 'show'])->name('feedback.show');
+          
+          // Teacher Proofs routes
+          Route::get('/proofs', [App\Http\Controllers\AdminProofController::class, 'index'])->name('proofs.index');
+          Route::get('/proofs/create', [App\Http\Controllers\AdminProofController::class, 'create'])->name('proofs.create');
+          Route::post('/proofs', [App\Http\Controllers\AdminProofController::class, 'store'])->middleware('large.uploads')->name('proofs.store');
+          Route::get('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'show'])->name('proofs.show');
+          Route::get('/proofs/{proof}/download', [App\Http\Controllers\AdminProofController::class, 'download'])->name('proofs.download');
       });
 
     // V2.5.0 - Resource routes (moved to facilitator routes to avoid conflicts)
@@ -379,7 +396,7 @@ Route::get('/api/clubs/{club_id}/sessions', [AttendanceController::class, 'getCl
           // Teacher Proofs routes
           Route::get('/proofs', [App\Http\Controllers\AdminProofController::class, 'index'])->name('proofs.index');
           Route::get('/proofs/create', [App\Http\Controllers\AdminProofController::class, 'create'])->name('proofs.create');
-          Route::post('/proofs', [App\Http\Controllers\AdminProofController::class, 'store'])->name('proofs.store');
+          Route::post('/proofs', [App\Http\Controllers\AdminProofController::class, 'store'])->middleware('large.uploads')->name('proofs.store');
           Route::get('/proofs/archived', [App\Http\Controllers\AdminProofController::class, 'archived'])->name('proofs.archived');
           Route::get('/proofs/{proof}', [App\Http\Controllers\AdminProofController::class, 'show'])->name('proofs.show');
           Route::get('/proofs/{proof}/edit', [App\Http\Controllers\AdminProofController::class, 'edit'])->name('proofs.edit');
@@ -435,3 +452,35 @@ Route::middleware(['auth:student'])->prefix('student')->name('student.')->group(
 
 // Public parent report route (no auth)
 Route::get('/r/{report_id}', [ParentReportController::class, 'show_public'])->name('reports.public');
+
+// Chunked upload routes
+Route::middleware('auth')->group(function () {
+    Route::get('/chunked-test', function() {
+        return view('chunked-upload-test');
+    })->name('chunked.test');
+    Route::post('/chunked-upload', [App\Http\Controllers\ChunkedUploadController::class, 'upload'])->name('chunked.upload');
+    Route::post('/simple-chunked-upload', [App\Http\Controllers\SimpleChunkedUploadController::class, 'upload'])->name('simple.chunked.upload');
+    Route::get('/chunked-progress', [App\Http\Controllers\ChunkedUploadController::class, 'progress'])->name('chunked.progress');
+});
+
+// Debug route for testing file uploads
+Route::get('/debug-upload', function() {
+    return view('debug-upload');
+})->middleware('auth');
+
+Route::post('/debug-upload', function(\Illuminate\Http\Request $request) {
+    if ($request->hasFile('test_file')) {
+        $file = $request->file('test_file');
+        return response()->json([
+            'original_name' => $file->getClientOriginalName(),
+            'mime_type' => $file->getMimeType(),
+            'size' => $file->getSize(),
+            'extension' => $file->getClientOriginalExtension(),
+            'is_valid' => $file->isValid(),
+            'error' => $file->getErrorMessage(),
+            'php_upload_max' => ini_get('upload_max_filesize'),
+            'php_post_max' => ini_get('post_max_size')
+        ]);
+    }
+    return response()->json(['error' => 'No file uploaded']);
+})->middleware('auth');

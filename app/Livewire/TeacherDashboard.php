@@ -259,6 +259,9 @@ class TeacherDashboard extends Component
     public function render()
     {
         return view('livewire.teacher-dashboard')
-            ->layout('layouts.admin');
+            ->layout('layouts.teacher', [
+                'title' => 'Teacher Dashboard',
+                'subtitle' => 'Overview of your clubs, sessions, and activities'
+            ]);
     }
 }

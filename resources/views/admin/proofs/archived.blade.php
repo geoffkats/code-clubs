@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(request()->routeIs('facilitator.*') ? 'layouts.facilitator' : (request()->routeIs('teacher.*') ? 'layouts.teacher' : 'layouts.admin'))
 
 @section('title', 'Archived Teacher Proofs')
 
@@ -194,15 +194,15 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-slate-900 dark:text-white">
-                                            {{ $proof->session->club->club_name ?? 'Unknown Club' }}
+                                            {{ $proof->session && $proof->session->club ? $proof->session->club->club_name : 'Unknown Club' }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-slate-900 dark:text-white">
-                                            {{ $proof->session->session_date->format('M d, Y') ?? 'Unknown Date' }}
+                                            {{ $proof->session && $proof->session->session_date ? \Carbon\Carbon::parse($proof->session->session_date)->format('M d, Y') : 'Unknown Date' }}
                                         </div>
                                         <div class="text-sm text-slate-500 dark:text-slate-400">
-                                            {{ $proof->session->session_time ?? 'Unknown Time' }}
+                                            {{ $proof->session ? $proof->session->session_time : 'Unknown Time' }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">

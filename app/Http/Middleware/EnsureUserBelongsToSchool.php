@@ -14,8 +14,8 @@ class EnsureUserBelongsToSchool
 			abort(403, 'User must be authenticated');
 		}
 		
-		// Allow admin users without school restriction
-		if ($user->user_role === 'admin' || $user->user_role === 'super_admin') {
+		// Allow admin and facilitator users without school restriction
+		if ($user->user_role === 'admin' || $user->user_role === 'super_admin' || $user->user_role === 'facilitator') {
 			return $next($request);
 		}
 		

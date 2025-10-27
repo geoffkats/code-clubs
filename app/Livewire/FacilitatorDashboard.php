@@ -22,6 +22,10 @@ class FacilitatorDashboard extends Component
     public $topTeachers = [];
     public $clubPerformance = [];
     public $recentResources = [];
+    public $recentProofs = [];
+    public $upcomingSessions = [];
+    public $teacherPerformance = [];
+    public $attendanceStats = [];
     
     // Filters
     public $selectedPeriod = '30';
@@ -51,22 +55,33 @@ class FacilitatorDashboard extends Component
         
         // Load stats with caching
         $this->stats = Cache::remember("facilitator.{$facilitator->id}.dashboard_stats", 300, function() use ($facilitator) {
+            $managedClubIds = $facilitator->managedClubs()->pluck('id');
+            
             return [
                 'total_clubs' => $facilitator->managedClubs()->count(),
                 'total_teachers' => $facilitator->teachers()->count(),
+                'total_students' => DB::table('club_enrollments')->whereIn('club_id', $managedClubIds)->count(),
                 'pending_reports' => Report::where('facilitator_id', $facilitator->id)
                     ->pendingFacilitatorApproval()
                     ->count(),
-                'total_sessions' => $facilitator->managedClubs()
-                    ->withCount('clubSessions')
-                    ->get()
-                    ->sum('club_sessions_count'),
+                'total_sessions' => DB::table('club_sessions')->whereIn('club_id', $managedClubIds)->count(),
+                'upcoming_sessions' => DB::table('club_sessions')
+                    ->whereIn('club_id', $managedClubIds)
+                    ->where('session_date', '>=', now())
+                    ->count(),
                 'active_teachers' => $facilitator->teachers()
                     ->whereHas('clubsAsTeacher.clubSessions', function($q) {
                         $q->where('session_date', '>=', now()->subDays(7));
                     })
                     ->count(),
+                'total_proofs' => \App\Models\SessionProof::whereHas('session.club', function($q) use ($facilitator) {
+                    $q->where('facilitator_id', $facilitator->id);
+                })->count(),
+                'pending_proofs' => \App\Models\SessionProof::whereHas('session.club', function($q) use ($facilitator) {
+                    $q->where('facilitator_id', $facilitator->id);
+                })->where('status', 'pending')->count(),
                 'completion_rate' => $this->getCompletionRate($facilitator),
+                'attendance_rate' => $this->getAttendanceStats($facilitator)['average_attendance'],
             ];
         });
 
@@ -118,6 +133,44 @@ class FacilitatorDashboard extends Component
             ->latest()
             ->limit(5)
             ->get();
+
+        // Load recent proofs from managed clubs
+        $this->recentProofs = \App\Models\SessionProof::with(['session.club', 'uploadedBy'])
+            ->whereHas('session.club', function($q) use ($facilitator) {
+                $q->where('facilitator_id', $facilitator->id);
+            })
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        // Load upcoming sessions
+        $this->upcomingSessions = DB::table('club_sessions')
+            ->join('clubs', 'club_sessions.club_id', '=', 'clubs.id')
+            ->join('users', 'club_sessions.teacher_id', '=', 'users.id')
+            ->where('clubs.facilitator_id', $facilitator->id)
+            ->where('club_sessions.session_date', '>=', now())
+            ->select('club_sessions.*', 'clubs.club_name', 'users.name as teacher_name')
+            ->orderBy('club_sessions.session_date')
+            ->limit(5)
+            ->get();
+
+        // Load teacher performance data
+        $this->teacherPerformance = $facilitator->teachers()
+            ->withCount(['clubsAsTeacher', 'uploadedProofs'])
+            ->with(['clubsAsTeacher' => function($q) {
+                $q->withCount('clubSessions');
+            }])
+            ->get()
+            ->map(function($teacher) {
+                $teacher->total_sessions = $teacher->clubsAsTeacher->sum('club_sessions_count');
+                $teacher->recent_activity = $teacher->uploaded_proofs_count;
+                return $teacher;
+            })
+            ->sortByDesc('total_sessions')
+            ->take(5);
+
+        // Load attendance statistics
+        $this->attendanceStats = $this->getAttendanceStats($facilitator);
     }
 
     public function getCompletionRate($facilitator)
@@ -144,6 +197,38 @@ class FacilitatorDashboard extends Component
             ->count();
 
         return $totalPossible > 0 ? round(($totalAttendance / $totalPossible) * 100, 1) : 0;
+    }
+
+    public function getAttendanceStats($facilitator)
+    {
+        $managedClubIds = $facilitator->managedClubs()->pluck('id');
+        
+        $totalSessions = DB::table('club_sessions')
+            ->whereIn('club_id', $managedClubIds)
+            ->where('session_date', '>=', now()->subDays($this->selectedPeriod))
+            ->count();
+
+        $totalAttendance = DB::table('session_attendance')
+            ->join('club_sessions', 'session_attendance.club_session_id', '=', 'club_sessions.id')
+            ->whereIn('club_sessions.club_id', $managedClubIds)
+            ->where('club_sessions.session_date', '>=', now()->subDays($this->selectedPeriod))
+            ->count();
+
+        $totalStudents = DB::table('club_enrollments')
+            ->whereIn('club_id', $managedClubIds)
+            ->count();
+
+        $averageAttendance = $totalSessions > 0 && $totalStudents > 0 
+            ? round(($totalAttendance / ($totalSessions * $totalStudents)) * 100, 1) 
+            : 0;
+
+        return [
+            'total_sessions' => $totalSessions,
+            'total_attendance' => $totalAttendance,
+            'total_students' => $totalStudents,
+            'average_attendance' => $averageAttendance,
+            'period' => $this->selectedPeriod
+        ];
     }
 
     public function approveReport($reportId)
@@ -245,6 +330,9 @@ class FacilitatorDashboard extends Component
     public function render()
     {
         return view('livewire.facilitator-dashboard')
-            ->layout('layouts.admin');
+            ->layout('layouts.facilitator', [
+                'title' => 'Facilitator Dashboard',
+                'subtitle' => 'Overview of your clubs, teachers, and activities'
+            ]);
     }
 }

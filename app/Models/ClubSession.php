@@ -54,8 +54,7 @@ class ClubSession extends Model
     public function students()
     {
         return $this->belongsToMany(Student::class, 'session_attendance', 'club_session_id', 'student_id')
-            ->withPivot(['attended_at', 'notes'])
-            ->withTimestamps();
+            ->withPivot(['attended_at', 'notes']);
     }
 
     /**

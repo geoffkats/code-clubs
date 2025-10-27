@@ -16,11 +16,18 @@ use Illuminate\Support\Facades\Validator;
 
 class TeacherController extends Controller
 {
-    public function __construct()
+    // Middleware is applied in routes/web.php for teacher routes
+
+    /**
+     * Helper method to get the correct redirect route based on current route context
+     */
+    protected function getRedirectRoute(): string
     {
-        $this->middleware('auth');
-        $this->middleware('role:teacher');
-        $this->middleware('throttle:10,1')->only('uploadProof'); // 10 uploads per minute
+        if (request()->routeIs('teacher.*')) {
+            return 'teacher.dashboard';
+        } else {
+            return 'admin.dashboard';
+        }
     }
 
     /**

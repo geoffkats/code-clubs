@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(request()->routeIs('facilitator.*') ? 'layouts.facilitator' : (request()->routeIs('teacher.*') ? 'layouts.teacher' : 'layouts.admin'))
 @section('title', 'Proof Review')
 
 @section('content')
@@ -9,7 +9,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <div class="flex items-center mb-4">
-                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : route('admin.proofs.index') }}" 
+                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : (request()->routeIs('teacher.*') ? route('teacher.proofs.index') : route('admin.proofs.index')) }}" 
                                class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white mr-4">
                                 ← Back to Proofs
                             </a>
@@ -22,7 +22,7 @@
                         </p>
                     </div>
                     <div class="flex space-x-3">
-                        @if($proof->status === 'pending')
+                        @if($proof->status === 'pending' && !request()->routeIs('teacher.*'))
                             <button onclick="approveProof()" 
                                     class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                                 ✅ Approve Proof
@@ -60,7 +60,7 @@
                                     📷 Photo - {{ $proof->formatted_file_size }}
                                 </p>
                             </div>
-                        @else
+                        @elseif($proof->isVideo())
                             <div class="text-center">
                                 <video controls class="max-w-full h-auto rounded-lg shadow-lg mx-auto" style="max-height: 500px;">
                                     <source src="{{ $proof->file_url }}" type="{{ $proof->mime_type }}">
@@ -70,10 +70,59 @@
                                     🎥 Video - {{ $proof->formatted_file_size }}
                                 </p>
                             </div>
+                        @elseif($proof->isDocument())
+                            <div class="text-center">
+                                <div class="bg-slate-100 dark:bg-slate-700 rounded-lg p-8 mx-auto max-w-md">
+                                    <div class="text-6xl mb-4">
+                                        @if(str_contains($proof->mime_type, 'pdf'))
+                                            📄
+                                        @elseif(str_contains($proof->mime_type, 'word') || str_contains($proof->mime_type, 'document'))
+                                            📝
+                                        @else
+                                            📁
+                                        @endif
+                                    </div>
+                                    <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                                        {{ basename($proof->proof_url) }}
+                                    </h4>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                                        {{ $proof->formatted_file_size }}
+                                    </p>
+                                    <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : (request()->routeIs('teacher.*') ? route('teacher.proofs.download', $proof) : route('admin.proofs.download', $proof)) }}" 
+                                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download Document
+                                    </a>
+                                </div>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                                    📄 Document - {{ $proof->formatted_file_size }}
+                                </p>
+                            </div>
+                        @else
+                            <div class="text-center">
+                                <div class="bg-slate-100 dark:bg-slate-700 rounded-lg p-8 mx-auto max-w-md">
+                                    <div class="text-6xl mb-4">📁</div>
+                                    <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                                        {{ basename($proof->proof_url) }}
+                                    </h4>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                                        {{ $proof->formatted_file_size }}
+                                    </p>
+                                    <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : (request()->routeIs('teacher.*') ? route('teacher.proofs.download', $proof) : route('admin.proofs.download', $proof)) }}" 
+                                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download File
+                                    </a>
+                                </div>
+                            </div>
                         @endif
 
                         <div class="mt-4 flex justify-center">
-                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : route('admin.proofs.download', $proof) }}" 
+                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : (request()->routeIs('teacher.*') ? route('teacher.proofs.download', $proof) : route('admin.proofs.download', $proof)) }}" 
                                class="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                                 📥 Download Proof
                             </a>
@@ -131,7 +180,15 @@
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Type</label>
                                 <p class="text-slate-900 dark:text-white mt-1">
-                                    {{ $proof->isImage() ? '📷 Photo' : '🎥 Video' }}
+                                    @if($proof->isImage())
+                                        📷 Photo
+                                    @elseif($proof->isVideo())
+                                        🎥 Video
+                                    @elseif($proof->isDocument())
+                                        📄 Document
+                                    @else
+                                        📁 File
+                                    @endif
                                 </p>
                             </div>
 
@@ -160,17 +217,17 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Club</label>
-                                <p class="text-slate-900 dark:text-white mt-1">{{ $proof->session->club->club_name ?? 'Unknown Club' }}</p>
+                                <p class="text-slate-900 dark:text-white mt-1">{{ $proof->session && $proof->session->club ? $proof->session->club->club_name : 'Unknown Club' }}</p>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Session Date</label>
-                                <p class="text-slate-900 dark:text-white mt-1">{{ $proof->session->session_date ? $proof->session->session_date->format('M d, Y') : 'Unknown Date' }}</p>
+                                <p class="text-slate-900 dark:text-white mt-1">{{ $proof->session && $proof->session->session_date ? \Carbon\Carbon::parse($proof->session->session_date)->format('M d, Y') : 'Unknown Date' }}</p>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-slate-700 dark:text-slate-300">Session Time</label>
-                                <p class="text-slate-900 dark:text-white mt-1">{{ $proof->session->session_time ?? 'Unknown Time' }}</p>
+                                <p class="text-slate-900 dark:text-white mt-1">{{ $proof->session ? $proof->session->session_time : 'Unknown Time' }}</p>
                             </div>
 
                             @if($proof->session && $proof->session->session_title)

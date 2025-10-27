@@ -1,142 +1,305 @@
-@extends('layouts.admin')
-@section('title', 'Upload Proof')
+@extends(request()->routeIs('facilitator.*') ? 'layouts.facilitator' : (request()->routeIs('teacher.*') ? 'layouts.teacher' : 'layouts.admin'))
 
 @section('content')
-    <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-        <!-- Header Section -->
-        <div class="sticky top-0 z-40 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-700/60">
-            <div class="px-6 py-6">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : route('admin.proofs.index') }}" class="group p-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200">
-                            <svg class="w-5 h-5 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                            </svg>
-                        </a>
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center text-white shadow-lg">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-900 via-emerald-900 to-teal-900 dark:from-white dark:via-emerald-100 dark:to-teal-100 bg-clip-text text-transparent">
-                                Upload Proof
-                            </h1>
-                            <p class="text-slate-600 dark:text-slate-400 mt-1">Upload session proof documentation</p>
-                        </div>
-                    </div>
+<div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Upload Proof</h1>
+                    <p class="mt-2 text-slate-600 dark:text-slate-400">Upload a file as proof for a session</p>
                 </div>
+                <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : (request()->routeIs('teacher.*') ? route('teacher.proofs.index') : route('admin.proofs.index')) }}" 
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Proofs
+                </a>
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="px-6 py-8">
-            <div class="max-w-4xl mx-auto">
-                <!-- Form Card -->
-                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <div class="px-8 py-6 border-b border-slate-200 dark:border-slate-700">
-                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Proof Information</h2>
-                        <p class="text-slate-600 dark:text-slate-400 mt-1">Upload and configure session proof documentation</p>
+        <!-- Upload Form -->
+        <div class="bg-white dark:bg-slate-800 shadow rounded-lg">
+            <div class="p-8">
+                <form id="proofUploadForm" class="space-y-8">
+                    @csrf
+                    
+                    <!-- Session Selection -->
+                    <div>
+                        <label for="session_id" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Select Session <span class="text-red-500">*</span>
+                        </label>
+                        <select name="session_id" id="session_id" required class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white">
+                            <option value="">Choose a session...</option>
+                            @foreach($sessions as $session)
+                                <option value="{{ $session->id }}">
+                                    {{ $session->club->club_name ?? 'Unknown Club' }} - 
+                                    {{ $session->session_date ? \Carbon\Carbon::parse($session->session_date)->format('M d, Y') : 'No Date' }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('session_id')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <div class="p-8">
-                        <form method="POST" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.store') : route('admin.proofs.store') }}" enctype="multipart/form-data" class="space-y-8">
-                            @csrf
-                            
-                            <!-- Session Selection -->
-                            <div class="space-y-6">
-                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
-                                    Session Details
-                                </h3>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label for="session_id" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                            Select Session <span class="text-red-500">*</span>
-                                        </label>
-                                        <select name="session_id" id="session_id" required
-                                                class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white transition-all duration-200">
-                                            <option value="">Choose a session...</option>
-                                            @foreach($sessions as $session)
-                                                <option value="{{ $session->id }}" {{ old('session_id') == $session->id ? 'selected' : '' }}>
-                                                    {{ $session->club->club_name }} - {{ $session->session_date }} {{ $session->session_time }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('session_id')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- File Upload -->
-                            <div class="space-y-6">
-                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
-                                    Proof File
-                                </h3>
-                                
-                                <div>
-                                    <label for="proof_url" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                        Upload Proof File <span class="text-red-500">*</span>
+                    <!-- File Upload -->
+                    <div>
+                        <label for="proof_url" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Upload Proof File <span class="text-red-500">*</span>
+                        </label>
+                        <div id="file-upload-area" class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors duration-200">
+                            <div class="space-y-1 text-center">
+                                <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                                <div class="flex text-sm text-slate-600 dark:text-slate-400">
+                                    <label for="proof_url" class="relative cursor-pointer bg-white dark:bg-slate-800 rounded-md font-medium text-emerald-600 hover:text-emerald-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500">
+                                        <span>Upload a file</span>
+                                        <input id="proof_url" name="proof_url" type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,.mp4,.mov,.avi,.webm">
                                     </label>
-                                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl hover:border-emerald-400 dark:hover:border-emerald-500 transition-colors duration-200">
-                                        <div class="space-y-1 text-center">
-                                            <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                            <div class="flex text-sm text-slate-600 dark:text-slate-400">
-                                                <label for="proof_url" class="relative cursor-pointer bg-white dark:bg-slate-800 rounded-md font-medium text-emerald-600 hover:text-emerald-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500">
-                                                    <span>Upload a file</span>
-                                                    <input id="proof_url" name="proof_url" type="file" class="sr-only" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" required>
-                                                </label>
-                                                <p class="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">
-                                                PNG, JPG, PDF, DOC, DOCX up to 10MB
-                                            </p>
-                                        </div>
-                                    </div>
-                                    @error('proof_url')
-                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                    @enderror
+                                    <p class="pl-1">or drag and drop</p>
                                 </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">
+                                    <strong>File Requirements:</strong><br>
+                                    • Images: JPG, PNG (Max 50MB)<br>
+                                    • Videos: MP4, MOV, AVI, WEBM (Max 8MB, 20 seconds)<br>
+                                    • Documents: PDF, DOC, DOCX (Max 50MB)
+                                </p>
                             </div>
-
-                            <!-- Description -->
-                            <div class="space-y-6">
-                                <h3 class="text-lg font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 pb-2">
-                                    Additional Information
-                                </h3>
-                                
-                                <div>
-                                    <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                        Description (Optional)
-                                    </label>
-                                    <textarea name="description" id="description" rows="4"
-                                              class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white transition-all duration-200"
-                                              placeholder="Add any additional details about this proof...">{{ old('description') }}</textarea>
-                                    @error('description')
-                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="flex justify-end space-x-4 pt-6 border-t border-slate-200 dark:border-slate-700">
-                                <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : route('admin.proofs.index') }}" 
-                                   class="px-6 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all duration-200 shadow-sm hover:shadow-md">
-                                    Cancel
-                                </a>
-                                <button type="submit" 
-                                        class="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105">
-                                    Upload Proof
-                                </button>
-                            </div>
-                        </form>
+                        </div>
+                        @error('proof_url')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
                     </div>
-                </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Description (Optional)
+                        </label>
+                        <textarea name="description" id="description" rows="4" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 dark:bg-slate-700 dark:text-white" placeholder="Add a description for this proof..."></textarea>
+                        @error('description')
+                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button type="submit" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                            </svg>
+                            Upload Proof
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('proof_url');
+    const fileUploadArea = document.getElementById('file-upload-area');
+    const form = document.getElementById('proofUploadForm');
+    const sessionSelect = document.querySelector('select[name="session_id"]');
+    const descriptionInput = document.querySelector('textarea[name="description"]');
+    
+    // Form submission handling
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const file = fileInput.files[0];
+        if (!file) {
+            alert('Please select a file to upload');
+            return;
+        }
+        
+        if (!sessionSelect.value) {
+            alert('Please select a session');
+            return;
+        }
+        
+        console.log('Uploading file:', {
+            fileName: file.name,
+            fileSize: (file.size / 1024 / 1024).toFixed(2) + 'MB',
+            fileType: file.type,
+            sessionId: sessionSelect.value
+        });
+        
+        uploadFile(file);
+    });
+    
+    // File selection handling
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            handleFileSelect(file);
+        }
+    });
+    
+    // Drag and drop handling
+    fileUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileUploadArea.classList.add('border-emerald-400', 'bg-emerald-50', 'dark:bg-emerald-900');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        fileUploadArea.classList.remove('border-emerald-400', 'bg-emerald-50', 'dark:bg-emerald-900');
+    });
+    
+    fileUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fileUploadArea.classList.remove('border-emerald-400', 'bg-emerald-50', 'dark:bg-emerald-900');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            handleFileSelect(files[0]);
+        }
+    });
+    
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('proof_url', file);
+        formData.append('session_id', sessionSelect.value);
+        formData.append('description', descriptionInput.value);
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+        
+        showProgress('Uploading file...');
+        
+        fetch('{{ request()->routeIs("facilitator.*") ? route("facilitator.proofs.store") : (request()->routeIs("teacher.*") ? route("teacher.proofs.store") : route("admin.proofs.store")) }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            if (!response.ok) {
+                // Try to get the response text to see what error we're getting
+                return response.text().then(text => {
+                    console.error('Error response:', text);
+                    throw new Error(`HTTP error! status: ${response.status}, response: ${text.substring(0, 200)}...`);
+                });
+            }
+            
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                return response.text().then(text => {
+                    console.error('Non-JSON response:', text);
+                    throw new Error('Server returned non-JSON response: ' + text.substring(0, 200) + '...');
+                });
+            }
+            
+            return response.json();
+        })
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            showProgress('Upload completed successfully!', 'success');
+            setTimeout(() => {
+                window.location.href = '{{ request()->routeIs("facilitator.*") ? route("facilitator.proofs.index") : (request()->routeIs("teacher.*") ? route("teacher.proofs.index") : route("admin.proofs.index")) }}';
+            }, 2000);
+        })
+        .catch(error => {
+            showProgress('Upload failed: ' + error.message, 'error');
+            console.error('Upload error:', error);
+        });
+    }
+    
+    function showProgress(message, type = 'info') {
+        // Create or update progress element
+        let progressDiv = document.getElementById('upload-progress');
+        if (!progressDiv) {
+            progressDiv = document.createElement('div');
+            progressDiv.id = 'upload-progress';
+            progressDiv.className = 'fixed top-4 right-4 bg-white dark:bg-slate-800 p-4 rounded-lg shadow-lg border z-50';
+            document.body.appendChild(progressDiv);
+        }
+        
+        progressDiv.innerHTML = `
+            <div class="flex items-center space-x-3">
+                <div class="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <span class="text-sm font-medium ${type === 'error' ? 'text-red-600' : type === 'success' ? 'text-green-600' : 'text-blue-600'}">${message}</span>
+            </div>
+        `;
+        
+        if (type === 'success') {
+            setTimeout(() => {
+                progressDiv.remove();
+            }, 3000);
+        }
+    }
+    
+    function handleFileSelect(file) {
+        if (!file) return;
+
+        // Validate file size based on type
+        const isVideo = file.type.startsWith('video/');
+        const maxSizeMB = isVideo ? 8 : 50; // 8MB for videos, 50MB for others
+        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+        
+        if (file.size > maxSizeBytes) {
+            alert(`File size must be less than ${maxSizeMB}MB. Your file is ` + (file.size / 1024 / 1024).toFixed(2) + 'MB');
+            return;
+        }
+        
+        // For videos, check duration
+        if (isVideo) {
+            checkVideoDuration(file);
+            return;
+        }
+
+        // Validate file type
+        const allowedTypes = [
+            'image/jpeg', 'image/jpg', 'image/png',
+            'video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/webm',
+            'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+        
+        if (!allowedTypes.includes(file.type)) {
+            alert('File type not supported. Please upload an image, video, or document.');
+            return;
+        }
+
+        // Update UI to show selected file
+        fileUploadArea.innerHTML = `
+            <div class="text-center">
+                <div class="text-4xl mb-2">${getFileIcon(file.type)}</div>
+                <div class="text-sm font-medium text-slate-900 dark:text-white">${file.name}</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400">${formatFileSize(file.size)}</div>
+            </div>
+        `;
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function getFileIcon(mimeType) {
+        if (mimeType.includes('pdf')) return '📄';
+        if (mimeType.includes('word') || mimeType.includes('document')) return '📝';
+        if (mimeType.includes('video')) return '🎥';
+        if (mimeType.includes('image')) return '🖼️';
+        return '📁';
+    }
+});
+</script>
 @endsection

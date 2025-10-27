@@ -42,7 +42,7 @@ class SessionProof extends Model
      */
     public function session()
     {
-        return $this->belongsTo(ClubSession::class, 'session_id');
+        return $this->belongsTo(SessionSchedule::class, 'session_id');
     }
 
     /**
@@ -215,6 +215,14 @@ class SessionProof extends Model
     public function isVideo()
     {
         return $this->proof_type === 'video';
+    }
+
+    /**
+     * Check if file is a document
+     */
+    public function isDocument()
+    {
+        return $this->proof_type === 'document';
     }
 
     /**

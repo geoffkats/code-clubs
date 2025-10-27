@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(request()->routeIs('facilitator.*') ? 'layouts.facilitator' : (request()->routeIs('teacher.*') ? 'layouts.teacher' : 'layouts.admin'))
 @section('title', 'Teacher Proofs Management')
 
 @section('content')
@@ -16,7 +16,7 @@
                         </p>
                     </div>
                     <div class="flex space-x-3">
-                        @if(!request()->routeIs('facilitator.*'))
+                        @if(!request()->routeIs('facilitator.*') && !request()->routeIs('teacher.*'))
                         <a href="{{ route('admin.proofs.archived') }}" 
                            class="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                             📦 Archived Proofs
@@ -26,7 +26,7 @@
                             📊 Analytics
                         </a>
                         @endif
-                        <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.create') : route('admin.proofs.create') }}" 
+                        <a href="@if(request()->routeIs('facilitator.*')){{ route('facilitator.proofs.create') }}@elseif(request()->routeIs('teacher.*')){{ route('teacher.proofs.create') }}@else{{ route('admin.proofs.create') }}@endif" 
                            class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl">
                             📤 Upload Proof
                         </a>
@@ -95,7 +95,7 @@
 
             <!-- Filters Section -->
             <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-slate-200 dark:border-slate-700 mb-6">
-                <form method="GET" action="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.index') : route('admin.proofs.index') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                <form method="GET" action="@if(request()->routeIs('facilitator.*')){{ route('facilitator.proofs.index') }}@elseif(request()->routeIs('teacher.*')){{ route('teacher.proofs.index') }}@else{{ route('admin.proofs.index') }}@endif" class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Status</label>
                         <select name="status" class="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent">
@@ -146,6 +146,7 @@
             </div>
 
             <!-- Bulk Actions -->
+            @if(!request()->routeIs('teacher.*'))
             <div class="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg border border-slate-200 dark:border-slate-700 mb-6">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Bulk Actions</h3>
@@ -183,12 +184,14 @@
                         </svg>
                         <span>Archive Selected</span>
                     </button>
+                    @if(!request()->routeIs('facilitator.*'))
                     <button onclick="bulkDelete()" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
                         <span>Delete Selected</span>
                     </button>
+                    @endif
                     <button onclick="bulkExport()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -197,6 +200,7 @@
                     </button>
                 </div>
             </div>
+            @endif
 
             <!-- Proofs Table -->
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
@@ -230,16 +234,36 @@
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                     </svg>
                                                 </div>
-                                            @else
-                                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                            @elseif($proof->isVideo())
+                                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
                                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                                    </svg>
+                                                </div>
+                                            @elseif($proof->isDocument())
+                                                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                    </svg>
+                                                </div>
+                                            @else
+                                                <div class="w-12 h-12 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg flex items-center justify-center mr-3">
+                                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                     </svg>
                                                 </div>
                                             @endif
                                             <div>
                                                 <div class="text-sm font-medium text-slate-900 dark:text-white">
-                                                    {{ $proof->isImage() ? 'Photo' : 'Video' }}
+                                                    @if($proof->isImage())
+                                                        Photo
+                                                    @elseif($proof->isVideo())
+                                                        Video
+                                                    @elseif($proof->isDocument())
+                                                        Document
+                                                    @else
+                                                        File
+                                                    @endif
                                                 </div>
                                                 <div class="text-sm text-slate-500 dark:text-slate-400">
                                                     {{ $proof->formatted_file_size }}
@@ -257,15 +281,15 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-slate-900 dark:text-white">
-                                            {{ $proof->session->club->club_name ?? 'Unknown Club' }}
+                                            {{ $proof->session && $proof->session->club ? $proof->session->club->club_name : 'Unknown Club' }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-slate-900 dark:text-white">
-                                            {{ $proof->session->session_date->format('M d, Y') ?? 'Unknown Date' }}
+                                            {{ $proof->session && $proof->session->session_date ? \Carbon\Carbon::parse($proof->session->session_date)->format('M d, Y') : 'Unknown Date' }}
                                         </div>
                                         <div class="text-sm text-slate-500 dark:text-slate-400">
-                                            {{ $proof->session->session_time ?? 'Unknown Time' }}
+                                            {{ $proof->session ? $proof->session->session_time : 'Unknown Time' }}
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -287,7 +311,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div class="flex space-x-1">
-                                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.show', $proof) : route('admin.proofs.show', $proof) }}" 
+                                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.show', $proof) : (request()->routeIs('teacher.*') ? route('teacher.proofs.show', $proof) : route('admin.proofs.show', $proof)) }}" 
                                                class="p-2 text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors duration-200"
                                                title="View Details">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -295,7 +319,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                                 </svg>
                                             </a>
-                                            @if($proof->status === 'pending')
+                                            @if($proof->status === 'pending' && !request()->routeIs('teacher.*'))
                                                 <button onclick="approveProof({{ $proof->id }})" 
                                                         class="p-2 text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors duration-200"
                                                         title="Approve Proof">
@@ -311,6 +335,7 @@
                                                     </svg>
                                                 </button>
                                             @endif
+                                            @if(!request()->routeIs('teacher.*'))
                                             <button onclick="archiveProof({{ $proof->id }})" 
                                                     class="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900/20 rounded-lg transition-colors duration-200"
                                                     title="Archive Proof">
@@ -318,13 +343,15 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8l6 6 6-6"></path>
                                                 </svg>
                                             </button>
-                                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : route('admin.proofs.download', $proof) }}" 
+                                            @endif
+                                            <a href="{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.download', $proof) : (request()->routeIs('teacher.*') ? route('teacher.proofs.download', $proof) : route('admin.proofs.download', $proof)) }}" 
                                                class="p-2 text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors duration-200"
                                                title="Download Proof">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                 </svg>
                                             </a>
+                                            @if(!request()->routeIs('teacher.*'))
                                             <button onclick="deleteProof({{ $proof->id }})" 
                                                     class="p-2 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
                                                     title="Delete Proof">
@@ -332,6 +359,7 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                                 </svg>
                                             </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -527,7 +555,7 @@
                 () => {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '{{ route("admin.proofs.bulk-approve") }}';
+                    form.action = '{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.bulk-approve') : route('admin.proofs.bulk-approve') }}';
                     
                     const csrfToken = document.createElement('input');
                     csrfToken.type = 'hidden';
@@ -569,7 +597,7 @@
                 () => {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '{{ route("admin.proofs.bulk-reject") }}';
+                    form.action = '{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.bulk-reject') : route('admin.proofs.bulk-reject') }}';
                     
                     const csrfToken = document.createElement('input');
                     csrfToken.type = 'hidden';
@@ -670,7 +698,7 @@
                 () => {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '{{ route("admin.proofs.bulk-archive") }}';
+                    form.action = '{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.bulk-archive') : route('admin.proofs.bulk-archive') }}';
                     
                     const csrfToken = document.createElement('input');
                     csrfToken.type = 'hidden';
@@ -802,6 +830,12 @@
 
         // Enhanced bulk operations
         function bulkDelete() {
+            // Prevent facilitators from deleting proofs (malpractice prevention)
+            @if(request()->routeIs('facilitator.*'))
+                showErrorMessage('Facilitators cannot delete proofs. This action is restricted to prevent malpractice.');
+                return;
+            @endif
+
             const selectedIds = getSelectedProofIds();
             if (selectedIds.length === 0) {
                 showErrorMessage('Please select proofs to delete.');
@@ -815,7 +849,7 @@
                 () => {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '{{ route("admin.proofs.bulk-delete") }}';
+                    form.action = '{{ route('admin.proofs.bulk-delete') }}';
                     
                     const csrfToken = document.createElement('input');
                     csrfToken.type = 'hidden';
@@ -852,7 +886,7 @@
                 () => {
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '{{ route("admin.proofs.bulk-export") }}';
+                    form.action = '{{ request()->routeIs('facilitator.*') ? route('facilitator.proofs.bulk-export') : route('admin.proofs.bulk-export') }}';
                     
                     const csrfToken = document.createElement('input');
                     csrfToken.type = 'hidden';
@@ -993,3 +1027,4 @@
         });
     </script>
 @endsection
+

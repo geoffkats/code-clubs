@@ -41,5 +41,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Use safe default string length for older MySQL index limits
         Schema::defaultStringLength(191);
+        
+        // Set upload limits for video uploads
+        if (file_exists(config_path('upload_limits.php'))) {
+            require config_path('upload_limits.php');
+        }
     }
 }

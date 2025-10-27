@@ -136,7 +136,7 @@
                         @foreach($upcomingSessions as $session)
                         <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700 rounded-lg">
                             <div class="flex-1">
-                                <h3 class="font-medium text-slate-900 dark:text-white">{{ $session->club->club_name }}</h3>
+                                <h3 class="font-medium text-slate-900 dark:text-white">{{ $session->club->club_name ?? 'Unknown Club' }}</h3>
                                 <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
                                     {{ \Carbon\Carbon::parse($session->session_date)->format('M d, Y') }}
                                     @if($session->session_time)
@@ -247,7 +247,7 @@
                             {{ $proof->session->club->club_name ?? 'Unknown Club' }}
                         </p>
                         <p class="text-xs text-slate-600 dark:text-slate-400 mt-1">
-                            {{ \Carbon\Carbon::parse($proof->session->session_date)->format('M d, Y') }}
+                            {{ $proof->session?->session_date ? \Carbon\Carbon::parse($proof->session->session_date)->format('M d, Y') : 'Unknown Date' }}
                         </p>
                         <div class="flex space-x-2 mt-3">
                             <button wire:click="downloadProof({{ $proof->id }})" 

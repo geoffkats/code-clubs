@@ -19,6 +19,10 @@ class SessionSchedule extends Model
 		'session_date',
 	];
 
+	protected $casts = [
+		'session_date' => 'date',
+	];
+
 	public function club(): BelongsTo
 	{
 		return $this->belongsTo(Club::class);

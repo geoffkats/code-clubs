@@ -13,7 +13,7 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string $roles): Response
     {
         if (!auth()->check()) {
             return redirect()->route('login');
@@ -26,13 +26,11 @@ class RoleMiddleware
             return $next($request);
         }
         
-        // Allow admin users to access admin routes
-        if ($role === 'admin' && $user->user_role === 'admin') {
-            return $next($request);
-        }
+        // Split roles by comma and check if user has any of the required roles
+        $allowedRoles = array_map('trim', explode(',', $roles));
         
-        // Check if user has the required role
-        if ($user->user_role !== $role) {
+        // Check if user has any of the required roles
+        if (!in_array($user->user_role, $allowedRoles)) {
             abort(403, 'You do not have permission to access this resource.');
         }
 
